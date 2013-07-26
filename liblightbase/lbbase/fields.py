@@ -199,7 +199,7 @@ class DataType():
     def __init__(self, datatype):
         self.datatype = datatype
 
-    def valid_tipos(self):
+    def valid_types(self):
         """
         Get valid instances of pototypes
         """
@@ -233,7 +233,7 @@ class DataType():
         """
         Check if is a valid datatype
         """
-        if t in self.valid_tipos():
+        if t in self.valid_types():
             self._datatype = t
         else:
             msg = 'TypeError Wrong tipo. The value you supllied for tipo is not valid: %s' % t
