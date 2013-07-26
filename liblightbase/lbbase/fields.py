@@ -71,6 +71,29 @@ class Group():
 
         return group_object
 
+    @property
+    def schema(self):
+
+        """ Builds base schema
+        """
+
+        """
+        def generic_type():
+            return lambda v: v
+
+        _schema = dict()
+
+        for attr in self.content:
+            _schema.update(attr.schema)
+
+        if self.multivalued:
+            _schema[self.name] = 
+            return _schema
+        else:
+            _schema[self.name] = 
+            return _schema
+        """
+
 class Field():
     """
     This is the field description
@@ -154,6 +177,18 @@ class Field():
         )
 
         return dict(field = _field)
+
+    @property
+    def schema(self):
+
+        """ Builds field schema
+        """
+        def generic_type():
+            return lambda v: v
+        if self.multivalued:
+            return {self.name: [generic_type()]}
+        else:
+            return {self.name: generic_type()}
 
 class Index():
     """

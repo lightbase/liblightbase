@@ -58,5 +58,18 @@ class Base():
         return base_object
 
     @property
+    def schema(self):
+        """ Builds base schema
+        """
+
+        return { attr.schema for attr in self.content }
+
+        _schema = dict()
+        for attr in self.content:
+            _schema.update(attr.schema)
+
+        return _schema
+
+    @property
     def json(self):
         return json.dumps(self.object, ensure_ascii=True)
