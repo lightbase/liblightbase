@@ -49,31 +49,21 @@ class Group():
 
     @property
     def object(self):
-
         """ Builds group object 
         """
-        group_object = dict()
-
-        _metadata = dict(
-            name = self.name,
-            description = self.description,
-            multivalued =  self.multivalued.multivalued
+        return dict(
+            group = dict(
+                content = [attr.object for attr in self.content],
+                metadata = dict(
+                    name = self.name,
+                    description = self.description,
+                    multivalued =  self.multivalued.multivalued
+                )
+            )
         )
-
-        _content = list()
-        for attr in self.content:
-            _content.append(attr.object)
-
-        group_object['group'] = dict(
-            metadata = _metadata,
-            content = _content,
-        )
-
-        return group_object
 
     @property
     def schema(self):
-
         """ Builds base schema
         """
         _schema = {attr.name: attr.schema for attr in self.content}
@@ -82,7 +72,7 @@ class Group():
         elif self.multivalued.multivalued is False:
             return _schema
         else:
-            raise Exception('multivalued must be boolean')
+            raise TypeError('multivalued must be boolean')
 
 class Field():
     """
