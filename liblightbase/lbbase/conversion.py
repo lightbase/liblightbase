@@ -7,15 +7,9 @@ def json_to_base(base_json):
 
     """ Parses base_json and builds Base instance
     """
-    def object_decoder(obj):
-        pass
-
-    #return json.loads(base_json.encode('utf-8'), object_hook=object_decoder)
-
     base_object = json.loads(base_json.encode('utf-8'))
     base_metadata = base_object['metadata']
     base_content = base_object['content']
-
 
     def assemble_content(content_object):
 
