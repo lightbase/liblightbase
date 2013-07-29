@@ -76,23 +76,13 @@ class Group():
 
         """ Builds base schema
         """
-
-        """
-        def generic_type():
-            return lambda v: v
-
-        _schema = dict()
-
-        for attr in self.content:
-            _schema.update(attr.schema)
-
-        if self.multivalued:
-            _schema[self.name] = 
+        _schema = {attr.name: attr.schema for attr in self.content}
+        if self.multivalued.multivalued is True:
+            return [_schema]
+        elif self.multivalued.multivalued is False:
             return _schema
         else:
-            _schema[self.name] = 
-            return _schema
-        """
+            raise Exception('multivalued must be boolean')
 
 class Field():
     """
@@ -185,10 +175,12 @@ class Field():
         """
         def generic_type():
             return lambda v: v
-        if self.multivalued:
-            return {self.name: [generic_type()]}
+        if self.multivalued.multivalued is True:
+            return [generic_type()]
+        elif self.multivalued.multivalued is False:
+            return generic_type()
         else:
-            return {self.name: generic_type()}
+            raise Exception('multivalued must be boolean')
 
 class Index():
     """

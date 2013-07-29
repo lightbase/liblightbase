@@ -83,6 +83,8 @@ example = {
 }
 
 
+
+
 def create_base(prelude):
 
     """ Creates Base instance based on predefined object
