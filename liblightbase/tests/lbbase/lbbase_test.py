@@ -1,6 +1,6 @@
 import unittest
 
-from liblightbase.lbbase import Base
+from liblightbase.lbbase.__init__2 import Base
 from liblightbase.lbbase.fields import *
 from liblightbase.lbbase.conversion import json_to_base
 
@@ -18,7 +18,7 @@ class BaseTestCase(unittest.TestCase):
         """
         Try to setup index value
         """
-        index = Index('Palavra')
+        index = Index('Vazio')
 
     def test_datatype(self):
         """
@@ -111,9 +111,6 @@ class BaseTestCase(unittest.TestCase):
             description = 'base1 description',
             content = [group1, field1, field2]
         )
-
-        base2 = json_to_base(base.json)
-        base.object == base2.object
 
     def tearDown(self):
         """
