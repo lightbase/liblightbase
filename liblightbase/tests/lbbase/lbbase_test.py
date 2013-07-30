@@ -1,7 +1,8 @@
 import unittest
-from datetime import datetime
+
 from liblightbase.lbbase import Base
-from liblightbase.lbbase.campos import *
+from liblightbase.lbbase.fields import *
+from liblightbase.lbbase.conversion import json_to_base
 
 class BaseTestCase(unittest.TestCase):
     """
@@ -12,293 +13,108 @@ class BaseTestCase(unittest.TestCase):
         Set up test data
         """
         pass
-        
+
     def test_index(self):
         """
         Try to setup index value
         """
-        indice = Indice(indice='Palavra')
-    
-    def test_tipo(self):
+        index = Index('Palavra')
+
+    def test_datatype(self):
         """
         Try to setup Tipo object
         """
-        tipo = Tipo(tipo='Inteiro')
-        
-        
-    def test_campo(self):
-        """
-        Try to setup a campo object
-        """
-        indice = Indice(indice='Palavra')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Texto')
-        
-        campo = Campo(nome='nome',
-                      descricao='Esse é o nome da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-    def test_objeto(self):
-        """
-        Try to setup objeto
-        """
-        indice = Indice(indice='Palavra')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Texto')
-        
-        campo = Campo(nome='nome',
-                      descricao='Esse é o nome da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        objeto = list()
-        objeto.append(campo)
-        
-        objeto = CampoObjeto(objeto=objeto)
-        
-    def test_objeto_multiple(self):
-        """
-        Try objeto with multiple fields
-        """
-        objeto = list()
-                        
-        # First <campo>
-        indice = Indice(indice='Palavra')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Texto')
-        
-        campo = Campo(nome='nome',
-                      descricao='Esse é o nome da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        objeto.append(campo)
-        
-        # Second <campo>
-        indice = Indice(indice='Unico')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Inteiro')
-        
-        campo = Campo(nome='cpf',
-                      descricao='Esse é o CPF da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
+        datatype = DataType('Inteiro'),
 
-        objeto.append(campo)
-        
-        # Now create objeto        
-        objeto = list()
-                        
-        # First <campo>
-        indice = Indice(indice='Palavra')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Texto')
-        
-        campo = Campo(nome='nome',
-                      descricao='Esse é o nome da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        objeto.append(campo)
-        
-        # Second <campo>
-        indice = Indice(indice='Unico')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Inteiro')
-        
-        campo = Campo(nome='cpf',
-                      descricao='Esse é o CPF da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-
-        objeto.append(campo)
-        
-        # Finally create <objeto>
-        objeto = CampoObjeto(objeto=objeto)
-        
-    def test_objeto_multivalued(self):
+    def test_field(self):
         """
-        Test multivalued fields
+        Try to setup a field object
         """
-        objeto = list()
-                        
-        # First <campo>
-        indice = Indice(indice='Palavra')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Texto')
-        
-        campo = Campo(nome='nome',
-                      descricao='Esse é o nome da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        objeto.append(campo)
-        
-        # Second <campo>
-        indice = Indice(indice='Unico')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Inteiro')
-        
-        campo = Campo(nome='cpf',
-                      descricao='Esse é o CPF da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
+        index1 = Index('Textual')
+        index2 = Index('Ordenado')
 
-        objeto.append(campo)
-        
-        # Now add a multivalued field
-        indice = Indice(indice='Palavra')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Texto')
-        
-        dependente_nome = Campo(nome='nome',
-                      descricao='Esse é o nome do dependente',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        indice = Indice(indice='Ordenado')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Data')
-        
-        dependente_nasc = Campo(nome='datanascimento',
-                      descricao='Essa é a data de nascimento do dependente',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        objeto_dep = list()
-        objeto_dep.append(dependente_nome)
-        objeto_dep.append(dependente_nasc)
-        objeto_dep = CampoObjeto(objeto=objeto_dep)
-        
-        # Add this objeto to a regular <campo>
-        campo = Campo(
-                      nome='dependentes',
-                      descricao='Dependentes da pessoa',
-                      objeto=objeto_dep
-                      )
-        
-        objeto.append(campo)
-        
-        # Finally create <objeto>
-        objeto = CampoObjeto(objeto=objeto)
-        
+        field = Field(
+            name = 'nome',
+            description = 'Esse é o nome da pessoa',
+            datatype = DataType('Inteiro'),
+            indices = [index1, index2],
+            multivalued = Multivalued(False)
+        )
+
+    def test_group(self):
+        """
+        Try to setup group
+        """
+        index1 = Index('Textual')
+        index2 = Index('Ordenado')
+        field1 = Field(
+            name = 'field1',
+            description = 'desc1',
+            datatype = DataType('Inteiro'),
+            indices = [index1, index2],
+            multivalued = Multivalued(False)
+        )
+
+        field2 = Field(
+            name = 'field2',
+            description = 'desc2',
+            datatype = DataType('Documento'),
+            indices = [index1],
+            multivalued = Multivalued(True)
+        )
+
+        group = Group(
+            name = 'group2',
+            description = 'groupdesc2',
+            content = [field1, field2],
+            multivalued = Multivalued(False)
+        )
+
     def test_base(self):
         """
         Test base object creation
         """
-        objeto = list()
-                        
-        # First <campo>
-        indice = Indice(indice='Palavra')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Texto')
-        
-        campo = Campo(nome='nome',
-                      descricao='Esse é o nome da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        objeto.append(campo)
-        
-        # Second <campo>
-        indice = Indice(indice='Unico')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Inteiro')
-        
-        campo = Campo(nome='cpf',
-                      descricao='Esse é o CPF da pessoa',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
+        index1 = Index('Textual')
+        index2 = Index('Ordenado')
+        field1 = Field(
+            name = 'field1',
+            description = 'desc1',
+            datatype = DataType('Inteiro'),
+            indices = [index1, index2],
+            multivalued = Multivalued(False)
+        )
 
-        objeto.append(campo)
-        
-        # Now add a multivalued field
-        indice = Indice(indice='Palavra')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Texto')
-        
-        dependente_nome = Campo(nome='nome',
-                      descricao='Esse é o nome do dependente',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        indice = Indice(indice='Ordenado')
-        indexacao = list()
-        indexacao.append(indice)
-        
-        tipo = Tipo(tipo='Data')
-        
-        dependente_nasc = Campo(nome='datanascimento',
-                      descricao='Essa é a data de nascimento do dependente',
-                      tipo=tipo,
-                      indexacao=indexacao
-                      )
-        
-        objeto_dep = list()
-        objeto_dep.append(dependente_nome)
-        objeto_dep.append(dependente_nasc)
-        objeto_dep = CampoObjeto(objeto=objeto_dep)
-        
-        # Add this objeto to a regular <campo>
-        campo = Campo(
-                      nome='dependentes',
-                      descricao='Dependentes da pessoa',
-                      objeto=objeto_dep
-                      )
-        
-        objeto.append(campo)
-        
-        # Finally create <objeto>
-        objeto = CampoObjeto(objeto=objeto)
-        
+        field2 = Field(
+            name = 'field2',
+            description = 'desc2',
+            datatype = DataType('Documento'),
+            indices = [index1],
+            multivalued = Multivalued(True)
+        )
+
+        group2 = Group(
+            name = 'group2',
+            description = 'groupdesc2',
+            content = [field1, field2],
+            multivalued = Multivalued(False)
+        )
+
+        group1 = Group(
+            name = 'group1',
+            description = 'groupdesc1',
+            content = [field1, field2, group2],
+            multivalued = Multivalued(True)
+        )
+
         base = Base(
-                    nome='Pessoa',
-                    descricao='Base que armazena informações de pessoas',
-                    senha='@$!@#%fhbhfdh54745754',
-                    objeto=objeto
-                    )
-        
-        
+            name = 'base1',
+            description = 'base1 description',
+            content = [group1, field1, field2]
+        )
+
+        base2 = json_to_base(base.json)
+        base.object == base2.object
+
     def tearDown(self):
         """
         Remove test data
