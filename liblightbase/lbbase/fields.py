@@ -78,7 +78,7 @@ class Field():
     """
     This is the field description
     """
-    def __init__(self, name, description, datatype, indices, multivalued, **entries):
+    def __init__(self, name, description, datatype, indices, multivalued, required):
         """
         Field attributes
         """
@@ -87,7 +87,6 @@ class Field():
         self.datatype = datatype
         self.indices = indices
         self.multivalued = multivalued
-        if entries: self.__dict__.update(entries)
 
     @property
     def datatype(self):
@@ -144,6 +143,20 @@ class Field():
             self._multivalued = None
 
     @property
+    def required(self):
+        return self._required
+
+    @required.setter
+    def required(self, r):
+        if isinstance(r, Required):
+            self._required = r
+        else:
+            # Invalid required. Raise exception
+            msg = 'InstanceError This should be an instance of Required. instead it is %s' % r
+            raise Exception(msg)
+            self._required = None
+
+    @property
     def object(self):
 
         """ Builds field object 
@@ -153,9 +166,9 @@ class Field():
             description = self.description,
             indices = [i.index for i in self.indices],
             datatype = self.datatype.datatype,
-            multivalued = self.multivalued.multivalued
+            multivalued = self.multivalued.multivalued,
+            required = self.required.required
         )
-
         return dict(field = _field)
 
     @property
@@ -279,3 +292,26 @@ class Multivalued():
             msg = 'TypeError Wrong multivalued. The value you supllied for multivalued is not valid: %s' % m
             raise Exception(msg)
             self._multivalued = None
+
+class Required():
+    """
+    Define valid required
+    """
+    def __init__(self, required):
+        self.required = required
+
+    @property
+    def required(self):
+        return self._required
+
+    @required.setter
+    def required(self, r):
+        """
+        Check if is a valid required
+        """
+        if isinstance(r, bool):
+            self._required= r
+        else:
+            msg = 'TypeError Wrong required. The value you supllied for required is not valid: %s' % r
+            raise Exception(msg)
+            self._required = None

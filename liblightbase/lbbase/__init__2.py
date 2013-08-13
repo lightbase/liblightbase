@@ -7,15 +7,20 @@ class Base():
     """
     Defining a LB Base object
     """
-    def __init__(self, name, description, content, **entries):
+    def __init__(self, name, description, content,
+                index_export, index_url, index_time,
+                doc_extract, extract_time):
         """
         Base attributes
         """
         self.name = name
         self.description = description
         self.content = content
-        if entries:
-            self.__dict__.update(entries)
+        self.index_export = index_export
+        self.index_url = index_url
+        self.index_time = index_time
+        self.doc_extract = doc_extract
+        self.extract_time = extract_time
 
     @property
     def content(self):
@@ -46,6 +51,11 @@ class Base():
             metadata = dict(
                 name = self.name,
                 description = self.description,
+                index_export = self.index_export,
+                index_url = self.index_url,
+                index_time = self.index_time,
+                doc_extract = self.doc_extract,
+                extract_time = self.extract_time
             )
         )
 
