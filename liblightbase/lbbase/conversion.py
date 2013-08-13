@@ -64,13 +64,18 @@ def json_to_base(base_json):
                 multivalued = field['multivalued']
                 _multivalued = Multivalued(multivalued)
 
+                # Build required instance
+                required = field['required']
+                _required = Required(required)
+
                 # Finally Build Field instance ...
                 _field = Field(
                     name = field['name'],
                     description = field['description'],
                     datatype = _datatype,
                     indices = _indices,
-                    multivalued = _multivalued
+                    multivalued = _multivalued,
+                    required = _required
                 )
 
                 # and append it to content list
@@ -82,9 +87,14 @@ def json_to_base(base_json):
 
     # build base instance
     base = Base(
-        name = base_metadata['name'],
-        description = base_metadata['description'],
-        content = _content
+        name            = base_metadata['name'],
+        description     = base_metadata['description'],
+        index_export    = base_metadata['index_export'],
+        index_url       = base_metadata['index_url'],
+        index_time      = base_metadata['index_time'],
+        doc_extract     = base_metadata['doc_extract'],
+        extract_time    = base_metadata['extract_time'],
+        content         = _content
     )
 
     return base
