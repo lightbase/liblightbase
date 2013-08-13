@@ -198,7 +198,7 @@ class Index():
         Returns a list of valid values for indices
         """
         # TODO: Get this list of values from somewhere else
-        valid_indices = ['SemIndice',
+        valid_indices = ['Nenhum',
                          'Textual',
                          'Ordenado',
                          'Unico',
@@ -252,6 +252,7 @@ class DataType():
                            'Arquivo',
                            'HTML',
                            'Email'
+                           'JSON'
                            ]
         return valid_datatypes
 
