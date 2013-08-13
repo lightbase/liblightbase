@@ -26,19 +26,12 @@ def json_to_base(base_json):
                 group_metadata = obj['group']['metadata']
                 group_content = obj['group']['content']
 
-                # Build multivalued instance
-                multivalued = group_metadata['multivalued']
-                _multivalued = Multivalued(multivalued)
-
-                # Build inner fields/groups
-                _content_list = assemble_content(group_content)
-
                 # Finally build group instance ...
                 _group = Group(
-                    name = group_metadata['name'],
+                    name        = group_metadata['name'],
                     description = group_metadata['description'],
-                    content = _content_list,
-                    multivalued = _multivalued
+                    multivalued = Multivalued(group_metadata['multivalued']),
+                    content     = assemble_content(group_content),
                 )
 
                 # ... and append it to content list
@@ -48,34 +41,14 @@ def json_to_base(base_json):
             elif obj.get('field'):
                 field = obj['field']
 
-                # Build datatype instance
-                datatype = field['datatype']
-                _datatype = DataType(datatype)
-
-                # Build indices list
-                indices = field['indices']
-                _indices = list()
-                if type(indices) is list:
-                    for index in indices:
-                        _index = Index(index)
-                        _indices.append(_index)
-
-                # Build multivalued instance
-                multivalued = field['multivalued']
-                _multivalued = Multivalued(multivalued)
-
-                # Build required instance
-                required = field['required']
-                _required = Required(required)
-
-                # Finally Build Field instance ...
+                # Build Field instance ...
                 _field = Field(
-                    name = field['name'],
+                    name        = field['name'],
                     description = field['description'],
-                    datatype = _datatype,
-                    indices = _indices,
-                    multivalued = _multivalued,
-                    required = _required
+                    datatype    = DataType(field['datatype']),
+                    indices     = [Index(i) for i in field['indices']],
+                    multivalued = Multivalued(field['multivalued']),
+                    required    = Required(field['required'])
                 )
 
                 # and append it to content list
