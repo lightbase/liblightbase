@@ -38,7 +38,8 @@ class BaseTestCase(unittest.TestCase):
             description = 'Esse é o nome da pessoa',
             datatype = DataType('Inteiro'),
             indices = [index1, index2],
-            multivalued = Multivalued(False)
+            multivalued = Multivalued(False),
+            required = Required(False)
         )
 
     def test_group(self):
@@ -52,7 +53,8 @@ class BaseTestCase(unittest.TestCase):
             description = 'desc1',
             datatype = DataType('Inteiro'),
             indices = [index1, index2],
-            multivalued = Multivalued(False)
+            multivalued = Multivalued(False),
+            required = Required(False)
         )
 
         field2 = Field(
@@ -60,7 +62,8 @@ class BaseTestCase(unittest.TestCase):
             description = 'desc2',
             datatype = DataType('Documento'),
             indices = [index1],
-            multivalued = Multivalued(True)
+            multivalued = Multivalued(True),
+            required = Required(True)
         )
 
         group = Group(
@@ -81,7 +84,8 @@ class BaseTestCase(unittest.TestCase):
             description = 'desc1',
             datatype = DataType('Inteiro'),
             indices = [index1, index2],
-            multivalued = Multivalued(False)
+            multivalued = Multivalued(False),
+            required = Required(True)
         )
 
         field2 = Field(
@@ -89,7 +93,8 @@ class BaseTestCase(unittest.TestCase):
             description = 'desc2',
             datatype = DataType('Documento'),
             indices = [index1],
-            multivalued = Multivalued(True)
+            multivalued = Multivalued(True),
+            required = Required(True)
         )
 
         group2 = Group(
@@ -109,11 +114,18 @@ class BaseTestCase(unittest.TestCase):
         base = Base(
             name = 'base1',
             description = 'base1 description',
+            index_export = 'index_export',
+            index_url = 'index_url',
+            index_time = 'index_time',
+            doc_extract = 'doc_extract',
+            extract_time = 'extract_time',
             content = [group1, field1, field2]
         )
+        print(base.json)
 
     def tearDown(self):
         """
         Remove test data
         """
         pass
+

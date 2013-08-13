@@ -22,7 +22,8 @@ class JSONTestCase(unittest.TestCase):
             description='Esse é o nome da pessoa',
             datatype = DataType('Documento'),
             indices = [index1],
-            multivalued = Multivalued(False)
+            multivalued = Multivalued(False),
+            required = Required(True)
         )
 
         cpf_pessoa = Field(
@@ -30,7 +31,8 @@ class JSONTestCase(unittest.TestCase):
             description='Esse é o CPF da pessoa',
             datatype = DataType('Inteiro'),
             indices = [index1, index2],
-            multivalued = Multivalued(False)
+            multivalued = Multivalued(False),
+            required = Required(True)
         )
 
         nome_dep = Field(
@@ -38,7 +40,8 @@ class JSONTestCase(unittest.TestCase):
             description='Esse é o nome do dependente',
             datatype = DataType('Documento'),
             indices = [index1],
-            multivalued = Multivalued(False)
+            multivalued = Multivalued(False),
+            required = Required(True)
         )
 
         nasc_dep = Field(
@@ -46,7 +49,8 @@ class JSONTestCase(unittest.TestCase):
             description='Essa é a data de nascimento do dependente',
             datatype = DataType('Documento'),
             indices = [index1],
-            multivalued = Multivalued(False)
+            multivalued = Multivalued(False),
+            required = Required(True)
         )
 
         dependentes = Group(
@@ -59,6 +63,11 @@ class JSONTestCase(unittest.TestCase):
         self.base = Base(
             name='Pessoa',
             description='Base que armazena informações de pessoas',
+            index_export = 'index_export',
+            index_url = 'index_url',
+            index_time = 'index_time',
+            doc_extract = 'doc_extract',
+            extract_time = 'extract_time',
             content = [nome_pessoa, cpf_pessoa, dependentes]
         )
 
@@ -68,6 +77,8 @@ class JSONTestCase(unittest.TestCase):
         """ Test base JSON creation
         """
         base_json = self.base.json
+        print('jjjjjjjjjjj')
+        print(base_json)
 
         # Write it to a test file
         fd = open('/tmp/json_base.json', 'w+')

@@ -87,6 +87,7 @@ class Field():
         self.datatype = datatype
         self.indices = indices
         self.multivalued = multivalued
+        self.required = required
 
     @property
     def datatype(self):
