@@ -1,5 +1,5 @@
 
-from voluptuous import Required
+import voluptuous
 
 class Group():
     """
@@ -67,11 +67,10 @@ class Group():
     def schema(self):
         """ Builds base schema
         """
+        _schema = dict()
         for attr in self.content:
             if attr.required.required is True:
-                _schema.update({
-                    Required(attr.name): attr.schema 
-                }) 
+                _schema.update({voluptuous.Required(attr.name): attr.schema}) 
             else:
                 _schema[attr.name] = attr.schema 
         if self.multivalued.multivalued is True:
