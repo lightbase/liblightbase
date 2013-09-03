@@ -1,9 +1,11 @@
 
+from voluptuous import Required
+
 class Group():
     """
     This is the field description
     """
-    def __init__(self, name, description, content, multivalued, **entries):
+    def __init__(self, name, description, content, multivalued):
         """
         Group attributes
         """
@@ -11,17 +13,16 @@ class Group():
         self.description = description
         self.content = content
         self.multivalued = multivalued
-        if entries: self.__dict__.update(entries)
 
     @property
     def content(self):
         return self._content
 
     @content.setter
-    def content(self, g):
+    def content(self, c):
         content_list = list()
-        if type(g) is list:
-            for value in g:
+        if type(c) is list:
+            for value in c:
                 if isinstance(value, Field) or isinstance(value, Group):
                     content_list.append(value)
                 else:
@@ -29,7 +30,7 @@ class Group():
                     raise Exception(msg)
             self._content = content_list
         else:
-            msg = 'Type Error: content must be a list instead of %s' % b
+            msg = 'Type Error: content must be a list instead of %s' % c
             raise Exception(msg)
             self._content = None
 
@@ -66,13 +67,17 @@ class Group():
     def schema(self):
         """ Builds base schema
         """
-        _schema = {attr.name: attr.schema for attr in self.content}
+        for attr in self.content:
+            if attr.required.required is True:
+                _schema.update({
+                    Required(attr.name): attr.schema 
+                }) 
+            else:
+                _schema[attr.name] = attr.schema 
         if self.multivalued.multivalued is True:
             return [_schema]
         elif self.multivalued.multivalued is False:
             return _schema
-        else:
-            raise TypeError('multivalued must be boolean')
 
 class Field():
     """

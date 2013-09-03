@@ -18,8 +18,8 @@ LightBase Library""",
       include_package_data=True,
       zip_safe=True,
       install_requires=[
+          'voluptuous'
           # -*- Extra requirements: -*-
-          "python-dateutil"
       ],
       entry_points="""
       # -*- Entry points: -*-

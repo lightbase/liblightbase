@@ -8,8 +8,8 @@ class Base():
     Defining a LB Base object
     """
     def __init__(self, name, description, content,
-                index_export, index_url, index_time,
-                doc_extract, extract_time):
+                index_export=False , index_url=None, index_time=None,
+                doc_extract=False, extract_time=None):
         """
         Base attributes
         """
@@ -70,3 +70,7 @@ class Base():
         """ Builds base JSON
         """
         return json.dumps(self.object, ensure_ascii=True)
+
+    @property
+    def reg_model(self):
+        return '{reg_model}'
