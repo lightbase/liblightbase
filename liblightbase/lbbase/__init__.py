@@ -1,7 +1,7 @@
 
 from liblightbase.lbbase import fields
 import json
-from voluptuous import Schema
+import voluptuous
 
 class Base():
     """
@@ -63,7 +63,15 @@ class Base():
     def schema(self):
         """ Builds base Schema
         """
-        return Schema({attr.name: attr.schema for attr in self.content})
+        _schema = dict()
+        for attr in self.content:
+            required = getattr(attr, 'required', None)
+            name = attr.name
+            if required:
+                if required.required is True:
+                    name = voluptuous.Required(attr.name)
+            _schema.update({ name: attr.schema })
+        return voluptuous.Schema(_schema)
 
     @property
     def json(self):
