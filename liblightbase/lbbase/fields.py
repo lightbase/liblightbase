@@ -239,25 +239,27 @@ class DataType():
         Get valid instances of pototypes
         """
         # TODO: Get these valid data types from somewhere else
-        valid_datatypes = ['AlfaNumerico',
-                           'Documento',
-                           'Inteiro',
-                           'Decimal',
-                           'Moeda',
-                           'AutoEnumerado',
-                           'Data',
-                           'Hora',
-                           'Imagem',
-                           'Som',
-                           'Video',
-                           'URL',
-                           'Verdadeiro/Falso',
-                           'Texto',
-                           'Arquivo',
-                           'HTML',
-                           'Email'
-                           'JSON'
-                           ]
+        valid_datatypes = [
+            'AlfaNumerico',
+            'Documento',
+            'Inteiro',
+            'Decimal',
+            'Moeda',
+            'AutoEnumerado',
+            'Data/Hora',
+            'Data',
+            'Hora',
+            'Imagem',
+            'Som',
+            'Video',
+            'URL',
+            'Verdadeiro/Falso',
+            'Texto',
+            'Arquivo',
+            'HTML',
+            'Email',
+            'JSON'
+        ]
         return valid_datatypes
 
     @property
