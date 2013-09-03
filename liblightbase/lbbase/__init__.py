@@ -78,7 +78,3 @@ class Base():
         """ Builds base JSON
         """
         return json.dumps(self.object, ensure_ascii=True)
-
-    @property
-    def reg_model(self):
-        return '{reg_model}'
