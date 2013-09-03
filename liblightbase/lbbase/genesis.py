@@ -69,6 +69,8 @@ def json_to_base(base_json):
     base = Base(
         name = base_metadata['name'],
         description = base_metadata['description'],
+        password = base_metadata['password'],
+        color = base_metadata['color'],
         index_export = base_metadata['index_export'],
         index_url = base_metadata['index_url'],
         index_time = base_metadata['index_time'],
