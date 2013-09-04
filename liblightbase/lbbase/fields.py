@@ -1,5 +1,6 @@
 
 import voluptuous
+from liblightbase.lbtypes import standard
 
 class Group():
     """
@@ -181,12 +182,12 @@ class Field():
 
         """ Builds field schema
         """
-        def generic_type():
-            return lambda v: v
+        datatype = getattr(standard, self.datatype.datatype)
+
         if self.multivalued.multivalued is True:
-            return [generic_type()]
+            return [datatype()]
         elif self.multivalued.multivalued is False:
-            return generic_type()
+            return datatype()
         else:
             raise Exception('multivalued must be boolean')
 
