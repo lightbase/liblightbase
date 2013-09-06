@@ -182,7 +182,7 @@ class Field():
 
         """ Builds field schema
         """
-        datatype = getattr(standard, self.datatype.datatype)
+        datatype = getattr(standard, self.datatype.datatype.replace('/', ''))
 
         if self.multivalued.multivalued is True:
             return [datatype()]
