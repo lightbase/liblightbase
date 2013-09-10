@@ -70,10 +70,11 @@ class Group():
         """
         _schema = dict()
         for attr in self.content:
-            if attr.required.required is True:
-                _schema.update({voluptuous.Required(attr.name): attr.schema}) 
+            required = getattr(attr, 'required', False)
+            if required and required.required is True:
+                _schema[voluptuous.Required(attr.name)] = attr.schema
             else:
-                _schema[attr.name] = attr.schema 
+                _schema[attr.name] = attr.schema
         if self.multivalued.multivalued is True:
             return [_schema]
         elif self.multivalued.multivalued is False:
