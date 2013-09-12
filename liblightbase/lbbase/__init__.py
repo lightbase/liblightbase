@@ -1,5 +1,6 @@
 
 from liblightbase.lbbase import fields
+from liblightbase.lbtypes.standard import Inteiro
 import json
 import voluptuous
 
@@ -68,6 +69,7 @@ class Base():
         """ Builds base Schema
         """
         _schema = dict()
+        _schema['id_reg'] = Inteiro()
         for attr in self.content:
             required = getattr(attr, 'required', None)
             name = attr.name
