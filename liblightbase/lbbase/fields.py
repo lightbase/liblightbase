@@ -6,11 +6,12 @@ class Group():
     """
     This is the field description
     """
-    def __init__(self, name, description, content, multivalued):
+    def __init__(self, name, alias, description, content, multivalued):
         """
         Group attributes
         """
         self.name = name
+        self.alias = alias
         self.description = description
         self.content = content
         self.multivalued = multivalued
@@ -58,6 +59,7 @@ class Group():
                 content = [attr.object for attr in self.content],
                 metadata = dict(
                     name = self.name,
+                    alias = self.alias,
                     description = self.description,
                     multivalued =  self.multivalued.multivalued
                 )
@@ -84,11 +86,12 @@ class Field():
     """
     This is the field description
     """
-    def __init__(self, name, description, datatype, indices, multivalued, required):
+    def __init__(self, name, alias, description, datatype, indices, multivalued, required):
         """
         Field attributes
         """
         self.name = name
+        self.alias = alias
         self.description = description
         self.datatype = datatype
         self.indices = indices
@@ -170,6 +173,7 @@ class Field():
         """
         _field = dict(
             name = self.name,
+            alias = self.alias,
             description = self.description,
             indices = [i.index for i in self.indices],
             datatype = self.datatype.datatype,
