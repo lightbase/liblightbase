@@ -29,6 +29,7 @@ def json_to_base(base_json):
                 _group = Group(
                     name = group_metadata['name'],
                     description = group_metadata['description'],
+                    alias = group_metadata['alias'],
                     multivalued = Multivalued(group_metadata['multivalued']),
                     content = assemble_content(group_content),
                 )
@@ -52,6 +53,7 @@ def json_to_base(base_json):
                 _field = Field(
                     name = field['name'],
                     description = field['description'],
+                    alias = field['alias'],
                     datatype = DataType(field['datatype']),
                     indices = _indices,
                     multivalued = Multivalued(field['multivalued']),
