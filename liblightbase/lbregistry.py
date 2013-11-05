@@ -1,0 +1,115 @@
+from liblightbase.lbutils import deserialize
+from liblightbase.lbutils import serialize
+from liblightbase.lbutils import Object
+from liblightbase.lbutils import parse_json
+
+class Registry():
+
+    def __init__(self, base, registry):
+        self.base = base
+        self.registry = deserialize(registry)
+
+    def find_base_object(self, path):
+        split = path.split('.')
+        base = self.base
+        for name in split:
+            name = name.split('[')[0]
+            base = self.get_structure(base, name)
+        return base
+
+    def get_structure(self, base, name):
+        found = None
+        for content in base.content:
+            if content.name == name:
+                found = content
+        if not found:
+            raise Exception('Key "%s" is not present in base definitions.' % name)
+        else:
+            return found
+
+    def get_path(self, path, return_obj=False):
+        try:
+            expr = 'self.registry.' + path
+            value = eval(expr)
+            if return_obj:
+                if hasattr(value, '__dict__'): return value.__dict__
+                else: return value
+            else: return serialize(value)
+
+        except AttributeError as e:
+            raise AttributeError('Could not get path. Details: %s' % str(e.args[0]))
+
+        except TypeError as e:
+            raise TypeError('Registry attribute is not multivalued.')
+
+        except SyntaxError as e:
+            raise SyntaxError('Not a valid path.')
+
+        except IndexError as e:
+            raise IndexError('List index out of range.')
+
+    def set_path(self, path, value):
+        try: current_value = self.get_path(path, return_obj=True)
+        except (IndexError, AttributeError): current_value = None
+        base = self.find_base_object(path)
+        if not base.multivalued.multivalued:
+            raise Exception('This method is only allowed for multivalued Fields/Groups')
+        if hasattr(base, 'datatype') and hasattr(base, 'indices'):
+            # It's a field, no need for parsing value
+            pass
+        else:
+            # It's a group, need for parsing value
+            try: value = parse_json(value)
+            except: raise Exception('Expected dictionary for Group value.')
+        if not current_value:
+            index = 0
+            value = [value]
+        elif type(current_value) is list:
+            index = len(current_value)
+            current_value.append(value)
+            value = current_value
+        else:
+            raise Exception('Expected list for current registry value, but type is %s' % type(current_value))
+        expr = 'self.registry.' + path + ' = value'
+        try: exec(expr)
+        except Exception as e:
+            raise Exception('Could not set path. Details: %s' % str(e.args[0]))
+        return index, serialize(self.registry)
+
+
+    def put_path(self, path, value):
+        # Does path exist ?
+        current_value = self.get_path(path, return_obj=True)
+        put_index = path[-1:] == ']'
+        # Alright, lets do the job.
+        base = self.find_base_object(path)
+        if hasattr(base, 'datatype') and hasattr(base, 'indices'):
+            if base.multivalued.multivalued and not put_index:
+                # It's a multivalued field, need to parse value
+                try: value = parse_json(value)
+                except: raise Exception('Expected list for multivalued Field.')
+        else:
+            # It's a group, need to parse value
+            try: value = parse_json(value)
+            except: raise Exception('Expected list of dictionaries for Group.')
+        expr = 'self.registry.' + path + ' = value'
+        try: exec(expr)
+        except Exception as e:
+            raise Exception('Could not update path. Details: %s' % str(e.args[0]))
+        return serialize(self.registry)
+
+    def delete_path(self, path):
+        base = self.find_base_object(path)
+        # Does path exist ?
+        self.get_path(path, return_obj=True)
+        # Alright, lets do the job.
+        put_index = path[-1:] == ']'
+        if base.multivalued.multivalued or not put_index:
+            raise Exception('This method is only allowed for multivalued Fields/Groups')
+        expr = 'del self.registry.' + path
+        try: exec(expr)
+        except Exception as e:
+            raise Exception('Could not delete path. Details: %s' % str(e.args[0]))
+        return serialize(self.registry)
+
+

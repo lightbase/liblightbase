@@ -1,6 +1,6 @@
 
 import voluptuous
-from liblightbase.lbtypes import standard
+from liblightbase import lbtypes
 
 class Group():
     """
@@ -66,17 +66,16 @@ class Group():
             )
         )
 
-    @property
-    def schema(self):
+    def schema(self, base):
         """ Builds base schema
         """
         _schema = dict()
         for attr in self.content:
             required = getattr(attr, 'required', False)
             if required and required.required is True:
-                _schema[voluptuous.Required(attr.name)] = attr.schema
+                _schema[voluptuous.Required(attr.name)] = attr.schema(base)
             else:
-                _schema[attr.name] = attr.schema
+                _schema[attr.name] = attr.schema(base)
         if self.multivalued.multivalued is True:
             return [_schema]
         elif self.multivalued.multivalued is False:
@@ -182,17 +181,16 @@ class Field():
         )
         return dict(field = _field)
 
-    @property
-    def schema(self):
+    def schema(self, base):
 
         """ Builds field schema
         """
-        datatype = getattr(standard, self.datatype.datatype.replace('/', ''))
+        datatype = self.datatype.__schema__
 
         if self.multivalued.multivalued is True:
-            return [datatype()]
+            return [datatype(base, self)]
         elif self.multivalued.multivalued is False:
-            return datatype()
+            return datatype(base, self)
         else:
             raise Exception('multivalued must be boolean')
 
@@ -206,16 +204,25 @@ class Index():
     def valid_indices(self):
         """
         Returns a list of valid values for indices
+        valid_indices = [
+            'None',
+            'Textual',
+            'Ordered',
+            'Unique',
+            'Fonetic',
+            'Fuzzy',
+            'Empty',
+        ]
         """
-        # TODO: Get this list of values from somewhere else
-        valid_indices = ['Nenhum',
-                         'Textual',
-                         'Ordenado',
-                         'Unico',
-                         'Fonetico',
-                         'Fuzzy',
-                         'Vazio',
-                         ]
+        valid_indices = [
+            'Nenhum',
+            'Textual',
+            'Ordenado',
+            'Unico',
+            'Fonetico',
+            'Fuzzy',
+            'Vazio',
+        ]
 
         return valid_indices
 
@@ -242,29 +249,28 @@ class DataType():
 
     def valid_types(self):
         """
-        Get valid instances of pototypes
+        Get valid instances of datatypes
         """
-        # TODO: Get these valid data types from somewhere else
         valid_datatypes = [
-            'AlfaNumerico',
-            'Documento',
-            'Inteiro',
+            'Text',
+            'Document',
+            'Integer',
             'Decimal',
-            'Moeda',
-            'AutoEnumerado',
-            'Data/Hora',
-            'Data',
-            'Hora',
-            'Imagem',
-            'Som',
+            'Money',
+            'SelfEnumerated',
+            'DateTime',
+            'Date',
+            'Time',
+            'Image',
+            'Sound',
             'Video',
-            'URL',
-            'Verdadeiro/Falso',
-            'Texto',
-            'Arquivo',
-            'HTML',
+            'Url',
+            'Boolean',
+            'TextArea',
+            'File',
+            'Html',
             'Email',
-            'JSON'
+            'Json',
         ]
         return valid_datatypes
 
@@ -279,8 +285,9 @@ class DataType():
         """
         if t in self.valid_types():
             self._datatype = t
+            self.__schema__ = getattr(lbtypes, self._datatype)
         else:
-            msg = 'TypeError Wrong tipo. The value you supllied for tipo is not valid: %s' % t
+            msg = 'TypeError Wrong DataType. The value you supllied is not valid: %s' % t
             raise Exception(msg)
             self._datatype = None
 
