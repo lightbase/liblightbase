@@ -13,8 +13,12 @@ liblightbase.egg-info/requires.txt
 liblightbase.egg-info/top_level.txt
 liblightbase.egg-info/zip-safe
 liblightbase/lbbase/__init__.py
+liblightbase/lbbase/__init__2.py
+liblightbase/lbbase/campos.py
+liblightbase/lbbase/conversion.py
 liblightbase/lbbase/fields.py
 liblightbase/lbbase/genesis.py
+liblightbase/lbbase/xml.py
 liblightbase/lbtypes/__init__.py
 liblightbase/lbtypes/base.py
 liblightbase/lbtypes/extended.py

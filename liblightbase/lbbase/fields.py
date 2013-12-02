@@ -1,6 +1,6 @@
 
 import voluptuous
-from liblightbase import lbtypes
+from liblightbase.lbtypes import standard
 
 class Group():
     """
@@ -66,20 +66,32 @@ class Group():
             )
         )
 
-    def schema(self, base):
+    def schema(self, base, id):
         """ Builds base schema
         """
         _schema = dict()
         for attr in self.content:
             required = getattr(attr, 'required', False)
             if required and required.required is True:
-                _schema[voluptuous.Required(attr.name)] = attr.schema(base)
+                _schema[voluptuous.Required(attr.name)] = attr.schema(base, id)
             else:
-                _schema[attr.name] = attr.schema(base)
+                _schema[attr.name] = attr.schema(base, id)
         if self.multivalued.multivalued is True:
             return [_schema]
         elif self.multivalued.multivalued is False:
             return _schema
+
+    def reg_model(self, base):
+        """ Builds registry model
+        """
+        _schema = dict()
+        for attr in self.content:
+            _schema[attr.name] = attr.reg_model(base)
+        if self.multivalued.multivalued is True:
+            return [_schema]
+        elif self.multivalued.multivalued is False:
+            return _schema
+
 
 class Field():
     """
@@ -167,7 +179,6 @@ class Field():
 
     @property
     def object(self):
-
         """ Builds field object 
         """
         _field = dict(
@@ -181,18 +192,22 @@ class Field():
         )
         return dict(field = _field)
 
-    def schema(self, base):
-
+    def schema(self, base, id=None):
         """ Builds field schema
         """
         datatype = self.datatype.__schema__
 
         if self.multivalued.multivalued is True:
-            return [datatype(base, self)]
+            return [datatype(base, self, id)]
         elif self.multivalued.multivalued is False:
-            return datatype(base, self)
+            return datatype(base, self, id)
         else:
             raise Exception('multivalued must be boolean')
+
+    def reg_model(self, base):
+        """ Builds registry model
+        """
+        return self.schema(base)
 
 class Index():
     """
@@ -285,7 +300,7 @@ class DataType():
         """
         if t in self.valid_types():
             self._datatype = t
-            self.__schema__ = getattr(lbtypes, self._datatype)
+            self.__schema__ = getattr(standard, self._datatype)
         else:
             msg = 'TypeError Wrong DataType. The value you supllied is not valid: %s' % t
             raise Exception(msg)
