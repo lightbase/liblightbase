@@ -1,23 +1,21 @@
 
-from ..lbutils import reify
-from ..lbutils import FileMask
-from ..lbutils import is_uuid
-import lbgenerator.model
+from liblightbase.lbutils import reify
+from liblightbase.lbutils import FileMask
+from liblightbase.lbutils import is_uuid
+from liblightbase.lbtypes import BaseDataType
+import lbgenerator
 import glob
 import os
 import base64
 
-class FileExtension():
+class FileExtension(BaseDataType):
 
-    def __init__(self, base, field):
-        self.base = base
-        self.field = field
-        self.tmp_dir = lbgenerator.model.tmp_dir + '/lightbase_tmp_storage/' + self.base.name
+    """ Represents an extension for file-based Fields
+    """
+    def __init__(self, base, field, id):
+        super(FileExtension, self).__init__(base, field, id)
+        self.tmp_dir = lbgenerator.config.TMP_DIR + '/lightbase_tmp_storage/' + self.base.name
         self.entity = lbgenerator.model.doc_hyper_class(self.base.name)
-
-    #@reify
-    #def session(self):
-    #    return lbgenerator.model.begin_session()
 
     def __call__(self, value):
         if value == '' or value is None:
@@ -64,23 +62,19 @@ class FileExtension():
         file_name_encoded = split.pop()
         file_name = base64.urlsafe_b64decode(file_name_encoded.encode('utf-8')).decode('utf-8')
         mime_type = '.'.join(split).replace('-', '/', 1)
-
         id_doc = self.entity.next_id()
 
-        member = self.entity(
-            id_doc = id_doc,
-            id_reg = self.base.id_reg,
-            grupos_acesso = '',
-            nome_doc = file_name,
-            blob_doc = tmp_file.read(),
-            mimetype = mime_type,
-            texto_doc = None,
-            dt_ext_texto = None
-        )
-        self.session = lbgenerator.model.begin_session()
-        self.session.add(member)
-        self.session.commit()
-        self.session.close()
+        self.base.__docs__[self.id].append({
+           'id_doc': id_doc,
+           'id_reg': self.id,
+           'grupos_acesso': '',
+           'nome_doc': file_name,
+           'blob_doc': tmp_file.read(),
+           'mimetype': mime_type,
+           'texto_doc': None,
+           'dt_ext_texto': None
+        })
+
         tmp_file.close()
         #os.remove(tmp_file.name)
 

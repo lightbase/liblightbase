@@ -1,6 +1,5 @@
 from liblightbase.lbutils import deserialize
 from liblightbase.lbutils import serialize
-from liblightbase.lbutils import Object
 from liblightbase.lbutils import parse_json
 
 class Registry():
@@ -18,14 +17,10 @@ class Registry():
         return base
 
     def get_structure(self, base, name):
-        found = None
         for content in base.content:
             if content.name == name:
-                found = content
-        if not found:
-            raise Exception('Key "%s" is not present in base definitions.' % name)
-        else:
-            return found
+                return content
+        raise Exception('Key "%s" is not present in base definitions.' % name)
 
     def get_path(self, path, return_obj=False):
         try:
@@ -54,7 +49,7 @@ class Registry():
         base = self.find_base_object(path)
         if not base.multivalued.multivalued:
             raise Exception('This method is only allowed for multivalued Fields/Groups')
-        if hasattr(base, 'datatype') and hasattr(base, 'indices'):
+        if hasattr(base, 'datatype') and hasattr(base, 'indices'): #if isinstance(base, Field):
             # It's a field, no need for parsing value
             pass
         else:
@@ -74,8 +69,17 @@ class Registry():
         try: exec(expr)
         except Exception as e:
             raise Exception('Could not set path. Details: %s' % str(e.args[0]))
-        return index, serialize(self.registry)
 
+        _return = {
+            'DEFAULT': str(index),
+            'json_reg': serialize(self.registry),
+            'json_path': None,
+            'new_path': path + '[' + str(index) + ']',
+            'new_value': None
+        }
+
+        #return index, serialize(self.registry)
+        return _return
 
     def put_path(self, path, value):
         # Does path exist ?
@@ -96,20 +100,32 @@ class Registry():
         try: exec(expr)
         except Exception as e:
             raise Exception('Could not update path. Details: %s' % str(e.args[0]))
-        return serialize(self.registry)
+
+        _return = {
+            'DEFAULT': 'UPDATED',
+            'json_reg': serialize(self.registry),
+            'new_value': None,
+        }
+
+        return _return
 
     def delete_path(self, path):
         base = self.find_base_object(path)
         # Does path exist ?
         self.get_path(path, return_obj=True)
         # Alright, lets do the job.
-        put_index = path[-1:] == ']'
-        if base.multivalued.multivalued or not put_index:
-            raise Exception('This method is only allowed for multivalued Fields/Groups')
+        #put_index = path[-1:] == ']'
+        #if base.multivalued.multivalued or not put_index:
+        #    raise Exception('This method is only allowed for multivalued Fields/Groups')
         expr = 'del self.registry.' + path
         try: exec(expr)
         except Exception as e:
             raise Exception('Could not delete path. Details: %s' % str(e.args[0]))
-        return serialize(self.registry)
 
+        _return = {
+            'DEFAULT': 'DELETED',
+            'json_reg': serialize(self.registry),
+        }
+
+        return _return
 
