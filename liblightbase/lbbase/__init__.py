@@ -104,10 +104,14 @@ class Base():
     @content.setter
     def content(self, c):
         content_list = list()
+        repeated_names = list()
         if type(c) is list:
             for value in c:
                 if isinstance(value, fields.Field) or isinstance(value, fields.Group):
+                    if value.name in repeated_names:
+                        raise Exception('Can not have repeated names in same level: %s' % value.name)
                     content_list.append(value)
+                    repeated_names.append(value.name)
                 else:
                     msg = 'InstanceError This should be an instance of Field or Group. instead it is %s' % value
                     raise Exception(msg)
@@ -183,33 +187,6 @@ class Base():
         Encoder = type('Encoder', (json.JSONEncoder,), {'default': lambda self, o: repr(o)})
         return json.dumps(_schema, cls=Encoder, ensure_ascii=False)
 
-    """
-    @property
-    def relational_fields(self):
-        _relational_fields = dict(
-            normal_cols = [ ],
-            unique_cols = [ ],
-            date_types = [ ],
-            Textual = [ ],
-            Nenhum = [ ]
-        )
-        for element in self.content:
-            if isinstance(element, fields.Field):
-                for index in element.indices:
-                    if index.index in ['Ordenado', 'Vazio']:
-                        base_cc['normal_cols'].append(fname)
-                    if index.index in ['Unico']:
-                        base_cc['unique_cols'].append(fname)
-                    if index.index in ['Textual']:
-                        base_cc['Textual'].append(fname)
-                    if index.index in ['Nenhum']:
-                        base_cc['Nenhum'].append(fname)
-                if field.datatype.datatype == 'Data':
-                    base_cc['date_types'].append(fname)
-
-        base.custom_columns = base_cc
-    """
-
     @property
     def json(self):
         """ Builds base JSON
@@ -239,3 +216,30 @@ class Base():
         """
         registry = Registry(self, registry)
         return registry.delete_path(path)
+
+    @property
+    def relational_fields(self):
+        """ Get relational fields
+        """
+        _relational_fields = dict(
+            normal_cols = [ ],
+            unique_cols = [ ],
+            date_types = [ ],
+            Textual = [ ],
+            Nenhum = [ ]
+        )
+        for field in self.content:
+            if isinstance(field, fields.Field):
+                for index in field.indices:
+                    if index.index in ['Ordenado', 'Vazio']:
+                        _relational_fields['normal_cols'].append(field.name)
+                    if index.index in ['Unico']:
+                        _relational_fields['unique_cols'].append(field.name)
+                    if index.index in ['Textual']:
+                        _relational_fields['Textual'].append(field.name)
+                    if index.index in ['Nenhum']:
+                        _relational_fields['Nenhum'].append(field.name)
+                if field.datatype.datatype in ['Date', 'DateTime']:
+                    _relational_fields['date_types'].append(field.name)
+
+        return _relational_fields

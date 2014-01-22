@@ -7,6 +7,7 @@ import lbgenerator
 import glob
 import os
 import base64
+import datetime
 
 class FileExtension(BaseDataType):
 
@@ -18,7 +19,7 @@ class FileExtension(BaseDataType):
         self.entity = lbgenerator.model.doc_hyper_class(self.base.name)
 
     def __call__(self, value):
-        if value == '' or value is None:
+        if value is None:
             return value
         file_mask = self.get_file_mask(value)
         if not file_mask:
@@ -64,6 +65,11 @@ class FileExtension(BaseDataType):
         mime_type = '.'.join(split).replace('-', '/', 1)
         id_doc = self.entity.next_id()
 
+        dt_ext_texto = None
+        field_indices = [index.index for index in self.field.indices]
+        if 'Nenhum' in field_indices:
+            dt_ext_texto = datetime.datetime.now()
+
         self.base.__docs__[self.id].append({
            'id_doc': id_doc,
            'id_reg': self.id,
@@ -72,7 +78,7 @@ class FileExtension(BaseDataType):
            'blob_doc': tmp_file.read(),
            'mimetype': mime_type,
            'texto_doc': None,
-           'dt_ext_texto': None
+           'dt_ext_texto': dt_ext_texto
         })
 
         tmp_file.close()

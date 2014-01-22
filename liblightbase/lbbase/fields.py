@@ -4,7 +4,7 @@ from liblightbase.lbtypes import standard
 
 class Group():
     """
-    This is the field description
+    This is the group definition
     """
     def __init__(self, name, alias, description, content, multivalued):
         """
@@ -23,10 +23,14 @@ class Group():
     @content.setter
     def content(self, c):
         content_list = list()
+        repeated_names = list()
         if type(c) is list:
             for value in c:
                 if isinstance(value, Field) or isinstance(value, Group):
+                    if value.name in repeated_names:
+                        raise Exception('Can not have repeated names in same level: %s' % value.name)
                     content_list.append(value)
+                    repeated_names.append(value.name)
                 else:
                     msg = 'InstanceError This should be an instance of Field or Group. instead it is %s' % value
                     raise Exception(msg)

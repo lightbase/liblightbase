@@ -25,7 +25,7 @@ class Video(FileExtension):
     pass
 
 class Image(FileExtension):
-    """ Represents a Image Field
+    """ Represents an Image Field
     """
     pass
 
@@ -42,10 +42,10 @@ class TextArea(BaseDataType):
         return value
 
 class Integer(BaseDataType):
-    """ Represents a Integer Field
+    """ Represents an Integer Field
     """
     def validate(self, value):
-        return value
+        return int(value)
 
 class Decimal(BaseDataType):
     """ Represents a Decimal Field
@@ -84,7 +84,7 @@ class DateTime(BaseDataType):
         return value
 
 class Url(BaseDataType):
-    """ Represents a Url Field
+    """ Represents an Url Field
     """
     def validate(self, value):
         return value
@@ -104,7 +104,7 @@ class Html(BaseDataType):
         return value
 
 class Email(BaseDataType):
-    """ Represents a Email Field
+    """ Represents an Email Field
     """
     def validate(self, value):
         return value
