@@ -1,0 +1,4 @@
+liblightbase
+============
+
+Lightbase database library
