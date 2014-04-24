@@ -1,8 +1,8 @@
 
-import uuid
-from copy import deepcopy
 import json
 import re
+from liblightbase.lbcodecs import json2object
+from liblightbase.lbcodecs import object2json
 
 class reify(object):
     """ Use as a class method decorator.  It operates almost exactly like the
@@ -37,62 +37,19 @@ def Coerce(type):
             raise ValueError('Expected %s for value: %s' % (type.__name__, v))
     return f
 
-class FileMask():
-
-    def __init__(self, id_doc, nome_doc, mimetype, uuid):
-        self._id_doc = id_doc
-        self.nome_doc = nome_doc
-        self.mimetype = mimetype
-        self.uuid = uuid
-
-    @property
-    def _id_doc(self):
-        return self.id_doc
-
-    @_id_doc.setter
-    def _id_doc(self, id):
-        try:
-            if id: self.id_doc = int(id)
-        except:
-            raise Exception('ValueError: id_doc must be integer.')
-
-def is_uuid(id):
-    try:
-        uuid.UUID(id)
-        return True
-    except ValueError:
-        return False
 
 class Object():
     def __init__(self, **kwargs):
         self.__dict__.update(kwargs)
 
 def deserialize(string):
-    if isinstance(string, str):
-        string = string.encode('utf-8')
-    try:
-        return json.loads(string.decode('utf-8'), object_hook=lambda d: Object(**d))
-    except Exception as e:
-        raise Exception('Could not parse JSON data. Details: %s' % str(e.args[0]))
+    return json2object(string, object_hook=lambda d: Object(**d))
 
 def serialize(obj):
     class MyEncoder(json.JSONEncoder):
         def default(self, obj):
             return obj.__dict__
-    return json.dumps(obj, cls=MyEncoder, ensure_ascii=False)
-
-def parse_json(obj):
-    if obj is None:
-        raise Exception('No JSON data supplied.')
-    if type(obj) is dict:
-        return obj
-    if isinstance(obj, str):
-        obj = obj.encode('utf-8')
-    try:
-        obj = json.loads(obj.decode('utf-8'))
-        return obj
-    except Exception as e:
-        raise Exception('Could not parse JSON data. Details: %s' % str(e.args[0]))
+    return object2json(obj, cls=MyEncoder)
 
 def validate_url(url):
     #http://stackoverflow.com/questions/7160737/python-how-to-validate-a-url-in-python-malformed-or-not
@@ -110,3 +67,30 @@ def validate_url(url):
         return _url.string
     else:
         raise ValueError('"%s" is not a valid url' % url)
+
+def typed_getter(prop):
+    def __getter__(self):
+        return getattr(self, '_' + prop)
+    return __getter__
+
+def typed_setter(prop, types):
+    def __setter__(self, val):
+        if type(val) in types:
+            setattr(self, '_' + prop, val)
+        else:
+            raise TypeError('Expected one type of {} for {}, but got {}'
+                .format(str(types), prop, str(type(val))))
+    return __setter__
+
+class TypedMetaClass(type):
+
+    def __new__(cls, name, bases, attrs):
+
+        for prop, types in attrs.items():
+            if prop.startswith('__'): continue
+            attrs[prop] = property(typed_getter(prop), typed_setter(prop, types))
+
+        return super(TypedMetaClass, cls).__new__(cls, name, bases, attrs)
+
+
+

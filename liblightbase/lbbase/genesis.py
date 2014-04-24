@@ -9,7 +9,7 @@ def json_to_base(base_json):
     base_metadata = base_json['metadata']
     base_content = base_json['content']
 
-    def assemble_content(content_object):
+    def assemble_content(content_object, dimension=0):
 
         """ Parses content object and builds a list with fields/groups instances
         """
@@ -24,13 +24,17 @@ def json_to_base(base_json):
                 group_metadata = obj['group']['metadata']
                 group_content = obj['group']['content']
 
+                _dimension = dimension
+                if group_metadata['multivalued'] is True:
+                    _dimension = _dimension + 1
+
                 # Build group instance ...
                 _group = Group(
                     name = group_metadata['name'],
                     description = group_metadata['description'],
                     alias = group_metadata['alias'],
                     multivalued = Multivalued(group_metadata['multivalued']),
-                    content = assemble_content(group_content),
+                    content = assemble_content(group_content, dimension=_dimension),
                 )
 
                 # ... and append it to content list
@@ -58,6 +62,10 @@ def json_to_base(base_json):
                     multivalued = Multivalued(field['multivalued']),
                     required = Required(field['required'])
                 )
+                if _field.multivalued:
+                    _field.__dim__ = dimension + 1
+                else:
+                    _field.__dim__ = dimension
 
                 # and append it to content list
                 content_list.append(_field)
