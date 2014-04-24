@@ -2,9 +2,8 @@ setup.cfg
 setup.py
 dist/liblightbase-0.1dev_r18-py2.7.egg
 liblightbase/__init__.py
-liblightbase/lbmetaclass.py
+liblightbase/lbregistry.py
 liblightbase/lbutils.py
-liblightbase/lbxml.py
 liblightbase.egg-info/PKG-INFO
 liblightbase.egg-info/SOURCES.txt
 liblightbase.egg-info/dependency_links.txt
@@ -13,12 +12,8 @@ liblightbase.egg-info/requires.txt
 liblightbase.egg-info/top_level.txt
 liblightbase.egg-info/zip-safe
 liblightbase/lbbase/__init__.py
-liblightbase/lbbase/__init__2.py
-liblightbase/lbbase/campos.py
-liblightbase/lbbase/conversion.py
 liblightbase/lbbase/fields.py
 liblightbase/lbbase/genesis.py
-liblightbase/lbbase/xml.py
 liblightbase/lbtypes/__init__.py
 liblightbase/lbtypes/base.py
 liblightbase/lbtypes/extended.py

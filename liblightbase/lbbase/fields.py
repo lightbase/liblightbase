@@ -1,4 +1,5 @@
 
+import collections
 import voluptuous
 from liblightbase.lbtypes import standard
 
@@ -22,18 +23,29 @@ class Group():
 
     @content.setter
     def content(self, c):
-        content_list = list()
-        repeated_names = list()
+
+        content_list = [ ]
+        self.__names__ = [ ]
+
         if type(c) is list:
             for value in c:
-                if isinstance(value, Field) or isinstance(value, Group):
-                    if value.name in repeated_names:
-                        raise Exception('Can not have repeated names in same level: %s' % value.name)
-                    content_list.append(value)
-                    repeated_names.append(value.name)
+
+                if isinstance(value, Field):
+                    self.__names__.append(value.name)
+
+                elif isinstance(value, Group):
+                    self.__names__.append(value.name)
+                    self.__names__ = self.__names__ + value.__names__
                 else:
                     msg = 'InstanceError This should be an instance of Field or Group. instead it is %s' % value
                     raise Exception(msg)
+
+                content_list.append(value)
+
+            repeated_names = [x for x, y in collections.Counter(self.__names__).items() if y > 1]
+            if len(repeated_names) > 0:
+                raise Exception('Base cannot have repeated names : %s' % str(repeated_names))
+
             self._content = content_list
         else:
             msg = 'Type Error: content must be a list instead of %s' % c
@@ -42,7 +54,7 @@ class Group():
 
     @property
     def multivalued(self):
-        return self._multivalued
+        return self._multivalued.multivalued
 
     @multivalued.setter
     def multivalued(self, m):
@@ -65,7 +77,7 @@ class Group():
                     name = self.name,
                     alias = self.alias,
                     description = self.description,
-                    multivalued =  self.multivalued.multivalued
+                    multivalued =  self.multivalued
                 )
             )
         )
@@ -76,13 +88,13 @@ class Group():
         _schema = dict()
         for attr in self.content:
             required = getattr(attr, 'required', False)
-            if required and required.required is True:
+            if required is True:
                 _schema[voluptuous.Required(attr.name)] = attr.schema(base, id)
             else:
                 _schema[attr.name] = attr.schema(base, id)
-        if self.multivalued.multivalued is True:
+        if self.multivalued is True:
             return [_schema]
-        elif self.multivalued.multivalued is False:
+        elif self.multivalued is False:
             return _schema
 
     def reg_model(self, base):
@@ -91,11 +103,24 @@ class Group():
         _schema = dict()
         for attr in self.content:
             _schema[attr.name] = attr.reg_model(base)
-        if self.multivalued.multivalued is True:
+        if self.multivalued is True:
             return [_schema]
-        elif self.multivalued.multivalued is False:
+        elif self.multivalued is False:
             return _schema
 
+    @property
+    def relational_fields(self):
+        """ Get relational fields
+        """
+        rel_fields = { }
+
+        for struct in self.content:
+            if isinstance(struct, Field) and struct.is_rel:
+                rel_fields[struct.name] = struct
+            elif isinstance(struct, Group):
+                rel_fields.update(struct.relational_fields)
+
+        return rel_fields
 
 class Field():
     """
@@ -115,7 +140,7 @@ class Field():
 
     @property
     def datatype(self):
-          return self._datatype
+          return self._datatype.datatype
 
     @datatype.setter
     def datatype(self, t):
@@ -131,7 +156,7 @@ class Field():
 
     @property
     def indices(self):
-        return self._indices
+        return [index.index for index in self._indices]
 
     @indices.setter
     def indices(self, i):
@@ -155,7 +180,7 @@ class Field():
 
     @property
     def multivalued(self):
-        return self._multivalued
+        return self._multivalued.multivalued
 
     @multivalued.setter
     def multivalued(self, m):
@@ -169,7 +194,7 @@ class Field():
 
     @property
     def required(self):
-        return self._required
+        return self._required.required
 
     @required.setter
     def required(self, r):
@@ -189,21 +214,21 @@ class Field():
             name = self.name,
             alias = self.alias,
             description = self.description,
-            indices = [i.index for i in self.indices],
-            datatype = self.datatype.datatype,
-            multivalued = self.multivalued.multivalued,
-            required = self.required.required
+            indices = self.indices,
+            datatype = self.datatype,
+            multivalued = self.multivalued,
+            required = self.required
         )
         return dict(field = _field)
 
     def schema(self, base, id=None):
         """ Builds field schema
         """
-        datatype = self.datatype.__schema__
+        datatype = self._datatype.__schema__
 
-        if self.multivalued.multivalued is True:
+        if self.multivalued is True:
             return [datatype(base, self, id)]
-        elif self.multivalued.multivalued is False:
+        elif self.multivalued is False:
             return datatype(base, self, id)
         else:
             raise Exception('multivalued must be boolean')
@@ -212,6 +237,15 @@ class Field():
         """ Builds registry model
         """
         return self.schema(base)
+
+    @property
+    def is_rel(self):
+        """ Check if field is relational
+        """
+        is_rel = set(['Ordenado', 'Vazio', 'Unico'])
+        if len(is_rel.intersection(self.indices)) > 0:
+            return True
+        return False
 
 class Index():
     """

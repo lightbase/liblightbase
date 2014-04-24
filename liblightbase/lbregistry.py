@@ -1,6 +1,36 @@
 from liblightbase.lbutils import deserialize
 from liblightbase.lbutils import serialize
-from liblightbase.lbutils import parse_json
+from liblightbase.lbcodecs import json2object as parse_json
+from liblightbase.lbutils import TypedMetaClass
+from datetime import datetime
+
+
+NONETYPE = type(None)
+
+class RegistryMetadata(metaclass=TypedMetaClass):
+
+    id_reg = (int,)
+    dt_reg = (datetime,)
+    dt_last_up = (datetime,)
+    dt_index_tex = (datetime, NONETYPE)
+    dt_reg_del = (datetime, NONETYPE)
+
+    def __init__(self, id_reg, dt_reg, dt_last_up, dt_index_tex=None, dt_reg_del=None):
+        self.id_reg = id_reg
+        self.dt_reg = dt_reg
+        self.dt_last_up = dt_last_up
+        self.dt_index_tex = dt_index_tex
+        self.dt_reg_del = dt_reg_del
+
+    @property
+    def __dict__(self):
+        return {
+            'id_reg' : self.id_reg,
+            'dt_reg' : self.dt_reg,
+            'dt_last_up' : self.dt_last_up,
+            'dt_index_tex' : self.dt_index_tex,
+            'dt_reg_del' : self.dt_reg_del
+        }
 
 class Registry():
 
@@ -88,7 +118,7 @@ class Registry():
         # Alright, lets do the job.
         base = self.find_base_object(path)
         if hasattr(base, 'datatype') and hasattr(base, 'indices'):
-            if base.multivalued.multivalued and not put_index:
+            if base.multivalued and not put_index:
                 # It's a multivalued field, need to parse value
                 try: value = parse_json(value)
                 except: raise Exception('Expected list for multivalued Field.')

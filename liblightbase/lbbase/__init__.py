@@ -1,4 +1,5 @@
 
+import collections
 from liblightbase.lbbase import fields
 from liblightbase import lbutils
 from liblightbase.lbregistry import Registry
@@ -10,7 +11,6 @@ class Base():
     Defining a LB Base object
     """
 
-    __docs__ = { }
 
     def __init__(self, name, description, password, color, content,
                 index_export=False , index_url=None, index_time=None,
@@ -28,6 +28,9 @@ class Base():
         self.index_time = index_time
         self.doc_extract = doc_extract
         self.extract_time = extract_time
+
+        self.__docs__ = { }
+        self.__reldata__ = { }
 
     @property
     def index_export(self):
@@ -103,18 +106,29 @@ class Base():
 
     @content.setter
     def content(self, c):
-        content_list = list()
-        repeated_names = list()
+
+        content_list = [ ]
+        self.__names__ = [ ]
+
         if type(c) is list:
             for value in c:
-                if isinstance(value, fields.Field) or isinstance(value, fields.Group):
-                    if value.name in repeated_names:
-                        raise Exception('Can not have repeated names in same level: %s' % value.name)
-                    content_list.append(value)
-                    repeated_names.append(value.name)
+
+                if isinstance(value, fields.Field):
+                    self.__names__.append(value.name)
+
+                elif isinstance(value, fields.Group):
+                    self.__names__.append(value.name)
+                    self.__names__ = self.__names__ + value.__names__
                 else:
                     msg = 'InstanceError This should be an instance of Field or Group. instead it is %s' % value
                     raise Exception(msg)
+
+                content_list.append(value)
+
+            repeated_names = [x for x, y in collections.Counter(self.__names__).items() if y > 1]
+            if len(repeated_names) > 0:
+                raise Exception('Base cannot have repeated names : %s' % str(repeated_names))
+
             self._content = content_list
         else:
             msg = 'Type Error: content must be a list instead of %s' % c
@@ -140,42 +154,43 @@ class Base():
             content = [attr.object for attr in self.content]
         )
 
-    def validate(self, registry, id):
+    def validate(self, registry, _meta):
         """ Validate registry, given id
         """
-        # Ensures id is integer
-        _coerce = lbutils.Coerce(int)
-        id = _coerce(id)
+        id = _meta.id_reg
 
         # Create docs memory area
         self.__docs__[id] = [ ]
+        self.__reldata__[id] = { }
 
-        # Delete id from registry
-        if 'id_reg' in registry: del registry['id_reg']
+        # Delete metadata from registry
+        if '_metadata' in registry: del registry['_metadata']
 
         # Build schema
         _schema = self.schema(id)
         try:
+            # Validates registry
             registry = _schema(registry)
         except Exception as e:
             # If process goes wrong, clear the docs memory area
             del self.__docs__[id]
+            del self.__reldata__[id]
             raise Exception('Registry data is not according to base definition. Details: %s' % str(e))
 
-        # Put registry id back
-        registry['id_reg'] = id
-        return json.dumps(registry, ensure_ascii=False)
+        # Put registry metadata back
+        registry['_metadata'] = _meta.__dict__
+
+        return registry, self.__reldata__[id], self.__docs__[id]
 
     def schema(self, id):
         """ Builds base Schema
         """
         _schema = dict()
         for attr in self.content:
-            required = getattr(attr, 'required', None)
+            required = getattr(attr, 'required', False)
             name = attr.name
             if required:
-                if required.required is True:
-                    name = voluptuous.Required(attr.name)
+                name = voluptuous.Required(attr.name)
             _schema.update({ name: attr.schema(self, id) })
         return voluptuous.Schema(_schema)
 
@@ -184,7 +199,7 @@ class Base():
         """ Builds registry model
         """
         _schema = { attr.name: attr.reg_model(self) for attr in self.content }
-        Encoder = type('Encoder', (json.JSONEncoder,), {'default': lambda self, o: repr(o)})
+        Encoder = type('Encoder', (json.JSONEncoder,), {'default': lambda self, o: o._encoded()})
         return json.dumps(_schema, cls=Encoder, ensure_ascii=False)
 
     @property
@@ -221,25 +236,12 @@ class Base():
     def relational_fields(self):
         """ Get relational fields
         """
-        _relational_fields = dict(
-            normal_cols = [ ],
-            unique_cols = [ ],
-            date_types = [ ],
-            Textual = [ ],
-            Nenhum = [ ]
-        )
-        for field in self.content:
-            if isinstance(field, fields.Field):
-                for index in field.indices:
-                    if index.index in ['Ordenado', 'Vazio']:
-                        _relational_fields['normal_cols'].append(field.name)
-                    if index.index in ['Unico']:
-                        _relational_fields['unique_cols'].append(field.name)
-                    if index.index in ['Textual']:
-                        _relational_fields['Textual'].append(field.name)
-                    if index.index in ['Nenhum']:
-                        _relational_fields['Nenhum'].append(field.name)
-                if field.datatype.datatype in ['Date', 'DateTime']:
-                    _relational_fields['date_types'].append(field.name)
+        rel_fields = { }
 
-        return _relational_fields
+        for struct in self.content:
+            if isinstance(struct, fields.Field) and struct.is_rel:
+                rel_fields[struct.name] = struct
+            elif isinstance(struct, fields.Group):
+                rel_fields.update(struct.relational_fields)
+
+        return rel_fields
