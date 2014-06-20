@@ -1,6 +1,5 @@
 
-from liblightbase.lbutils import reify
-from liblightbase.lbutils import TypedMetaClass
+from liblightbase import lbutils
 from liblightbase.lbtypes import BaseDataType
 import lbgenerator
 import glob
@@ -9,30 +8,30 @@ import base64
 import datetime
 import uuid
 
-class FileMask(metaclass=TypedMetaClass):
+class FileMask(metaclass=lbutils.TypedMetaClass):
     """ Represents a Generic File Mask
     """
 
-    id_doc = (int,)
-    nome_doc = (str, type(None))
+    id_file = (int,)
+    filename = (str, type(None))
     mimetype = (str, type(None))
-    size = (int, type(None))
+    filesize = (int, type(None))
     uuid = (str, type(None))
 
-    def __init__(self, id_doc, nome_doc, mimetype, size, uuid=None, **kw):
-        self.id_doc = id_doc
-        self.nome_doc = nome_doc
+    def __init__(self, id_file, filename, mimetype, filesize, uuid=None):
+        self.id_file = id_file
+        self.filename = filename
         self.mimetype = mimetype
-        self.size = size
+        self.filesize = filesize
         self.uuid = uuid
 
     @property
     def __dict__(self):
         return dict(
-            id_doc = self.id_doc,
-            nome_doc = self.nome_doc,
+            id_file= self.id_file,
+            filename = self.filename,
             mimetype = self.mimetype,
-            size = self.size
+            filesize = self.filesize
         )
 
 class FileExtension(BaseDataType):
@@ -42,19 +41,27 @@ class FileExtension(BaseDataType):
     def __init__(self, base, field, id):
         super(FileExtension, self).__init__(base, field, id)
         self.tmp_dir = lbgenerator.config.TMP_DIR + '/lightbase_tmp_storage/' + self.base.name
-        self.entity = lbgenerator.model.doc_hyper_class(self.base.name)
+        self.entity = lbgenerator.model.file_entity(self.base.name)
 
     def _encoded(self):
         return {
-            'id_doc': "Integer",
-            'nome_doc': "Text",
+            'id_file': "Integer",
+            'filename': "Text",
             'mimetype': "Text",
-            'size': "Integer",
+            'filesize': "Integer",
         }
 
+    @staticmethod
+    def cast_str(value):
+        return lbutils.json2object(value)
+
     def __call__(self, value):
-        """ @param value: string or dictionary, witch contains file id on disk, or not
-            This method should return a dictonary in the form described by _encoded.
+        """ @param value: string or dictionary. If string, must be an uuid 
+            object (new file). If dictionary, must be a file mask (new or
+            existent file)
+
+            This method should return a dictonary in the form described by 
+            self._encoded().
         """
         mask = None
 
@@ -63,6 +70,7 @@ class FileExtension(BaseDataType):
 
         if isinstance(value, str):
             if self.is_uuid(value):
+                # New coming file.
                 mask = self.build_file_mask(value)
             else:
                 raise TypeError('Malformed mask: unrecognized pattern %s' % value)
@@ -71,7 +79,12 @@ class FileExtension(BaseDataType):
             mask = self.get_file_mask(value)
 
             if self.is_uuid(mask.uuid):
+                # New coming file.
                 mask = self.build_file_mask(mask.uuid)
+            else:
+                # Existent file. 
+                self.base.__files__[self.id].append(mask.id_file)
+
         else:
             raise TypeError('Malformed mask: Expected dict or str, but found %s' % type(value).__name__)
 
@@ -80,7 +93,6 @@ class FileExtension(BaseDataType):
         return mask.__dict__
 
     def get_file_mask(self, value):
-        if not value.get('size'): value['size'] = None
         try:
             return FileMask(**value)
         except TypeError as e:
@@ -111,31 +123,31 @@ class FileExtension(BaseDataType):
 
         uuid = split.pop(0)
         file_name_encoded = split.pop()
-        file_name = base64.urlsafe_b64decode(file_name_encoded.encode('utf-8')).decode('utf-8')
-        mime_type = '.'.join(split).replace('-', '/', 1)
-        file_size = self.get_size(tmp_file)
-        id_doc = self.entity.next_id()
+        filename = base64.urlsafe_b64decode(file_name_encoded.encode('utf-8')).decode('utf-8')
+        mimetype = '.'.join(split).replace('-', '/', 1)
+        filesize = self.get_size(tmp_file)
+        id_file = self.entity.next_id()
 
-        dt_ext_texto = None
+        dt_ext_text = None
         field_indices = [index.index for index in self.field.indices]
         if 'Nenhum' in field_indices:
-            dt_ext_texto = datetime.datetime.now()
+            dt_ext_text = datetime.datetime.now()
 
-        self.base.__docs__[self.id].append({
-           'id_doc': id_doc,
-           'id_reg': self.id,
-           'grupos_acesso': '',
-           'nome_doc': file_name,
-           'blob_doc': tmp_file.read(),
-           'mimetype': mime_type,
-           'texto_doc': None,
-           'dt_ext_texto': dt_ext_texto
+        self.base.__cfiles__[self.id].append({
+           'id_file': id_file,
+           'id_doc': self.id,
+           'file': tmp_file.read(),
+           'filename': filename,
+           'filesize': filesize,
+           'mimetype': mimetype,
+           'filetext': None,
+           'dt_ext_text': dt_ext_text
         })
 
         tmp_file.close()
         os.remove(tmp_file.name)
 
-        return FileMask(id_doc, file_name, mime_type, file_size)
+        return FileMask(id_file, filename, mimetype, filesize)
 
     def is_uuid(self, id):
         if id is None:

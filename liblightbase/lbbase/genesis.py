@@ -8,6 +8,7 @@ def json_to_base(base_json):
     """
     base_metadata = base_json['metadata']
     base_content = base_json['content']
+    structures = { }
 
     def assemble_content(content_object, dimension=0):
 
@@ -39,6 +40,7 @@ def json_to_base(base_json):
 
                 # ... and append it to content list
                 content_list.append(_group)
+                structures[_group.name] = _group
 
             # ... Or do we have a field ?
             elif obj.get('field'):
@@ -69,6 +71,7 @@ def json_to_base(base_json):
 
                 # and append it to content list
                 content_list.append(_field)
+                structures[_field.name] = _field
 
         return content_list
 
@@ -80,12 +83,15 @@ def json_to_base(base_json):
         description = base_metadata['description'],
         password = base_metadata['password'],
         color = base_metadata['color'],
-        index_export = base_metadata['index_export'],
-        index_url = base_metadata['index_url'],
-        index_time = base_metadata['index_time'],
-        doc_extract = base_metadata['doc_extract'],
-        extract_time = base_metadata['extract_time'],
+        id_base = base_metadata.get('id_base'),
+        dt_base = base_metadata.get('dt_base'),
+        idx_exp = base_metadata['idx_exp'],
+        idx_exp_url = base_metadata['idx_exp_url'],
+        idx_exp_time = base_metadata['idx_exp_time'],
+        file_ext = base_metadata['file_ext'],
+        file_ext_time = base_metadata['file_ext_time'],
         content = _content
     )
 
+    base.__structs__ = structures
     return base
