@@ -1,6 +1,7 @@
 
 # -*- coding: utf-8 -*-
 import inspect
+import json
 
 class BaseDataType():
 
@@ -64,13 +65,21 @@ class BaseDataType():
     @__obj__.setter
     def __obj__(self, obj):
         if isinstance(self.__pytype__, tuple):
-            if type(obj) not in self.__pytype__:
+            if not isinstance(obj, self.__pytype__):
                 raise Exception('Expected %s but %s found' %
-                    (self.__pytype__.__name__, type(obj).__name__))
+                    (self.get_expected_types(), type(obj).__name__))
         elif not isinstance(obj, self.__pytype__):
             raise Exception('Expected type %s but %s found' %
                 (self.__pytype__.__name__, type(obj).__name__))
         self._obj = obj
+
+    def get_expected_types(self):
+        expected_types = ''
+        for i, pytype in enumerate(self.__pytype__):
+            if i > 0: expected_types = ' or ' + expected_types
+            expected_types = pytype.__name__ + expected_types 
+        return expected_types
+                
 
 class Matrix(list):
 
@@ -90,4 +99,11 @@ class Matrix(list):
             self.__setitem__(index, m)
             return super(Matrix, self).__getitem__(index)
 
+class BaseEncoder(json.JSONEncoder):
+
+    def default(self, obj):
+        if isinstance(obj, BaseDataType):
+            return obj._encoded()
+        else:
+            return obj
 

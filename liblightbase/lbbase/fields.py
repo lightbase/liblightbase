@@ -18,6 +18,14 @@ class Group():
         self.multivalued = multivalued
 
     @property
+    def is_group(self):
+        return True
+
+    @property
+    def is_field(self):
+        return False
+
+    @property
     def content(self):
         return self._content
 
@@ -68,7 +76,7 @@ class Group():
 
     @property
     def object(self):
-        """ Builds group object 
+        """ Builds group object
         """
         return dict(
             group = dict(
@@ -137,6 +145,14 @@ class Field():
         self.indices = indices
         self.multivalued = multivalued
         self.required = required
+
+    @property
+    def is_group(self):
+        return False
+
+    @property
+    def is_field(self):
+        return True
 
     @property
     def datatype(self):
@@ -208,7 +224,7 @@ class Field():
 
     @property
     def object(self):
-        """ Builds field object 
+        """ Builds field object
         """
         _field = dict(
             name = self.name,
@@ -305,25 +321,26 @@ class DataType():
         Get valid instances of datatypes
         """
         valid_datatypes = [
-            'Text',
-            'Document',
-            'Integer',
-            'Decimal',
-            'Money',
-            'SelfEnumerated',
-            'DateTime',
-            'Date',
-            'Time',
-            'Image',
-            'Sound',
-            'Video',
-            'Url',
             'Boolean',
-            'TextArea',
+            'Date',
+            'DateTime',
+            'Decimal',
+            'Document',
+            'Email',
             'File',
             'Html',
-            'Email',
+            'Image',
+            'Integer',
             'Json',
+            'Money',
+            'Password',
+            'SelfEnumerated',
+            'Sound',
+            'Text',
+            'TextArea',
+            'Time',
+            'Url',
+            'Video'
         ]
         return valid_datatypes
 

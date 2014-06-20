@@ -1,8 +1,7 @@
 
 import json
 import re
-from liblightbase.lbcodecs import json2object
-from liblightbase.lbcodecs import object2json
+from liblightbase.lbcodecs import *
 
 class reify(object):
     """ Use as a class method decorator.  It operates almost exactly like the
