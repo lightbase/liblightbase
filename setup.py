@@ -1,17 +1,17 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.1'
+version = '0.2'
 
 setup(name='liblightbase',
       version=version,
       description="LightBase Library",
       long_description="""\
-LightBase Library""",
+LightBase Library. Integrate your Python application to Lightbase""",
       classifiers=[], # Get strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       keywords='lightbase-neo ligthbase json database library',
       author='Lightbase',
-      author_email='antony.carvalho@lightbase.com.br',
+      author_email='info@lightbase.com.br',
       url='http://lightbase.com.br/',
       license='',
       packages=find_packages(exclude=['ez_setup', 'examples', 'tests']),
