@@ -18,6 +18,8 @@ LightBase Library. Integrate your Python application to Lightbase""",
       include_package_data=True,
       zip_safe=True,
       install_requires=[
-          'voluptuous'
+          'voluptuous',
+          'sqlalchemy',
+          'bcrypt'
       ]
       )

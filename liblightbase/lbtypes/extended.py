@@ -1,14 +1,14 @@
-
 from liblightbase import lbutils
 from liblightbase.lbtypes import BaseDataType
-import lbgenerator
+#import lbgenerator
 import glob
 import os
 import base64
 import datetime
 import uuid
+import random
 
-class FileMask(metaclass=lbutils.TypedMetaClass):
+class FileMask(lbutils.TypedMetaClass):
     """ Represents a Generic File Mask
     """
 
@@ -19,6 +19,14 @@ class FileMask(metaclass=lbutils.TypedMetaClass):
     uuid = (str, type(None))
 
     def __init__(self, id_file, filename, mimetype, filesize, uuid=None):
+        """
+
+        :param id_file:
+        :param filename:
+        :param mimetype:
+        :param filesize:
+        :param uuid:
+        """
         self.id_file = id_file
         self.filename = filename
         self.mimetype = mimetype
@@ -40,8 +48,12 @@ class FileExtension(BaseDataType):
     """
     def __init__(self, base, field, id):
         super(FileExtension, self).__init__(base, field, id)
-        self.tmp_dir = lbgenerator.config.TMP_DIR + '/lightbase_tmp_storage/' + self.base.name
-        self.entity = lbgenerator.model.file_entity(self.base.name)
+        # FIXME: Removing because this lib can't depend on LBGenerator.
+        # It is necessary fo find a workaround
+        #self.tmp_dir = lbgenerator.config.TMP_DIR + '/lightbase_tmp_storage/' + self.base.name
+        #self.entity = lbgenerator.model.file_entity(self.base.name)
+        self.tmp_dir = '/tmp/lightbase_tmp_storage/' + self.base.name
+        self.entity = ''
 
     def _encoded(self):
         return {
@@ -126,7 +138,9 @@ class FileExtension(BaseDataType):
         filename = base64.urlsafe_b64decode(file_name_encoded.encode('utf-8')).decode('utf-8')
         mimetype = '.'.join(split).replace('-', '/', 1)
         filesize = self.get_size(tmp_file)
-        id_file = self.entity.next_id()
+        #FIXME: This definition has to get out of here
+        #id_file = self.entity.next_id()
+        id_file = self.next_id()
 
         dt_ext_text = None
         field_indices = [index.index for index in self.field.indices]
@@ -158,3 +172,10 @@ class FileExtension(BaseDataType):
         except ValueError:
             return False
 
+    def next_id(self):
+        """
+        FIXME: Workaround just to generate a random int number. Implement a REST opration later
+
+        :return: random int
+        """
+        return random.randint()

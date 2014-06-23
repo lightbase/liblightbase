@@ -1,16 +1,17 @@
-
+#!/usr/env python
+# -*- coding: utf-8 -*-
 import collections
 from liblightbase.lbbase import fields
-from liblightbase import lbtypes
 from liblightbase import lbutils
 from liblightbase.lbdocument import Tree
+from liblightbase import lbcodecs
 import voluptuous
+
 
 class Base():
     """
     Defining a LB Base object
     """
-
 
     def __init__(self, name, description, password, color, content,
                 dt_base=None, id_base=None,
@@ -32,6 +33,8 @@ class Base():
         self.idx_exp_time = idx_exp_time
         self.file_ext = file_ext
         self.file_ext_time = file_ext_time
+
+        self.json = lbcodecs.object2json(self)
 
         self.__files__ = { }
         self.__cfiles__ = { }
@@ -131,7 +134,7 @@ class Base():
 
                 content_list.append(value)
 
-            repeated_names = [x for x, y in collections.Counter(self.__names__)\
+            repeated_names = [x for x, y in collections.Counter(self.__names__)
                 .items() if y > 1]
             if len(repeated_names) > 0:
                 raise Exception('Base cannot have repeated names : %s'
@@ -166,12 +169,6 @@ class Base():
             ),
             content = [attr.object for attr in self.content]
         )
-
-    @property
-    def json(self):
-        """ Builds base JSON
-        """
-        return lbutils.object2json(self.object)
 
     def validate(self, document, _meta):
         """ Validate document, given id
@@ -269,3 +266,10 @@ class Base():
                 rel_fields.update(struct.relational_fields)
 
         return rel_fields
+
+    def _encoded(self):
+        """
+        Serialize for JSON
+        :return:
+        """
+        return self.__dict__
