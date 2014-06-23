@@ -1,6 +1,9 @@
+#!/usr/env python
+# -*- coding: utf-8 -*-
+
 import unittest
 
-from liblightbase.lbbase.__init__2 import Base
+from liblightbase.lbbase import Base
 from liblightbase.lbbase.fields import *
 from liblightbase.lbbase.conversion import json_to_base
 
