@@ -1,6 +1,6 @@
-
 from liblightbase.lbbase.fields import *
 from liblightbase.lbbase import Base
+
 
 def json_to_base(base_json):
 

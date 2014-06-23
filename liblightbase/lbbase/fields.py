@@ -1,7 +1,10 @@
-
+#!/usr/env python
+# -*- coding: utf-8 -*-
 import collections
 import voluptuous
 from liblightbase.lbtypes import standard
+from liblightbase import lbcodecs
+
 
 class Group():
     """
@@ -16,6 +19,7 @@ class Group():
         self.description = description
         self.content = content
         self.multivalued = multivalued
+        self.json = lbcodecs.object2json(self)
 
     @property
     def is_group(self):
@@ -130,6 +134,13 @@ class Group():
 
         return rel_fields
 
+    def _encoded(self):
+        """
+        Serialize Groups data
+        """
+        return self.__dict__
+
+
 class Field():
     """
     This is the field description
@@ -145,6 +156,7 @@ class Field():
         self.indices = indices
         self.multivalued = multivalued
         self.required = required
+        self.json = lbcodecs.object2json(self)
 
     @property
     def is_group(self):
@@ -190,9 +202,10 @@ class Field():
             self._indices = indices_list
         else:
             # Invalid index. Raise exception
+            self._indices = None
             msg = 'Type Error: indexes must be a list instead of %s' % i
             raise Exception(msg)
-            self._indices = None
+
 
     @property
     def multivalued(self):
@@ -240,7 +253,7 @@ class Field():
     def schema(self, base, id=None):
         """ Builds field schema
         """
-        datatype = self._datatype.__schema__
+        datatype = self.datatype.__schema__
 
         if self.multivalued is True:
             return [datatype(base, self, id)]
@@ -263,12 +276,20 @@ class Field():
             return True
         return False
 
+    def _encoded(self):
+        """
+        Encode data for JSON
+        """
+        return self.__dict__
+
+
 class Index():
     """
     This is the index object.
     """
     def __init__(self, index):
         self.index = index
+        self.json = lbcodecs.object2json(self)
 
     def valid_indices(self):
         """
@@ -303,11 +324,18 @@ class Index():
     def index(self, i):
         if not i in self.valid_indices():
             # invalid value for indices. Raise exception
+            self._index = None
             msg = 'IndexError violation. Supplied value for index %s is not valid' % i
             raise Exception(msg)
-            self._index = None
 
         self._index = i
+
+    def _encoded(self):
+        """
+        Encode data for JSON
+        """
+
+        return self.index
 
 class DataType():
     """
@@ -315,6 +343,8 @@ class DataType():
     """
     def __init__(self, datatype):
         self.datatype = datatype
+        self.__schema__ = getattr(standard, self.datatype)
+        self.json = lbcodecs.object2json(self)
 
     def valid_types(self):
         """
@@ -355,11 +385,17 @@ class DataType():
         """
         if t in self.valid_types():
             self._datatype = t
-            self.__schema__ = getattr(standard, self._datatype)
         else:
             msg = 'TypeError Wrong DataType. The value you supllied is not valid: %s' % t
             raise Exception(msg)
             self._datatype = None
+
+    def _encoded(self):
+        """
+        Encode data for JSON
+        """
+
+        return self.datatype
 
 class Multivalued():
     """
@@ -383,6 +419,7 @@ class Multivalued():
             msg = 'TypeError Wrong multivalued. The value you supllied for multivalued is not valid: %s' % m
             raise Exception(msg)
             self._multivalued = None
+
 
 class Required():
     """
