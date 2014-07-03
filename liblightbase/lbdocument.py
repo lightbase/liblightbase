@@ -5,7 +5,7 @@ import copy
 
 NONETYPE = type(None)
 
-class DocumentMetadata(lbutils.TypedMetaClass):
+class DocumentMetadata(metaclass=lbutils.TypedMetaClass):
 
     id_doc = (int,)
     dt_doc = (datetime,)
