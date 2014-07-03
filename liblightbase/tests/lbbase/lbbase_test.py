@@ -1,10 +1,8 @@
-#!/usr/env python
-# -*- coding: utf-8 -*-
-
 import unittest
 
-from liblightbase.lbbase import Base
+from liblightbase.lbbase.__init__2 import Base
 from liblightbase.lbbase.fields import *
+from liblightbase.lbbase.conversion import json_to_base
 
 class BaseTestCase(unittest.TestCase):
     """
@@ -21,14 +19,12 @@ class BaseTestCase(unittest.TestCase):
         Try to setup index value
         """
         index = Index('Vazio')
-        assert isinstance(index, Index)
 
     def test_datatype(self):
         """
         Try to setup Tipo object
         """
-        datatype = DataType('Integer')
-        assert isinstance(datatype, DataType)
+        datatype = DataType('Inteiro'),
 
     def test_field(self):
         """
@@ -40,14 +36,11 @@ class BaseTestCase(unittest.TestCase):
         field = Field(
             name = 'nome',
             description = 'Esse é o nome da pessoa',
-            alias='alias',
-            datatype = DataType('Integer'),
+            datatype = DataType('Inteiro'),
             indices = [index1, index2],
             multivalued = Multivalued(False),
             required = Required(False)
         )
-
-        assert isinstance(field, Field)
 
     def test_group(self):
         """
@@ -57,9 +50,8 @@ class BaseTestCase(unittest.TestCase):
         index2 = Index('Ordenado')
         field1 = Field(
             name = 'field1',
-            alias='alias',
             description = 'desc1',
-            datatype = DataType('Integer'),
+            datatype = DataType('Inteiro'),
             indices = [index1, index2],
             multivalued = Multivalued(False),
             required = Required(False)
@@ -67,9 +59,8 @@ class BaseTestCase(unittest.TestCase):
 
         field2 = Field(
             name = 'field2',
-            alias='alias',
             description = 'desc2',
-            datatype = DataType('Document'),
+            datatype = DataType('Documento'),
             indices = [index1],
             multivalued = Multivalued(True),
             required = Required(True)
@@ -77,13 +68,10 @@ class BaseTestCase(unittest.TestCase):
 
         group = Group(
             name = 'group2',
-            alias='alias',
             description = 'groupdesc2',
             content = [field1, field2],
             multivalued = Multivalued(False)
         )
-
-        assert isinstance(group, Group)
 
     def test_base(self):
         """
@@ -93,19 +81,17 @@ class BaseTestCase(unittest.TestCase):
         index2 = Index('Ordenado')
         field1 = Field(
             name = 'field1',
-            alias='alias',
             description = 'desc1',
-            datatype = DataType('Integer'),
+            datatype = DataType('Inteiro'),
             indices = [index1, index2],
             multivalued = Multivalued(False),
-            required = Required(True),
+            required = Required(True)
         )
 
         field2 = Field(
             name = 'field2',
-            alias='alias',
             description = 'desc2',
-            datatype = DataType('Document'),
+            datatype = DataType('Documento'),
             indices = [index1],
             multivalued = Multivalued(True),
             required = Required(True)
@@ -113,7 +99,6 @@ class BaseTestCase(unittest.TestCase):
 
         group2 = Group(
             name = 'group2',
-            alias='alias',
             description = 'groupdesc2',
             content = [field1, field2],
             multivalued = Multivalued(False)
@@ -121,7 +106,6 @@ class BaseTestCase(unittest.TestCase):
 
         group1 = Group(
             name = 'group1',
-            alias='alias',
             description = 'groupdesc1',
             content = [field1, field2, group2],
             multivalued = Multivalued(True)
@@ -130,20 +114,18 @@ class BaseTestCase(unittest.TestCase):
         base = Base(
             name = 'base1',
             description = 'base1 description',
-            password='123456',
-            idx_exp =False,
-            idx_exp_url = 'index_url',
-            idx_exp_time = 'index_time',
-            file_ext = 'doc_extract',
-            file_ext_time = 'extract_time',
-            color='#FFFFFF',
-            content=[group1, field1, field2]
+            index_export = 'index_export',
+            index_url = 'index_url',
+            index_time = 'index_time',
+            doc_extract = 'doc_extract',
+            extract_time = 'extract_time',
+            content = [group1, field1, field2]
         )
-
-        assert isinstance(base, Base)
+        print(base.json)
 
     def tearDown(self):
         """
         Remove test data
         """
         pass
+

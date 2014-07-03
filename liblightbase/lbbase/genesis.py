@@ -1,96 +1,86 @@
-from liblightbase.lbbase.fields import *
-from liblightbase.lbbase import Base
 
+from liblightbase.lbbase.struct import Base
+from liblightbase.lbbase.metadata import BaseMetadata
+from liblightbase.lbbase.content import Content
+from liblightbase.lbbase.lbstruct.field import Field
+from liblightbase.lbbase.lbstruct.group import Group
+from liblightbase.lbbase.lbstruct.group import GroupMetadata
 
 def json_to_base(base_json):
 
-    """ Parses base_json and builds Base instance
+    """ Parses base json and return Base instance
     """
-    base_metadata = base_json['metadata']
-    base_content = base_json['content']
+
+    # structures:  
     structures = { }
 
     def assemble_content(content_object, dimension=0):
 
         """ Parses content object and builds a list with fields/groups instances
         """
+
         # Reserve return object
-        content_list = list()
+        content_list = Content()
 
         # Parse object
         for obj in content_object:
 
             # Do we have a group ? ...
             if obj.get('group'):
-                group_metadata = obj['group']['metadata']
-                group_content = obj['group']['content']
+
+                group_metadata = GroupMetadata(**obj['group']['metadata'])
 
                 _dimension = dimension
-                if group_metadata['multivalued'] is True:
+                if group_metadata.multivalued:
                     _dimension = _dimension + 1
 
+                group_content = assemble_content(obj['group']['content'],
+                        dimension=_dimension)
+
                 # Build group instance ...
-                _group = Group(
-                    name = group_metadata['name'],
-                    description = group_metadata['description'],
-                    alias = group_metadata['alias'],
-                    multivalued = Multivalued(group_metadata['multivalued']),
-                    content = assemble_content(group_content, dimension=_dimension),
+                group = Group(
+                    metadata = group_metadata,
+                    content = group_content
                 )
 
+                if group.metadata.name not in structures:
+                    structures[group.metadata.name] = group
+                else:
+                    raise NameError('Duplicated struct name: %s'\
+                        % group.metadata.name)
+
                 # ... and append it to content list
-                content_list.append(_group)
-                structures[_group.name] = _group
+                content_list.append(group)
 
             # ... Or do we have a field ?
             elif obj.get('field'):
-                field = obj['field']
 
-                # Build indices list
-                indices = field['indices']
-                _indices = list()
-                if type(indices) is list:
-                    for index in indices:
-                        _index = Index(index)
-                        _indices.append(_index)
+                # Assemble Field instance ...
+                field = Field(**obj['field'])
 
-                # Finally Build Field instance ...
-                _field = Field(
-                    name = field['name'],
-                    description = field['description'],
-                    alias = field['alias'],
-                    datatype = DataType(field['datatype']),
-                    indices = _indices,
-                    multivalued = Multivalued(field['multivalued']),
-                    required = Required(field['required'])
-                )
-                if _field.multivalued:
-                    _field.__dim__ = dimension + 1
+                if field.multivalued:
+                    field.__dim__ = dimension + 1
                 else:
-                    _field.__dim__ = dimension
+                    field.__dim__ = dimension
 
                 # and append it to content list
-                content_list.append(_field)
-                structures[_field.name] = _field
+                content_list.append(field)
+
+                if field.name not in structures:
+                    structures[field.name] = field
+                else:
+                    raise NameError('Duplicated struct name: %s'\
+                        % field.name)
 
         return content_list
 
-    _content = assemble_content(base_content)
+    base_metadata = base_json['metadata']
+    base_content = assemble_content(base_json['content'])
 
     # build base instance
     base = Base(
-        name = base_metadata['name'],
-        description = base_metadata['description'],
-        password = base_metadata['password'],
-        color = base_metadata['color'],
-        id_base = base_metadata.get('id_base'),
-        dt_base = base_metadata.get('dt_base'),
-        idx_exp = base_metadata['idx_exp'],
-        idx_exp_url = base_metadata['idx_exp_url'],
-        idx_exp_time = base_metadata['idx_exp_time'],
-        file_ext = base_metadata['file_ext'],
-        file_ext_time = base_metadata['file_ext_time'],
-        content = _content
+        metadata=BaseMetadata(**base_metadata),
+        content=base_content
     )
 
     base.__structs__ = structures

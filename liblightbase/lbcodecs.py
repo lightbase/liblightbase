@@ -1,5 +1,3 @@
-#!/usr/env python
-# -*- coding: utf-8 -*-
 import json
 import datetime
 
@@ -33,8 +31,6 @@ class DocumentJSONEncoder(json.JSONEncoder):
         elif hasattr(obj, '_encoded'):
             # liblightbase.lbtypes.BaseDataType objects
             obj = obj._encoded()
-        else:
-            obj = obj.__dict__
 
         return obj
 
