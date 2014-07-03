@@ -3,7 +3,7 @@
 import inspect
 import json
 
-class BaseDataType():
+class BaseDataType(object):
 
     """ Base Methods for any Field
     """
