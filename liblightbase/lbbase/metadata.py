@@ -2,10 +2,19 @@ import datetime
 from liblightbase import lbutils
 
 class BaseMetadata():
-    """ Defining a LB Base Metadata Object
+
+    """ 
+    The base metadata is all data related to the group. The main purpose of 
+    metadata is to facilitate in the discovery of relevant information, more 
+    often classified as resource discovery.
     """
 
+    # @property _namemaxlen: The maximum number of characters allowed in the
+    # name property.
     _namemaxlen = 5000
+
+    # @property _descmaxlen: The maximum number of characters allowed in the
+    # description property.
     _descmaxlen = 5000
 
     def __init__(self, name=None, description=None, password=None, color=None,
@@ -59,6 +68,7 @@ class BaseMetadata():
         # asynchronous extractor to sleep beetwen the extracting processes.
         self.file_ext_time = file_ext_time
 
+        # @property asdict: Dictonary format of base metadata model. 
         self.asdict = {
             'name': self.name,
             'description': self.description,
@@ -73,14 +83,19 @@ class BaseMetadata():
             'file_ext_time': self.file_ext_time
         }
 
+        # @property json: JSON format of base metadata model. 
         self.json = lbutils.object2json(self.asdict)
 
     @property
     def name(self):
+        """ @property name getter
+        """
         return self._name
 
     @name.setter
     def name(self, value):
+        """ @property name setter
+        """
         try:
             assert(isinstance(value, str))
         except AssertionError:
@@ -101,10 +116,14 @@ class BaseMetadata():
 
     @property
     def description(self):
+        """ @property description getter
+        """
         return self._description
 
     @description.setter
     def description(self, value):
+        """ @property description setter
+        """
         try:
             assert(isinstance(value, str))
         except AssertionError:
@@ -118,10 +137,14 @@ class BaseMetadata():
 
     @property
     def id_base(self):
+        """ @property id_base getter
+        """
         return self._id_base
 
     @id_base.setter
     def id_base(self, value):
+        """ @property id_base setter
+        """
         try:
             assert(isinstance(value, int))
         except AssertionError:
@@ -131,10 +154,14 @@ class BaseMetadata():
 
     @property
     def dt_base(self):
+        """ @property id_base getter
+        """
         return self._dt_base
 
     @dt_base.setter
     def dt_base(self, value):
+        """ @property id_base setter
+        """
         if isinstance(value, datetime.datetime):
             self._dt_base = value
         else:
@@ -149,10 +176,14 @@ class BaseMetadata():
 
     @property
     def idx_exp(self):
+        """ @property idx_exp getter
+        """
         return self._idx_exp
 
     @idx_exp.setter
     def idx_exp(self, value):
+        """ @property idx_exp setter
+        """
         try:
             assert(isinstance(value, bool))
         except AssertionError:
@@ -162,10 +193,14 @@ class BaseMetadata():
 
     @property
     def idx_exp_url(self):
+        """ @property idx_exp_url getter
+        """
         return self._idx_exp_url
 
     @idx_exp_url.setter
     def idx_exp_url(self, value):
+        """ @property idx_exp_url setter
+        """
         assert(type(value) is str or type(value) is type(None))
         if self.idx_exp:
             url = lbutils.validate_url(value)
@@ -179,10 +214,14 @@ class BaseMetadata():
 
     @property
     def idx_exp_time(self):
+        """ @property idx_exp_time getter
+        """
         return self._idx_exp_time
 
     @idx_exp_time.setter
     def idx_exp_time(self, value):
+        """ @property idx_exp_time setter
+        """
         try:
             value = int(value)
             assert(isinstance(value, int))
@@ -193,10 +232,14 @@ class BaseMetadata():
 
     @property
     def file_ext(self):
+        """ @property file_ext getter
+        """
         return self._file_ext
 
     @file_ext.setter
     def file_ext(self, value):
+        """ @property file_ext setter
+        """
         try:
             assert(isinstance(value, bool))
         except AssertionError:
@@ -206,10 +249,14 @@ class BaseMetadata():
 
     @property
     def file_ext_time(self):
+        """ @property file_ext_time getter
+        """
         return self._file_ext_time
 
     @file_ext_time.setter
     def file_ext_time(self, value):
+        """ @property file_ext_time setter
+        """
         try:
             value = int(value)
             assert(isinstance(value, int))

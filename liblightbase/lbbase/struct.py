@@ -8,44 +8,66 @@ import voluptuous
 
 class Base():
 
-    """ Defining a Base Object
+    """ 
+    A base is a set of interrelated data, organized to allow the retrieval 
+    of information. A base must provide updated information (structural funds),
+    accurate and reliable (not to give the information in half) and according
+    to demand (offer what user needs).
     """
 
     def __init__(self, metadata, content):
 
-        # @param metadata: 
+        # @param metadata: The base metadata is all data related to the base.
+        # The main purpose of metadata is to facilitate in the discovery of 
+        # relevant information, more often classified as resource discovery.
         self.metadata = metadata
 
-        # @param content: 
+        # @param content: The base content is a list of structures that compose
+        # the base schema. Structures may also have metadata and content, giving
+        # the base a recursive modeling.
         self.content = content
 
-        # @property __files__: 
+        # @property __files__: A dictionary at the format { id_doc: list of 
+        # files }. This property helps to identify files contained on each
+        # document. When document is submitted, the routine should compare 
+        # these files to files present at database, deleting those that aren't
+        # present on both lists.
         self.__files__ = { }
 
-        # @property __cfiles__: 
+        # @property __cfiles__: A dictionary at the format { id_doc: list of 
+        # files to be created }. This property contains the new files present
+        # in document that do not exist on database yet. The routine should
+        # submit these files when submitting document. 
         self.__cfiles__ = { }
 
-        # @property __reldata__: 
+        # @property __reldata__: A dictionary at the format {id_doc: {field
+        # name: data}}. This property contains the data to be submitted at 
+        # relational column at database.
         self.__reldata__ = { }
 
         metadata_dict= self.metadata.asdict
         content_dict = self.content.asdict
         metadata_dict['model'] = self.document_model
 
-        # @property json: 
+        # @property asdict: Dictonary format of base model. 
         self.asdict = {
             'metadata': metadata_dict,
             'content': content_dict,
         }
 
+        # @property json: JSON format of base model. 
         self.json = lbutils.object2json(self.asdict)
 
     @property
     def metadata(self):
+        """ @property metadata getter
+        """
         return self._metadata
 
     @metadata.setter
     def metadata(self, value):
+        """ @property metadata setter
+        """
         try:
             assert isinstance(value, BaseMetadata)
         except AssertionError:
@@ -56,10 +78,14 @@ class Base():
 
     @property
     def content(self):
+        """ @property content getter
+        """
         return self._content
 
     @content.setter
     def content(self, value):
+        """ @property content setter
+        """
         try:
             assert isinstance(value, Content)
         except AssertionError:
@@ -69,7 +95,7 @@ class Base():
             self._content = value
 
     def validate(self, document, _meta):
-        """ Validate document, given id
+        """ Validate document data structure.
         """
         id = _meta.id_doc
 
@@ -103,7 +129,11 @@ class Base():
                self.__cfiles__[id])
 
     def schema(self, id):
-        """ Builds base Schema
+        """ 
+        A database schema is a collection of meta-data that describes the 
+        relations in a database. A schema can be simply described as the
+        "layout" of a database or the blueprint that outlines the way data is 
+        organized into tables. This method build the base schema, returning it.
         """
         schema = dict()
         for struct in self.content:
@@ -117,9 +147,10 @@ class Base():
         return voluptuous.Schema(schema)
 
     def get_struct(self, sname):
-        """ @param sname: structure name to find
-            @return: Field or Group 
-            This method return the structure corresponding to @sname.
+        """ 
+        @param sname: structure name to find
+        @return: Field or Group 
+        This method return the structure corresponding to @sname.
         """
         try:
             return self.__structs__[sname]
@@ -128,7 +159,9 @@ class Base():
 
     @property
     def document_model(self):
-        """ Builds document model
+        """
+        The document model is a template of the inherent structure in document.
+        This method builds the document model, returning it.
         """
         model = { }
         for struct in self.content:
