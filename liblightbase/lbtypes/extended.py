@@ -6,10 +6,12 @@ import os
 import base64
 import datetime
 import uuid
+import tempfile
 
-class FileMask(metaclass=lbutils.TypedMetaClass):
+class FileMask(object):
     """ Represents a Generic File Mask
     """
+    __metaclass__=lbutils.TypedMetaClass
 
     id_file = (int,)
     filename = (str, type(None))
@@ -37,20 +39,34 @@ class FileExtension(BaseDataType):
 
     """ Represents an extension for file-based Fields
     """
-    def __init__(self, base, field, id):
+    def __init__(self, base, field, id, tmp_dir=None):
         super(FileExtension, self).__init__(base, field, id)
-        import lbgenerator
-        self.tmp_dir = lbgenerator.config.TMP_DIR + '/lightbase_tmp_storage/' +\
-            self.base.metadata.name
-        self.entity = lbgenerator.model.file_entity(self.base.metadata.name)
+        #import lbgenerator
+        #self.tmp_dir = lbgenerator.config.TMP_DIR + '/lightbase_tmp_storage/' +\
+        #    self.base.metadata.name
+        #self.entity = lbgenerator.model.file_entity(self.base.metadata.name)
+        self.tmp_dir = tmp_dir
+        if dir is not None:
+            self.tmp_dir = tempfile.gettempdir() + '/lightbase_tmp_storage/' + self.base.metadata.name
+        else:
+            self.tmp_dir = tmp_dir + '/lightbase_tmp_storage/' + self.base.metadata.name
+        self.entity = FileEntity(self.base, self.field)
 
-    def _encoded(self):
-        return {
+        self.asdict = {
             'id_file': "Integer",
             'filename': "Text",
             'mimetype': "Text",
-            'filesize': "Integer",
+            'filesize': "Integer"
         }
+
+
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.asdict
 
     @staticmethod
     def cast_str(value):
@@ -159,3 +175,21 @@ class FileExtension(BaseDataType):
         except ValueError:
             return False
 
+
+class FileEntity(object):
+    """
+    Class to get file information from Lightbase
+    """
+    def __init__(self, base, field):
+        self.base = base
+        self.field = field
+
+    def next_id(self):
+        """
+        Method to return next available ID on Lightbase Database
+
+        FIXME: Implment rest operation
+
+        :return: Next available ID
+        """
+        return 1

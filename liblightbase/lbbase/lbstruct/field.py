@@ -2,7 +2,7 @@
 from liblightbase.lbbase.lbstruct.properties import *
 from liblightbase import lbutils
 
-class Field():
+class Field(object):
 
     """ This is the field description
     """
@@ -54,7 +54,7 @@ class Field():
             }
         }
 
-        self.json = lbutils.object2json(self.asdict)
+        self.json = lbutils.object2json(self)
 
     @property
     def name(self):
@@ -65,7 +65,11 @@ class Field():
         try:
             assert(isinstance(value, str))
         except AssertionError:
-            raise ValueError('Field name value must be string!')
+            # Check for valid unicode strings
+            try:
+                assert(isinstance(value,unicode))
+            except:
+                raise ValueError('Invalid chars on name. It must be an ascii string')
         try:
             assert(len(value) <= self._namemaxlen)
         except AssertionError:
@@ -86,10 +90,15 @@ class Field():
 
     @alias.setter
     def alias(self, value):
+        # Check for valid unicode strings
         try:
             assert(isinstance(value, str))
         except AssertionError:
-            raise ValueError('Field alias value must be string!')
+            # Check for valid unicode strings
+            try:
+                assert(isinstance(value,unicode))
+            except:
+                raise ValueError('Invalid chars on alias. It must be an ascii string')
         try:
             assert(len(value) <= self._aliasmaxlen)
         except AssertionError:
@@ -104,10 +113,9 @@ class Field():
 
     @description.setter
     def description(self, value):
-        try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            raise ValueError('Description must be string!')
+        if not isinstance(value,str):
+            if not isinstance(value,unicode):
+                raise ValueError('Description must be string or unicode!')
         try:
             assert(len(value) <= self._descmaxlen)
         except AssertionError:
@@ -196,3 +204,12 @@ class Field():
         if len(is_rel.intersection(self.indices)) > 0:
             return True
         return False
+
+    def _encoded(self):
+        """
+        Return JSON format
+
+        :return:
+        """
+
+        return self.asdict

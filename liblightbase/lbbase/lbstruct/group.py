@@ -1,9 +1,10 @@
-
+# -*- coding: utf-8 -*-
 import voluptuous
 from liblightbase.lbbase.lbstruct.properties import Multivalued
 from liblightbase import lbutils
+import liblightbase.lbbase.content
 
-class GroupMetadata():
+class GroupMetadata(object):
 
     _namemaxlen = 5000
     _aliasmaxlen = 5000
@@ -30,7 +31,8 @@ class GroupMetadata():
             'multivalued': self.multivalued
         }
 
-        self.json = lbutils.object2json(self.asdict)
+        self.json = lbutils.object2json(self)
+
 
     @property
     def name(self):
@@ -41,7 +43,11 @@ class GroupMetadata():
         try:
             assert(isinstance(value, str))
         except AssertionError:
-            raise ValueError('Group name value must be string!')
+            # Check for valid unicode strings
+            try:
+                assert(isinstance(value,unicode))
+            except:
+                raise ValueError('Invalid chars on name. It must be an ascii string')
         try:
             assert(len(value) <= self._namemaxlen)
         except AssertionError:
@@ -62,10 +68,15 @@ class GroupMetadata():
 
     @alias.setter
     def alias(self, value):
+        # Check for valid unicode strings
         try:
             assert(isinstance(value, str))
         except AssertionError:
-            raise ValueError('Group alias value must be string!')
+            # Check for valid unicode strings
+            try:
+                assert(isinstance(value,unicode))
+            except:
+                raise ValueError('Invalid chars on alias. It must be an ascii string')
         try:
             assert(len(value) <= self._aliasmaxlen)
         except AssertionError:
@@ -80,10 +91,9 @@ class GroupMetadata():
 
     @description.setter
     def description(self, value):
-        try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            raise ValueError('Description must be string!')
+        if not isinstance(value,str):
+            if not isinstance(value,unicode):
+                raise ValueError('Description must be string or unicode!')
         try:
             assert(len(value) <= self._descmaxlen)
         except AssertionError:
@@ -105,7 +115,16 @@ class GroupMetadata():
         else:
             self._multivalued = value
 
-class Group():
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.asdict
+
+
+class Group(object):
 
     """ This is the group structure definition
     """
@@ -125,12 +144,12 @@ class Group():
         self.asdict = {
             'group': {
                 'metadata': self.metadata.asdict,
-                'content': self.content.asdict
+                'content': self.content
             }
         }
 
         # @property json:
-        self.json = lbutils.object2json(self.asdict)
+        self.json = lbutils.object2json(self)
 
     @property
     def metadata(self):
@@ -152,9 +171,8 @@ class Group():
 
     @content.setter
     def content(self, value):
-        from liblightbase.lbbase.content import Content
         try:
-            assert isinstance(value, Content)
+            assert isinstance(value, liblightbase.lbbase.content.Content)
         except AssertionError:
             raise ValueError('Group content must be of type Content \
             instead of %s' % value)
@@ -207,3 +225,10 @@ class Group():
 
         return rel_fields
 
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.asdict
