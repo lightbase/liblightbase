@@ -1,6 +1,7 @@
 
 import voluptuous
 from liblightbase.lbbase.lbstruct.properties import Multivalued
+from liblightbase.lbbase.const import RESERVED_STRUCT_NAMES
 from liblightbase import lbutils
 
 class GroupMetadata():
@@ -68,20 +69,24 @@ class GroupMetadata():
         """ @property name setter
         """
         try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            raise ValueError('Group name value must be string!')
-        try:
-            assert(len(value) <= self._namemaxlen)
-        except AssertionError:
-            raise ValueError('Group name %s max length must be %i!' % (value,
-                self._namemaxlen))
-        try:
-            # check ascii characters
+
+            msg = 'Group name value must be string!'
+            assert isinstance(value, str)
+
+            msg = 'Group name %s is a reserved name. Please use another name.'\
+                % value
+            assert value not in RESERVED_STRUCT_NAMES
+
+            msg = 'Group name %s max length must be %i!' % (value,
+                self._namemaxlen)
+            assert len(value) <= self._namemaxlen
+
+            msg = 'Group name %s must contains ascii characters\
+                only!' % value
             assert all(ord(c) < 128 for c in value)
+
         except AssertionError:
-            raise ValueError('''Group name %s must contains ascii characters
-                only!''' % value)
+            raise ValueError(msg)
         else:
             self._name = value.lower()
 
