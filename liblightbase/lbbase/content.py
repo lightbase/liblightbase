@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from liblightbase.lbbase.lbstruct.field import Field
 from liblightbase.lbbase.lbstruct.group import Group
 from liblightbase import lbutils
@@ -7,10 +7,10 @@ class Content(list):
 
     def __init__(self):
 
-        # @property __structs__: 
+        # @property __structs__:
         self.__structs__ = { }
 
-        # @property asdict: 
+        # @property asdict:
         self.asdict = [ ]
 
         # Initialize super class constructor
@@ -18,7 +18,7 @@ class Content(list):
 
     @property
     def json(self):
-        return lbutils.object2json(self.asdict)
+        return lbutils.object2json(self)
 
     def __getitem__(self, index):
         return super(Content, self).__getitem__(index)
@@ -52,3 +52,11 @@ class Content(list):
         self.asdict.append(struct.asdict)
         self.__structs__[structname] = struct
         return super(Content, self).append(struct)
+
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.asdict

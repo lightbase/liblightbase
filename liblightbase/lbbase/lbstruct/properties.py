@@ -1,7 +1,7 @@
-
+# -*- coding: utf-8 -*-
 from liblightbase.lbtypes import standard
 
-class Index():
+class Index(object):
 
     """ This is the index object.
     """
@@ -32,7 +32,16 @@ class Index():
         else:
             self._index = value
 
-class DataType():
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.index
+
+
+class DataType(object):
     """ Define valid data type
     """
 
@@ -79,6 +88,13 @@ class DataType():
         else:
             self._datatype = value
 
+
+    def _encoded(self):
+        """
+        Return Object JSON
+        """
+        return self.datatype
+
 class Multivalued():
     """
     Define valid multivalued
@@ -97,12 +113,22 @@ class Multivalued():
         try:
             assert isinstance(value, bool)
         except AssertionError:
-            raise Value('''Wrong DataType. The value you supllied is not
+            raise ValueError('''Wrong DataType. The value you supllied is not
                 valid: %s''' % value)
         else:
             self._multivalued = value
 
-class Required():
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+
+        return self.multivalued
+
+
+class Required(object):
     """ Define valid required
     """
     def __init__(self, required):
@@ -123,3 +149,11 @@ class Required():
                 required is not valid: %s''' % value)
         else:
             self._required = value
+
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.required

@@ -28,8 +28,8 @@ class DocumentJSONEncoder(json.JSONEncoder):
         elif isinstance(obj, datetime.date):
             obj = obj.strftime('%d/%m/%Y')
 
-        elif hasattr(obj, '_encoded'):
-            # liblightbase.lbtypes.BaseDataType objects
+        else:
+            # method to generate JSON
             obj = obj._encoded()
 
         return obj

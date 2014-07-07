@@ -1,9 +1,10 @@
-
+# -*- coding: utf-8 -*-
 import voluptuous
 from liblightbase.lbbase.lbstruct.properties import Multivalued
 from liblightbase import lbutils
+import liblightbase.lbbase.content
 
-class GroupMetadata():
+class GroupMetadata(object):
 
     _namemaxlen = 5000
     _aliasmaxlen = 5000
@@ -30,7 +31,8 @@ class GroupMetadata():
             'multivalued': self.multivalued
         }
 
-        self.json = lbutils.object2json(self.asdict)
+        self.json = lbutils.object2json(self)
+
 
     @property
     def name(self):
@@ -105,7 +107,16 @@ class GroupMetadata():
         else:
             self._multivalued = value
 
-class Group():
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.asdict
+
+
+class Group(object):
 
     """ This is the group structure definition
     """
@@ -125,12 +136,12 @@ class Group():
         self.asdict = {
             'group': {
                 'metadata': self.metadata.asdict,
-                'content': self.content.asdict
+                'content': self.content
             }
         }
 
         # @property json:
-        self.json = lbutils.object2json(self.asdict)
+        self.json = lbutils.object2json(self)
 
     @property
     def metadata(self):
@@ -152,9 +163,8 @@ class Group():
 
     @content.setter
     def content(self, value):
-        from liblightbase.lbbase.content import Content
         try:
-            assert isinstance(value, Content)
+            assert isinstance(value, liblightbase.lbbase.content.Content)
         except AssertionError:
             raise ValueError('Group content must be of type Content \
             instead of %s' % value)
@@ -207,3 +217,10 @@ class Group():
 
         return rel_fields
 
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.asdict

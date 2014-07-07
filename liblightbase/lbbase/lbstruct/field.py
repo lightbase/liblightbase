@@ -2,7 +2,7 @@
 from liblightbase.lbbase.lbstruct.properties import *
 from liblightbase import lbutils
 
-class Field():
+class Field(object):
 
     """ This is the field description
     """
@@ -54,7 +54,7 @@ class Field():
             }
         }
 
-        self.json = lbutils.object2json(self.asdict)
+        self.json = lbutils.object2json(self)
 
     @property
     def name(self):
@@ -196,3 +196,12 @@ class Field():
         if len(is_rel.intersection(self.indices)) > 0:
             return True
         return False
+
+    def _encoded(self):
+        """
+        Return JSON format
+
+        :return:
+        """
+
+        return self.asdict

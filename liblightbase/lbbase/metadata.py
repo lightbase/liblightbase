@@ -1,7 +1,7 @@
 import datetime
 from liblightbase import lbutils
 
-class BaseMetadata():
+class BaseMetadata(object):
     """ Defining a LB Base Metadata Object
     """
 
@@ -73,7 +73,7 @@ class BaseMetadata():
             'file_ext_time': self.file_ext_time
         }
 
-        self.json = lbutils.object2json(self.asdict)
+        self.json = lbutils.object2json(self)
 
     @property
     def name(self):
@@ -137,6 +137,9 @@ class BaseMetadata():
     def dt_base(self, value):
         if isinstance(value, datetime.datetime):
             self._dt_base = value
+        elif value is None:
+            # Default to now
+            self._dt_base = datetime.datetime.now()
         else:
             try:
                 value = datetime.datetime.strptime(value, '%d/%m/%Y %H:%M:%S')
@@ -183,13 +186,17 @@ class BaseMetadata():
 
     @idx_exp_time.setter
     def idx_exp_time(self, value):
-        try:
-            value = int(value)
-            assert(isinstance(value, int))
-        except AssertionError:
-            raise ValueError('idx_exp_time value must be integer!')
+        if value is None:
+            # Default to 300 seconds
+            self._idx_exp_time = 300
         else:
-            self._idx_exp_time = value
+            try:
+                value = int(value)
+                assert(isinstance(value, int))
+            except AssertionError:
+                raise ValueError('idx_exp_time value must be integer!')
+            else:
+                self._idx_exp_time = value
 
     @property
     def file_ext(self):
@@ -197,12 +204,16 @@ class BaseMetadata():
 
     @file_ext.setter
     def file_ext(self, value):
-        try:
-            assert(isinstance(value, bool))
-        except AssertionError:
-            raise ValueError('file_ext value must be boolean!')
+        if value is None:
+            # Default to true
+            self._file_ext = True
         else:
-            self._file_ext = value
+            try:
+                assert(isinstance(value, bool))
+            except AssertionError:
+                raise ValueError('file_ext value must be boolean!')
+            else:
+                self._file_ext = value
 
     @property
     def file_ext_time(self):
@@ -210,10 +221,22 @@ class BaseMetadata():
 
     @file_ext_time.setter
     def file_ext_time(self, value):
-        try:
-            value = int(value)
-            assert(isinstance(value, int))
-        except AssertionError:
-            raise ValueError('file_ext_time value must be integer!')
+        if value is None:
+            # Default to 300 seconds
+            self._file_ext_time=300
         else:
-            self._file_ext_time = value
+            try:
+                value = int(value)
+                assert(isinstance(value, int))
+            except AssertionError:
+                raise ValueError('file_ext_time value must be integer!')
+            else:
+                self._file_ext_time = value
+
+    def _encoded(self):
+        """
+
+        :return: Return object JSON
+        """
+
+        return self.asdict

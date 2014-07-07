@@ -6,7 +6,7 @@ from liblightbase import lbutils
 from liblightbase.lbdocument import Tree
 import voluptuous
 
-class Base():
+class Base(object):
 
     """ Defining a Base Object
     """
@@ -28,17 +28,18 @@ class Base():
         # @property __reldata__: 
         self.__reldata__ = { }
 
-        metadata_dict= self.metadata.asdict
+        #metadata_dict = lbutils.object2json(self.metadata)
+        metadata_dict = self.metadata.asdict
         content_dict = self.content.asdict
         metadata_dict['model'] = self.document_model
 
-        # @property json: 
+        # @property json:
         self.asdict = {
             'metadata': metadata_dict,
             'content': content_dict,
         }
 
-        self.json = lbutils.object2json(self.asdict)
+        self.json = lbutils.object2json(self)
 
     @property
     def metadata(self):
@@ -172,3 +173,11 @@ class Base():
                 rel_fields.update(struct.relational_fields)
 
         return rel_fields
+
+    def _encoded(self):
+        """
+
+        :return: Object JSON
+        """
+
+        return self.asdict
