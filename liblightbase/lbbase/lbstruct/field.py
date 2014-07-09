@@ -66,22 +66,6 @@ class Field():
         # in which user must enter data or not. 
         self.required = Required(required)
 
-        # @property asdict: Dictonary format of field model. 
-        self.asdict = {
-            'field': {
-                'name': self.name,
-                'alias': self.alias,
-                'description': self.description,
-                'indices': self.indices,
-                'datatype': self.datatype,
-                'multivalued': self.multivalued,
-                'required': self.required
-            }
-        }
-
-        # @property json: JSON format of field model. 
-        self.json = lbutils.object2json(self.asdict)
-
     @property
     def name(self):
         """ @property name getter
@@ -261,3 +245,25 @@ class Field():
         if len(is_rel.intersection(self.indices)) > 0:
             return True
         return False
+
+    @property
+    def asdict(self):
+        """ @property asdict: Dictonary format of field model.
+        """
+        return {
+            'field': {
+                'name': self.name,
+                'alias': self.alias,
+                'description': self.description,
+                'indices': self.indices,
+                'datatype': self.datatype,
+                'multivalued': self.multivalued,
+                'required': self.required
+            }
+        }
+
+    @property
+    def json(self):
+        """ @property json: JSON format of field model.
+        """
+        return lbutils.object2json(self.asdict)

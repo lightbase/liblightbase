@@ -47,17 +47,6 @@ class GroupMetadata():
         # of holding more than one value.
         self.multivalued = Multivalued(multivalued)
 
-        # @property asdict: Dictonary format of group model. 
-        self.asdict = {
-            'name': self.name,
-            'alias': self.alias,
-            'description': self.description,
-            'multivalued': self.multivalued
-        }
-
-        # @property json: JSON format of group model. 
-        self.json = lbutils.object2json(self.asdict)
-
     @property
     def name(self):
         """ @property name getter
@@ -151,6 +140,23 @@ class GroupMetadata():
         else:
             self._multivalued = value
 
+    @property
+    def asdict(self):
+        """ @property asdict: Dictonary format of group metadata model.
+        """
+        return {
+            'name': self.name,
+            'alias': self.alias,
+            'description': self.description,
+            'multivalued': self.multivalued
+        }
+
+    @property
+    def json(self):
+        """ @property json: JSON format of group metadata model.
+        """
+        return lbutils.object2json(self.asdict)
+
 class Group():
 
     """
@@ -172,17 +178,6 @@ class Group():
         # the group schema. Structures may also have metadata and content, giving
         # the group a recursive modeling.
         self.content = content
-
-        # @property asdict: Dictonary format of base model. 
-        self.asdict = {
-            'group': {
-                'metadata': self.metadata.asdict,
-                'content': self.content.asdict
-            }
-        }
-
-        # @property json: JSON format of group model. 
-        self.json = lbutils.object2json(self.asdict)
 
     @property
     def metadata(self):
@@ -272,4 +267,23 @@ class Group():
                 rel_fields.update(struct.relational_fields)
 
         return rel_fields
+
+    @property
+    def asdict(self):
+        """ @property asdict: Dictonary format of base model. 
+        """
+        return {
+            'group': {
+                'metadata': self.metadata.asdict,
+                'content': self.content.asdict
+            }
+        }
+
+    @property
+    def json(self):
+        """ @property json: JSON format of group model. 
+        """
+        return lbutils.object2json(self.asdict)
+
+
 

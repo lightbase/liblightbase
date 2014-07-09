@@ -18,6 +18,10 @@ class Content(list):
         # instead of navigating the list.
         self.__structs__ = { }
 
+        # @property __snames__: List of structure names. Used for preventing
+        # duplicated names.
+        self.__snames__ = [ ]
+
         # @property asdict: Dictonary (actually list) format of content model. 
         self.asdict = [ ]
 
@@ -26,7 +30,8 @@ class Content(list):
 
     @property
     def json(self):
-        # @property json: JSON format of group model. 
+        """ @property json: JSON format of group model. 
+        """
         return lbutils.object2json(self.asdict)
 
     def __getitem__(self, index):
@@ -34,18 +39,34 @@ class Content(list):
         """
         return super(Content, self).__getitem__(index)
 
+    def find_duplicated(self, xset, yset):
+        zset = xset + yset
+        duplicated = set()
+        if not len(set(zset)) == len(xset) + len(yset):
+            duplicated = set([val for val in zset if zset.count(val) > 1])
+        return duplicated
+
     def __setitem__(self, index, struct):
         """ x.__setitem__(y, z) <==> x[y] = z
         """
         if isinstance(struct, Field):
             structname = struct.name
+            self.__snames__ +=  [structname]
+
         elif isinstance(struct, Group):
             structname = struct.metadata.name
+            self.__snames__ +=  [structname]
+            duplicated = self.find_duplicated(self.__snames__,
+                                              struct.content.__snames__)
+            if duplicated:
+                raise NameError('Duplicated names detected: %s' % duplicated)
+            else:
+                self.__snames__ +=  struct.content.__snames__
+                self.__structs__.update(struct.content.__structs__)
+
         else:
-            raise ValueError('This should be an instance of Field or Group.\
+            raise TypeError('This should be an instance of Field or Group.\
                 Instead it is %s' % struct)
-        if structname in self.__structs__:
-            raise ValueError('Duplicated struct name: %s' % structname)
 
         self.asdict.append(struct.asdict)
         self.__structs__[structname] = struct
@@ -56,13 +77,22 @@ class Content(list):
         """
         if isinstance(struct, Field):
             structname = struct.name
+            self.__snames__ +=  [structname]
+
         elif isinstance(struct, Group):
             structname = struct.metadata.name
+            self.__snames__ +=  [structname]
+            duplicated = self.find_duplicated(self.__snames__,
+                                              struct.content.__snames__)
+            if duplicated:
+                raise NameError('Duplicated names detected: %s' % duplicated)
+            else:
+                self.__snames__ +=  struct.content.__snames__
+                self.__structs__.update(struct.content.__structs__)
+
         else:
-            raise ValueError('This should be an instance of Field or Group.\
+            raise TypeError('This should be an instance of Field or Group.\
                 Instead it is %s' % struct)
-        if structname in self.__structs__:
-            raise ValueError('Duplicated struct name: %s' % structname)
 
         self.asdict.append(struct.asdict)
         self.__structs__[structname] = struct

@@ -68,24 +68,6 @@ class BaseMetadata():
         # asynchronous extractor to sleep beetwen the extracting processes.
         self.file_ext_time = file_ext_time
 
-        # @property asdict: Dictonary format of base metadata model. 
-        self.asdict = {
-            'name': self.name,
-            'description': self.description,
-            'id_base': self.id_base,
-            'dt_base': self.dt_base,
-            'password': self.password,
-            'color': self.color,
-            'idx_exp': self.idx_exp,
-            'idx_exp_url': self.idx_exp_url,
-            'idx_exp_time': self.idx_exp_time,
-            'file_ext': self.file_ext,
-            'file_ext_time': self.file_ext_time
-        }
-
-        # @property json: JSON format of base metadata model. 
-        self.json = lbutils.object2json(self.asdict)
-
     @property
     def name(self):
         """ @property name getter
@@ -264,3 +246,27 @@ class BaseMetadata():
             raise ValueError('file_ext_time value must be integer!')
         else:
             self._file_ext_time = value
+
+    @property
+    def asdict(self):
+        """ @property asdict: Dictonary format of base metadata model. 
+        """
+        return {
+            'name': self.name,
+            'description': self.description,
+            'id_base': self.id_base,
+            'dt_base': self.dt_base,
+            'password': self.password,
+            'color': self.color,
+            'idx_exp': self.idx_exp,
+            'idx_exp_url': self.idx_exp_url,
+            'idx_exp_time': self.idx_exp_time,
+            'file_ext': self.file_ext,
+            'file_ext_time': self.file_ext_time
+        }
+
+    @property
+    def json(self):
+        """ @property json: JSON format of base metadata model. 
+        """
+        return lbutils.object2json(self.asdict)

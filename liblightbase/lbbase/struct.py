@@ -45,19 +45,6 @@ class Base():
         # relational column at database.
         self.__reldata__ = { }
 
-        metadata_dict= self.metadata.asdict
-        content_dict = self.content.asdict
-        metadata_dict['model'] = self.document_model
-
-        # @property asdict: Dictonary format of base model. 
-        self.asdict = {
-            'metadata': metadata_dict,
-            'content': content_dict,
-        }
-
-        # @property json: JSON format of base model. 
-        self.json = lbutils.object2json(self.asdict)
-
     @property
     def metadata(self):
         """ @property metadata getter
@@ -205,3 +192,36 @@ class Base():
                 rel_fields.update(struct.relational_fields)
 
         return rel_fields
+
+    @property
+    def asdict(self):
+        """ @property asdict: Dictionary format of base model.
+        """
+        metadata_dict= self.metadata.asdict
+        content_dict = self.content.asdict
+        metadata_dict['model'] = self.document_model
+        return {
+            'metadata': metadata_dict,
+            'content': content_dict,
+        }
+
+    @property
+    def json(self):
+        """ @property json: JSON format of base model.
+        """
+        return lbutils.object2json(self.asdict)
+
+    @property
+    def __structs__(self):
+        """ 
+        @property __structs__: Dictionany at the format {structure name: 
+        structure}. Used for quickly access structure by name.
+        """
+        return self.content.__structs__
+
+    @property
+    def __snames__(self):
+        """ 
+        @property __snames__: List of all structure names. 
+        """
+        return self.content.__snames__
