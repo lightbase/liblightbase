@@ -4,7 +4,7 @@ from liblightbase import lbutils
 class BaseMetadata():
 
     """ 
-    The base metadata is all data related to the group. The main purpose of 
+    The base metadata is all data related to the base. The main purpose of 
     metadata is to facilitate in the discovery of relevant information, more 
     often classified as resource discovery.
     """
