@@ -74,10 +74,12 @@ class Base():
         """ @property content setter
         """
         try:
-            assert isinstance(value, Content)
-        except AssertionError:
-            raise ValueError('Base content must be of type Content \
-            instead of %s' % value)
+            assert isinstance(value, Content), 'Base content must be of type \
+                Content instead of %s' % value;
+            assert len(value) > 0, 'Base content must have at least one \
+                structure.'
+        except AssertionError as e:
+            raise ValueError(' '.join(str(e).split()))
         else:
             self._content = value
 

@@ -209,10 +209,12 @@ class Group():
         """
         from liblightbase.lbbase.content import Content
         try:
-            assert isinstance(value, Content)
-        except AssertionError:
-            raise ValueError('Group content must be of type Content \
-            instead of %s' % value)
+            assert isinstance(value, Content), 'Group content must be of type \
+                Content instead of %s' % value;
+            assert len(value) > 0, 'Group content must have at least one \
+                structure.'
+        except AssertionError as e:
+            raise ValueError(' '.join(str(e).split()))
         else:
             self._content = value
 
