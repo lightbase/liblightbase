@@ -1,28 +1,24 @@
 
 from liblightbase import lbutils
 from liblightbase.lbtypes import BaseDataType
-import glob
-import os
-import base64
-import datetime
-import uuid
+from uuid import UUID, uuid3
 
-class FileMask(metaclass=lbutils.TypedMetaClass):
+class FileMask(object):
     """ Represents a Generic File Mask
     """
 
-    id_file = (int,)
-    filename = (str, type(None))
-    mimetype = (str, type(None))
-    filesize = (int, type(None))
-    uuid = (str, type(None))
-
-    def __init__(self, id_file, filename, mimetype, filesize, uuid=None):
-        self.id_file = id_file
+    def __init__(self, id_file, filename, mimetype, filesize, uuid):
+        if id_file:
+            self.id_file = UUID(id_file)
+        else:
+            self.id_file = id_file
         self.filename = filename
         self.mimetype = mimetype
         self.filesize = filesize
-        self.uuid = uuid
+        if uuid:
+            self.uuid = UUID(uuid)
+        else:
+            self.uuid = uuid
 
     @property
     def __dict__(self):
@@ -30,8 +26,98 @@ class FileMask(metaclass=lbutils.TypedMetaClass):
             id_file= self.id_file,
             filename = self.filename,
             mimetype = self.mimetype,
-            filesize = self.filesize
+            filesize = self.filesize,
+            uuid = self.uuid,
         )
+
+    @property
+    def id_file(self):
+        """ @property id_file getter
+        """
+        if self._id_file:
+            return str(self._id_file)
+        return self._id_file
+
+    @id_file.setter
+    def id_file(self, value):
+        """ @property id_file setter
+        """
+        accepted_types = (UUID, type(None))
+        if isinstance(value, accepted_types):
+            self._id_file = value
+        else:
+            raise TypeError('id_file must be of type %s but got %s.' % (
+                accepted_types, value))
+
+    @property
+    def filename(self):
+        """ @property filename getter
+        """
+        return self._filename
+
+    @filename.setter
+    def filename(self, value):
+        """ @property filename setter
+        """
+        accepted_types = (str, type(None))
+        if isinstance(value, accepted_types):
+            self._filename= value
+        else:
+            raise TypeError('filename must be of type %s but got %s.' % (
+                accepted_types, value))
+
+    @property
+    def mimetype(self):
+        """ @property mimetype  getter
+        """
+        return self._mimetype
+
+    @mimetype.setter
+    def mimetype(self, value):
+        """ @property mimetype  setter
+        """
+        accepted_types = (str, type(None))
+        if isinstance(value, accepted_types):
+            self._mimetype = value
+        else:
+            raise TypeError('mimetype must be of type %s but got %s.' % (
+                accepted_types, value))
+
+    @property
+    def filesize(self):
+        """ @property filesize  getter
+        """
+        return self._filesize
+
+    @filesize.setter
+    def filesize (self, value):
+        """ @property filesize  setter
+        """
+        accepted_types = (int, type(None))
+        if isinstance(value, accepted_types):
+            self._filesize = value
+        else:
+            raise TypeError('filesize must be of type %s but got %s.' % (
+                accepted_types, value))
+
+    @property
+    def uuid(self):
+        """ @property uuid getter
+        """
+        if self._uuid:
+            return str(self._uuid)
+        return self._uuid
+
+    @uuid.setter
+    def uuid(self, value):
+        """ @property uuid setter
+        """
+        accepted_types = (UUID, type(None))
+        if isinstance(value, accepted_types):
+            self._uuid = value
+        else:
+            raise TypeError('uuid must be of type %s but got %s.' % (
+                accepted_types, value))
 
 class FileExtension(BaseDataType):
 
@@ -39,14 +125,11 @@ class FileExtension(BaseDataType):
     """
     def __init__(self, base, field, id):
         super(FileExtension, self).__init__(base, field, id)
-        import lbgenerator
-        self.tmp_dir = lbgenerator.config.TMP_DIR + '/lightbase_tmp_storage/' +\
-            self.base.metadata.name
-        self.entity = lbgenerator.model.file_entity(self.base.metadata.name)
 
     def _encoded(self):
         return {
-            'id_file': "Integer",
+            'id_file': "UUID",
+            'uuid': "UUID",
             'filename': "Text",
             'mimetype': "Text",
             'filesize': "Integer",
@@ -57,105 +140,29 @@ class FileExtension(BaseDataType):
         return lbutils.json2object(value)
 
     def __call__(self, value):
-        """ @param value: string or dictionary. If string, must be an uuid 
-            object (new file). If dictionary, must be a file mask (new or
-            existent file)
-
-            This method should return a dictonary in the form described by 
-            self._encoded().
-        """
-        mask = None
-
-        if value is None:
-            return None
-
-        if isinstance(value, str):
-            if self.is_uuid(value):
-                # New coming file.
-                mask = self.build_file_mask(value)
-            else:
-                raise TypeError('Malformed mask: unrecognized pattern %s' % value)
-
-        elif isinstance(value, dict):
-            mask = self.get_file_mask(value)
-
-            if self.is_uuid(mask.uuid):
-                # New coming file.
-                mask = self.build_file_mask(mask.uuid)
-            else:
-                # Existent file. 
-                self.base.__files__[self.id].append(mask.id_file)
-
-        else:
-            raise TypeError('Malformed mask: Expected dict or str, but found %s' % type(value).__name__)
-
-        assert(isinstance(mask, FileMask))
-
-        return mask.__dict__
-
-    def get_file_mask(self, value):
         try:
-            return FileMask(**value)
+            filemask = FileMask(**value)
         except TypeError as e:
-            raise Exception('Malformed mask: %s' % e)
+            raise Exception('Malformed file mask: %s' % e)
 
-    def build_file_mask(self, value):
-        tmp_file = self.find_tmp_file(value)
-        mask = self.save_file(tmp_file)
-        return mask
+        filemask = filemask.__dict__
+        if any([filemask[v] for v in filemask]):
 
-    def find_tmp_file(self, _uuid):
-        tmp_file = None
-        for file_path in glob.glob(self.tmp_dir + '/' + _uuid + '*'):
-            tmp_file = open(file_path, 'rb')
-        if tmp_file is None:
-            raise Exception('Could not find temporary file %s on disk' % _uuid)
-        return tmp_file
+            id_file = filemask.pop('id_file')
+            try:
+                namespace = UUID(filemask['uuid'])
+            except TypeError:
+                raise TypeError('%s is not a valid uuid' % filemask['uuid'])
 
-    def get_size(self, fileobject):
-        fileobject.seek(0, 2) # move the cursor to the end of the file
-        size = fileobject.tell()
-        fileobject.seek(0) # move the cursor to the begin of the file
-        return size
+            name = str(hash(frozenset(filemask.items())))
 
-    def save_file(self, tmp_file):
-        fake_name = os.path.split(tmp_file.name)[1]
-        split = fake_name.split('.')
+            try:
+                assert id_file == str(uuid3(namespace, name))
+            except AssertionError:
+                raise ValueError('Mask modified. id_file do not match file mask')
 
-        uuid = split.pop(0)
-        file_name_encoded = split.pop()
-        filename = base64.urlsafe_b64decode(file_name_encoded.encode('utf-8')).decode('utf-8')
-        mimetype = '.'.join(split).replace('-', '/', 1)
-        filesize = self.get_size(tmp_file)
-        id_file = self.entity.next_id()
-
-        dt_ext_text = None
-        field_indices = [index.index for index in self.field.indices]
-        if 'Nenhum' in field_indices:
-            dt_ext_text = datetime.datetime.now()
-
-        self.base.__cfiles__[self.id].append({
-           'id_file': id_file,
-           'id_doc': self.id,
-           'file': tmp_file.read(),
-           'filename': filename,
-           'filesize': filesize,
-           'mimetype': mimetype,
-           'filetext': None,
-           'dt_ext_text': dt_ext_text
-        })
-
-        tmp_file.close()
-        os.remove(tmp_file.name)
-
-        return FileMask(id_file, filename, mimetype, filesize)
-
-    def is_uuid(self, id):
-        if id is None:
-            return False
-        try:
-            uuid.UUID(id)
-            return True
-        except ValueError:
-            return False
-
+            filemask['id_file'] = id_file
+            self.base.__files__[self.id].append(id_file)
+            return filemask
+        else:
+            return filemask
