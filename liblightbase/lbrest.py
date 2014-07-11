@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 __author__ = 'eduardo'
 import requests
-import urlparse
+#import urlparse
 
 from requests.exceptions import HTTPError
 
@@ -41,8 +41,7 @@ class LBRest(object):
         # First get request method
         request_method = getattr(requests, method)
         # Make http request
-        full_url = self.rest_url + self.to_url('/', url)
-        print(full_url)
+        full_url = self.rest_url + self.to_url('', url)
         response = request_method(full_url, cookies=self.cookies, **kwargs)
         try:
             # Check if request has gone wrong
@@ -53,11 +52,11 @@ class LBRest(object):
             # Something got wrong, raise error
             raise RequestError(response.text)
 
-    def create_base(self, data):
+    def create_base(self, base):
         """
         Create a base on REST
         """
-        request_data = {'json_base': data}
+        request_data = {'json_base': base.json}
         response = self.send_request(method='post', data=request_data)
 
         return response
@@ -66,8 +65,9 @@ class LBRest(object):
         """
         Remove a base on REST
         """
-
-        response = self.send_request(method='delete', url=base)
+        request_data = {'json_base': base.json}
+        base_name = base.metadata.name
+        response = self.send_request(method='delete', url=base_name, data=request_data)
 
         return response
 

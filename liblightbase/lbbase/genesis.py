@@ -26,7 +26,7 @@ def json_to_base(base_json):
         for obj in content_object:
 
             # Do we have a group ? ...
-            if obj.get('group'):
+            if hasattr(obj, 'group'):
 
                 group_metadata = GroupMetadata(**obj['group']['metadata'])
 
@@ -53,7 +53,7 @@ def json_to_base(base_json):
                 content_list.append(group)
 
             # ... Or do we have a field ?
-            elif obj.get('field'):
+            elif hasattr(obj, 'field'):
 
                 # Assemble Field instance ...
                 field = Field(**obj['field'])
