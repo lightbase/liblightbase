@@ -15,15 +15,15 @@ class GroupMetadata(object):
 
     # @property _namemaxlen: The maximum number of characters allowed in the
     # name property.
-    _namemaxlen = 5000
+    #_namemaxlen = 5000
 
     # @property _aliasmaxlen: The maximum number of characters allowed in the
     # alias property.
-    _aliasmaxlen = 5000
+    #_aliasmaxlen = 5000
 
     # @property _descmaxlen: The maximum number of characters allowed in the
     # description property.
-    _descmaxlen = 5000
+    #_descmaxlen = 5000
 
     def __init__(self, name, alias, description, multivalued):
 
@@ -66,20 +66,20 @@ class GroupMetadata(object):
                 assert(isinstance(value,unicode))
             except:
                 raise ValueError('Invalid chars on name. It must be an ascii string')
-        try:
-            assert(len(value) <= self._namemaxlen)
-        except AssertionError:
-            raise ValueError('Group name %s max length must be %i!' % (value,
-                self._namemaxlen))
+        #try:
+        #    assert(len(value) <= self._namemaxlen)
+        #except AssertionError:
+        #    raise ValueError('Group name %s max length must be %i!' % (value,
+        #        self._namemaxlen))
         try:
 
             msg = 'Group name %s is a reserved name. Please use another name.'\
                 % value
             assert value not in RESERVED_STRUCT_NAMES
 
-            msg = 'Group name %s max length must be %i!' % (value,
-                self._namemaxlen)
-            assert len(value) <= self._namemaxlen
+            #msg = 'Group name %s max length must be %i!' % (value,
+            #    self._namemaxlen)
+            #assert len(value) <= self._namemaxlen
 
             msg = 'Group name %s must contains ascii characters\
                 only!' % value
@@ -108,13 +108,13 @@ class GroupMetadata(object):
                 assert(isinstance(value,unicode))
             except:
                 raise ValueError('Invalid chars on alias. It must be an ascii string')
-        try:
-            assert(len(value) <= self._aliasmaxlen)
-        except AssertionError:
-            raise ValueError('Group alias %s max length must be %i!' % (value,
-                self._aliasmaxlen))
-        else:
-            self._alias = value
+        #try:
+        #    assert(len(value) <= self._aliasmaxlen)
+        #except AssertionError:
+        #    raise ValueError('Group alias %s max length must be %i!' % (value,
+        #        self._aliasmaxlen))
+
+        self._alias = value
 
     @property
     def description(self):
@@ -129,16 +129,12 @@ class GroupMetadata(object):
         if not isinstance(value,str):
             if not isinstance(value,unicode):
                 raise ValueError('Description must be string or unicode!')
-        try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            raise ValueError('Description must be string!')
-        try:
-            assert(len(value) <= self._descmaxlen)
-        except AssertionError:
-            raise ValueError('Description max length is %i!' % self._descmaxlen)
-        else:
-            self._description= value
+        #try:
+        #    assert(len(value) <= self._descmaxlen)
+        #except AssertionError:
+        #    raise ValueError('Description max length is %i!' % self._descmaxlen)
+
+        self._description= value
 
     @property
     def multivalued(self):

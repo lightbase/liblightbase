@@ -76,8 +76,8 @@ class LBRestTestCase(lbjson_test.TestJSON):
         Rest base removal from REST
         :return:
         """
-        #response = self.rest.remove_base(self.base)
-        #assert response.status_code == 200
+        response = self.rest.remove_base(self.base)
+        assert response.status_code == 200
         pass
 
     def tearDown(self):
