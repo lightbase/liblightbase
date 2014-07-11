@@ -1,8 +1,4 @@
-liblightbase
-============
-
 Lightbase database library
-=======
 ===================
 
 Biblioteca para utilização do módulo Lightbase em aplicações python. A hierarquia fornece os seguintes módulos
