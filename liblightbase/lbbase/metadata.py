@@ -2,10 +2,18 @@ import datetime
 from liblightbase import lbutils
 
 class BaseMetadata(object):
-    """ Defining a LB Base Metadata Object
+    """ 
+    The base metadata is all data related to the base. The main purpose of 
+    metadata is to facilitate in the discovery of relevant information, more 
+    often classified as resource discovery.
     """
 
+    # @property _namemaxlen: The maximum number of characters allowed in the
+    # name property.
     _namemaxlen = 5000
+
+    # @property _descmaxlen: The maximum number of characters allowed in the
+    # description property.
     _descmaxlen = 5000
 
     def __init__(self, name=None, description=None, password=None, color=None,
@@ -59,28 +67,16 @@ class BaseMetadata(object):
         # asynchronous extractor to sleep beetwen the extracting processes.
         self.file_ext_time = file_ext_time
 
-        self.asdict = {
-            'name': self.name,
-            'description': self.description,
-            'id_base': self.id_base,
-            'dt_base': self.dt_base,
-            'password': self.password,
-            'color': self.color,
-            'idx_exp': self.idx_exp,
-            'idx_exp_url': self.idx_exp_url,
-            'idx_exp_time': self.idx_exp_time,
-            'file_ext': self.file_ext,
-            'file_ext_time': self.file_ext_time
-        }
-
-        self.json = lbutils.object2json(self)
-
     @property
     def name(self):
+        """ @property name getter
+        """
         return self._name
 
     @name.setter
     def name(self, value):
+        """ @property name setter
+        """
         try:
             assert(isinstance(value, str))
         except AssertionError:
@@ -105,10 +101,14 @@ class BaseMetadata(object):
 
     @property
     def description(self):
+        """ @property description getter
+        """
         return self._description
 
     @description.setter
     def description(self, value):
+        """ @property description setter
+        """
         if not isinstance(value,str):
             if not isinstance(value,unicode):
                 raise ValueError('Description must be string or unicode!')
@@ -121,10 +121,14 @@ class BaseMetadata(object):
 
     @property
     def id_base(self):
+        """ @property id_base getter
+        """
         return self._id_base
 
     @id_base.setter
     def id_base(self, value):
+        """ @property id_base setter
+        """
         try:
             assert(isinstance(value, int))
         except AssertionError:
@@ -134,10 +138,14 @@ class BaseMetadata(object):
 
     @property
     def dt_base(self):
+        """ @property id_base getter
+        """
         return self._dt_base
 
     @dt_base.setter
     def dt_base(self, value):
+        """ @property id_base setter
+        """
         if isinstance(value, datetime.datetime):
             self._dt_base = value
         elif value is None:
@@ -155,10 +163,14 @@ class BaseMetadata(object):
 
     @property
     def idx_exp(self):
+        """ @property idx_exp getter
+        """
         return self._idx_exp
 
     @idx_exp.setter
     def idx_exp(self, value):
+        """ @property idx_exp setter
+        """
         try:
             assert(isinstance(value, bool))
         except AssertionError:
@@ -168,10 +180,14 @@ class BaseMetadata(object):
 
     @property
     def idx_exp_url(self):
+        """ @property idx_exp_url getter
+        """
         return self._idx_exp_url
 
     @idx_exp_url.setter
     def idx_exp_url(self, value):
+        """ @property idx_exp_url setter
+        """
         try:
             assert(isinstance(value, str) or type(value) is type(None))
         except AssertionError:
@@ -192,6 +208,8 @@ class BaseMetadata(object):
 
     @property
     def idx_exp_time(self):
+        """ @property idx_exp_time getter
+        """
         return self._idx_exp_time
 
     @idx_exp_time.setter
@@ -210,6 +228,8 @@ class BaseMetadata(object):
 
     @property
     def file_ext(self):
+        """ @property file_ext getter
+        """
         return self._file_ext
 
     @file_ext.setter
@@ -227,10 +247,14 @@ class BaseMetadata(object):
 
     @property
     def file_ext_time(self):
+        """ @property file_ext_time getter
+        """
         return self._file_ext_time
 
     @file_ext_time.setter
     def file_ext_time(self, value):
+        """ @property file_ext_time setter
+        """
         if value is None:
             # Default to 300 seconds
             self._file_ext_time=300
@@ -243,10 +267,26 @@ class BaseMetadata(object):
             else:
                 self._file_ext_time = value
 
-    def _encoded(self):
+    @property
+    def asdict(self):
+        """ @property asdict: Dictonary format of base metadata model. 
         """
+        return {
+            'name': self.name,
+            'description': self.description,
+            'id_base': self.id_base,
+            'dt_base': self.dt_base,
+            'password': self.password,
+            'color': self.color,
+            'idx_exp': self.idx_exp,
+            'idx_exp_url': self.idx_exp_url,
+            'idx_exp_time': self.idx_exp_time,
+            'file_ext': self.file_ext,
+            'file_ext_time': self.file_ext_time
+        }
 
-        :return: Return object JSON
+    @property
+    def json(self):
+        """ @property json: JSON format of base metadata model. 
         """
-
-        return self.asdict
+        return lbutils.object2json(self.asdict)

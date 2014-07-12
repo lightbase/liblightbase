@@ -10,10 +10,6 @@ def json_to_base(base_json):
 
     """ Parses base json and return Base instance
     """
-
-    # structures:  
-    structures = { }
-
     def assemble_content(content_object, dimension=0):
 
         """ Parses content object and builds a list with fields/groups instances
@@ -43,12 +39,6 @@ def json_to_base(base_json):
                     content = group_content
                 )
 
-                if group.metadata.name not in structures:
-                    structures[group.metadata.name] = group
-                else:
-                    raise NameError('Duplicated struct name: %s'\
-                        % group.metadata.name)
-
                 # ... and append it to content list
                 content_list.append(group)
 
@@ -66,12 +56,6 @@ def json_to_base(base_json):
                 # and append it to content list
                 content_list.append(field)
 
-                if field.name not in structures:
-                    structures[field.name] = field
-                else:
-                    raise NameError('Duplicated struct name: %s'\
-                        % field.name)
-
         return content_list
 
     base_metadata = base_json['metadata']
@@ -83,5 +67,4 @@ def json_to_base(base_json):
         content=base_content
     )
 
-    base.__structs__ = structures
     return base
