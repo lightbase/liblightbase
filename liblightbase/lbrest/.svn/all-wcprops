@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/lightbase-neo/!svn/ver/1273/trunk/liblightbase/liblightbase/lbrest
+END
+document.py
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/lightbase-neo/!svn/ver/1274/trunk/liblightbase/liblightbase/lbrest/document.py
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/lightbase-neo/!svn/ver/1272/trunk/liblightbase/liblightbase/lbrest/__init__.py
+END
+file.py
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/lightbase-neo/!svn/ver/1274/trunk/liblightbase/liblightbase/lbrest/file.py
+END
+core.py
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/lightbase-neo/!svn/ver/1274/trunk/liblightbase/liblightbase/lbrest/core.py
+END
+base.py
+K 25
+svn:wc:ra_dav:version-url
+V 79
+/svn/lightbase-neo/!svn/ver/1273/trunk/liblightbase/liblightbase/lbrest/base.py
+END
