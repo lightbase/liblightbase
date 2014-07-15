@@ -51,8 +51,9 @@ class LBRestTestCase(lbjson_test.TestJSON):
         )
         # End Base definition
 
-        self.rest_url = "http://localhost/api"
-        self.rest = lbrest.LBRest(rest_url=self.rest_url)
+        #self.rest_url = "http://localhost/api"
+        self.rest_url = "http://127.0.0.1/api"
+        self.baserest = lbrest.BaseREST(rest_url=self.rest_url)
         pass
 
     def test_rest_communication(self):
@@ -60,7 +61,8 @@ class LBRestTestCase(lbjson_test.TestJSON):
         Test REST communication
         :return:
         """
-        response = self.rest.send_request(method='get')
+        response = self.baserest.search()
+        #response = self.rest.send_request(method='get')
         assert response.status_code == 200
 
     def test_base_creation(self):
@@ -68,7 +70,7 @@ class LBRestTestCase(lbjson_test.TestJSON):
         Test REST base creation
         :return:
         """
-        response = self.rest.create_base(self.base)
+        response = self.baserest.create(self.base)
         assert response.status_code == 200
 
     def test_base_removal(self):
@@ -76,7 +78,7 @@ class LBRestTestCase(lbjson_test.TestJSON):
         Rest base removal from REST
         :return:
         """
-        response = self.rest.remove_base(self.base)
+        response = self.baserest.delete(self.base)
         assert response.status_code == 200
         pass
 

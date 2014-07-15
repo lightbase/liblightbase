@@ -16,7 +16,7 @@ class FileREST(LBRest):
         @param rest_url: The REST URL.
         @param base: String or Base object.
         """
-        super(REST, self).__init__(rest_url):
+        super(REST, self).__init__(rest_url)
         self.base = base
 
     def get(id, sys_dir='/tmp'):

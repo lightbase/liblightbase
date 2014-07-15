@@ -11,30 +11,30 @@ class BaseREST(LBRest):
         @param rest_url:
         @param basename:
         """
-        super(REST, self).__init__(rest_url):
+        super(BaseREST, self).__init__(rest_url)
 
-    def research(self, search_obj):
+    def search(self, search_obj='{}'):
         """
         @param search_obj:
         """
         return self.send_request(self.httpget,
             data={self.search_param: search_obj})
 
-    def get(base):
+    def get(self, base):
         """
         @param name: base's name
         """
         return self.send_request(self.httpget,
             url_path=[base.metadata.name])
 
-    def create(base):
+    def create(self, base):
         """
         @param base:
         """
         return self.send_request(self.httppost,
             data={self.base_param: base.json})
 
-    def update(base):
+    def update(self, base):
         """
         @param base:
         """
@@ -42,7 +42,7 @@ class BaseREST(LBRest):
             url_path=[base.metadata.name],
             data={self.base_param: base.json})
 
-    def delete(base):
+    def delete(self, base):
         """
         @param base:
         """
