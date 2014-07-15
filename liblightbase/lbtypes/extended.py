@@ -4,9 +4,9 @@ from liblightbase.lbtypes import BaseDataType
 from uuid import UUID, uuid3
 
 class FileMask(object):
+
     """ Represents a Generic File Mask
     """
-    __metaclass__=lbutils.TypedMetaClass
 
     def __init__(self, id_file, filename, mimetype, filesize, uuid):
         if id_file:
