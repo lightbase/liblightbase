@@ -127,15 +127,6 @@ class FileExtension(BaseDataType):
     def __init__(self, base, field, id, tmp_dir=None):
         super(FileExtension, self).__init__(base, field, id)
 
-    def _encoded(self):
-        return {
-            'id_file': "UUID",
-            'uuid': "UUID",
-            'filename': "Text",
-            'mimetype': "Text",
-            'filesize': "Integer"
-        }
-
     @staticmethod
     def cast_str(value):
         return lbutils.json2object(value)
