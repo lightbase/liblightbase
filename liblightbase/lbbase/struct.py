@@ -229,21 +229,33 @@ class Base(object):
         return self.content.__snames__
 
     def metaclass(self):
-
+        """ 
+        Generate base metaclass. The base metaclass is an abstraction of 
+        document model defined by base structures.
+        """
         snames = self.__snames__
         basename = self.metadata.name
 
         class BaseMetaClass(object):
+            """ 
+            Top-level metaclass. Describes the structures defifined by
+            document structure model.
+            """
 
             def __init__(self, **kwargs):
+                """ Base metaclass constructor
+                """
                 for arg in kwargs:
                     if arg in snames:
                         setattr(self, arg, kwargs[arg])
                     else:
-                        raise AttributeError('Base {} has no structure named {}'\
-                            .format(basename, arg))
+                        msg = 'Base {} has no structure named {}'\
+                            .format(basename, arg)
+                        raise AttributeError(msg)
 
         for struct in self.content:
+
+            # make class properties
             structname, prop = self._make_meta_prop(self, struct)
             setattr(BaseMetaClass, structname, prop)
 
@@ -251,23 +263,32 @@ class Base(object):
         return BaseMetaClass
 
     def _make_meta_prop(self, base, struct):
+        """
+        Make python's property based on structure attributes.
+        @param base: Base object.
+        @param struct: Field or Group object.
+        """
 
+        # Get structure name.
         if struct.is_field:
             structname = struct.name
         elif struct.is_group:
             structname = struct.metadata.name
 
+        # create "private" attribute name
         attr_name = '_' + structname
 
         def getter(self):
-            outter = getattr(self, attr_name)
+            """ Property getter
+            """
+            value = getattr(self, attr_name)
             if struct.is_field:
-                return getattr(outter, '__value__')
-            else:
-                return outter
+                return getattr(value, '__value__')
+            return value
 
         def setter(self, value):
-
+            """ Property setter
+            """
             struct_metaclass = struct.metaclass(base, id)
 
             if struct.is_field:
@@ -286,10 +307,50 @@ class Base(object):
             setattr(self, attr_name, value)
 
         def deleter(self):
+            """ Property deleter
+            """
             delattr(self, attr_name)
 
         return structname, property(getter, setter, deleter, structname)
 
+    def document2object(self, document, metaclass=None):
+        """
+        Build metaclass object given document.
+        @param document:
+        @param metaclass:
+        """
+
+        if metaclass is None:
+            metaclass = self.metaclass()
+
+        kwargs = { }
+        for member in document:
+
+            struct = self.get_struct(member)
+
+            if struct.is_field:
+                kwargs[member] = document[member]
+
+            elif struct.is_group:
+
+                if struct.metadata.multivalued:
+                    meta_object = []
+                    for element in document[member]:
+
+                        meta_inner_object = self.document2object(
+                            document=element,
+                            metaclass=struct.metaclass(self, 0)
+                        )
+                        meta_object.append(meta_inner_object)
+                else:
+                    meta_object = self.document2object(
+                        document=document[member],
+                        metaclass=struct.metaclass(self, 0)
+                    )
+
+                kwargs[member] = meta_object
+
+        return metaclass(**kwargs)
 
 
 

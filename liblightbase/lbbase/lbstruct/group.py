@@ -302,22 +302,35 @@ class Group():
         return lbutils.object2json(self.asdict)
 
     def metaclass(self, base, id):
+        """ 
+        Generate group metaclass. The group metaclass is an abstraction of 
+        document model defined by group structures.
+        """
 
         snames = self.content.__snames__
         gname = self.metadata.name
         structs = self.content.__structs__
 
         class GroupMetaClass(object):
+            """ 
+            Group-level metaclass. Describes the structures defifined by
+            document structure model.
+            """
 
             def __init__(self, **kwargs):
+                """ Group metaclass constructor
+                """
                 for arg in kwargs:
                     if arg in snames:
                         setattr(self, arg, kwargs[arg])
                     else:
-                        raise AttributeError('{} has no structure named {}'\
-                            .format(gname, arg))
+                        msg = 'Group {} has no structure named {}'\
+                            .format(gname, arg)
+                        raise AttributeError(msg)
 
         for struct in self.content:
+
+            # make class properties
             structname, prop = self._make_meta_prop(base, struct)
             setattr(GroupMetaClass, structname, prop)
 
@@ -325,23 +338,32 @@ class Group():
         return GroupMetaClass
 
     def _make_meta_prop(self, base, struct):
+        """
+        Make python's property based on structure attributes.
+        @param base: Base object.
+        @param struct: Field or Group object.
+        """
 
+        # Get structure name.
         if struct.is_field:
             structname = struct.name
         elif struct.is_group:
             structname = struct.metadata.name
 
+        # create "private" attribute name
         attr_name = '_' + structname
 
         def getter(self):
-            outter = getattr(self, attr_name)
+            """ Property getter
+            """
+            value = getattr(self, attr_name)
             if struct.is_field:
-                return getattr(outter, '__value__')
-            else:
-                return outter
+                return getattr(value, '__value__')
+            return value
 
         def setter(self, value):
-
+            """ Property setter
+            """
             struct_metaclass = struct.metaclass(base, id)
 
             if struct.is_field:
@@ -361,6 +383,8 @@ class Group():
             setattr(self, attr_name, value)
 
         def deleter(self):
+            """ Property deleter
+            """
             delattr(self, attr_name)
 
         return structname, property(getter,
