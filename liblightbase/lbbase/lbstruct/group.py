@@ -301,5 +301,68 @@ class Group():
         """
         return lbutils.object2json(self.asdict)
 
+    def metaclass(self, base, id):
 
+        snames = self.content.__snames__
+        gname = self.metadata.name
+        structs = self.content.__structs__
+
+        class GroupMetaClass(object):
+
+            def __init__(self, **kwargs):
+                for arg in kwargs:
+                    if arg in snames:
+                        setattr(self, arg, kwargs[arg])
+                    else:
+                        raise AttributeError('{} has no structure named {}'\
+                            .format(gname, arg))
+
+        for struct in self.content:
+            structname, prop = self._make_meta_prop(base, struct)
+            setattr(GroupMetaClass, structname, prop)
+
+        GroupMetaClass.__name__ = self.metadata.name
+        return GroupMetaClass
+
+    def _make_meta_prop(self, base, struct):
+
+        if struct.is_field:
+            structname = struct.name
+        elif struct.is_group:
+            structname = struct.metadata.name
+
+        attr_name = '_' + structname
+
+        def getter(self):
+            outter = getattr(self, attr_name)
+            if struct.is_field:
+                return getattr(outter, '__value__')
+            else:
+                return outter
+
+        def setter(self, value):
+
+            struct_metaclass = struct.metaclass(base, id)
+
+            if struct.is_field:
+                value = struct_metaclass(value)
+            elif struct.is_group:
+                if struct.metadata.multivalued:
+                    assert isinstance(value, list)
+                    for element in value:
+                        pass
+                        #assert isinstance(element, struct_metaclass), 
+                        #'%s should be an instance of %s' % (value, struct_metaclass)
+                else:
+                #assert isinstance(value, struct_metaclass), 
+                    #'%s should be an instance of %s' % (value, struct_metaclass)
+                    pass
+
+            setattr(self, attr_name, value)
+
+        def deleter(self):
+            delattr(self, attr_name)
+
+        return structname, property(getter,
+            setter, deleter, structname)
 

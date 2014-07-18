@@ -282,3 +282,35 @@ class Field(object):
         """ @property json: JSON format of field model.
         """
         return lbutils.object2json(self.asdict)
+
+    def metaclass(self, base, id):
+
+        field_schema = self._datatype.__schema__
+        field = self
+
+        class FieldMetaClass(object):
+
+            def __init__(self, value):
+                self.__value__ = value
+
+            def __setattr__(self, obj, value):
+                validator = field_schema(base, field, id)
+                if field.multivalued is True:
+                    try:
+                        assert isinstance(value, list)
+                    except AssertionError:
+                        msg = 'Expected type list for {}, but found {}'
+                        raise ValueError(msg.format(field.name, type(value)))
+                    value = [validator(element) for element in value]
+                else:
+                    value = validator(value)
+                super(FieldMetaClass, self).__setattr__('__value__', value)
+
+            def __getattr__(self, obj):
+                return super(FieldMetaClass, self).__getattribute__('__value__')
+
+        FieldMetaClass.__name__ = self.name
+        return FieldMetaClass
+
+
+

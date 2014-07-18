@@ -227,3 +227,69 @@ class Base(object):
         @property __snames__: List of all structure names. 
         """
         return self.content.__snames__
+
+    def metaclass(self):
+
+        snames = self.__snames__
+        basename = self.metadata.name
+
+        class BaseMetaClass(object):
+
+            def __init__(self, **kwargs):
+                for arg in kwargs:
+                    if arg in snames:
+                        setattr(self, arg, kwargs[arg])
+                    else:
+                        raise AttributeError('Base {} has no structure named {}'\
+                            .format(basename, arg))
+
+        for struct in self.content:
+            structname, prop = self._make_meta_prop(self, struct)
+            setattr(BaseMetaClass, structname, prop)
+
+        BaseMetaClass.__name__ = self.metadata.name
+        return BaseMetaClass
+
+    def _make_meta_prop(self, base, struct):
+
+        if struct.is_field:
+            structname = struct.name
+        elif struct.is_group:
+            structname = struct.metadata.name
+
+        attr_name = '_' + structname
+
+        def getter(self):
+            outter = getattr(self, attr_name)
+            if struct.is_field:
+                return getattr(outter, '__value__')
+            else:
+                return outter
+
+        def setter(self, value):
+
+            struct_metaclass = struct.metaclass(base, id)
+
+            if struct.is_field:
+                value = struct_metaclass(value)
+            elif struct.is_group:
+                if struct.metadata.multivalued:
+                    assert isinstance(value, list)
+                    for element in value:
+                        pass
+                        #assert isinstance(element, struct_metaclass), 
+                        #'%s should be an instance of %s' % (value, struct_metaclass)
+                else:
+                #assert isinstance(value, struct_metaclass), 
+                    #'%s should be an instance of %s' % (value, struct_metaclass)
+                    pass
+            setattr(self, attr_name, value)
+
+        def deleter(self):
+            delattr(self, attr_name)
+
+        return structname, property(getter, setter, deleter, structname)
+
+
+
+
