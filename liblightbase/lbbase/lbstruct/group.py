@@ -308,8 +308,9 @@ class Group():
         """
 
         snames = self.content.__snames__
-        gname = self.metadata.name
+        rnames = self.content.__rnames__
         structs = self.content.__structs__
+        gname = self.metadata.name
 
         class GroupMetaClass(object):
             """ 
@@ -320,6 +321,12 @@ class Group():
             def __init__(self, **kwargs):
                 """ Group metaclass constructor
                 """
+                a = set(rnames)
+                b = set(kwargs.keys())
+                if len(a-b) > 0:
+                    msg = 'Required key {} not provided'.format(a-b)
+                    raise TypeError(msg)
+
                 for arg in kwargs:
                     if arg in snames:
                         setattr(self, arg, kwargs[arg])

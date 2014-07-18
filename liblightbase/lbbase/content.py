@@ -13,14 +13,27 @@ class Content(list):
     def __init__(self):
         #FIXME: Fix repeated name check for structs in global scope
 
-        # @property __structs__: Dictionary in the format {structure name:
-        # structure}. This data structure helps to get structure by it's name,
+        # @property __structs__: All structures from this level to down.
+        # Dictionary in the format {structure name: structure}. This data
+        # structure helps to get structure by it's name,
         # instead of navigating the list.
+        self.__allstructs__ = { }
+
+        # @property __structs__: Structures from this level only. Dictionary
+        # in the format {structure name: structure}. This data structure helps
+        # to get structure by it's name, instead of navigating the list.
         self.__structs__ = { }
 
-        # @property __snames__: List of structure names. Used for preventing
+        # @property __snames__: List of all structure names. Used for preventing
         # duplicated names.
+        self.__allsnames__ = [ ]
+
+        # @property __snames__: List of structure names on this level only.
         self.__snames__ = [ ]
+
+        # @property __snames__: List of structure names (on this level only)
+        # that are required fields.
+        self.__rnames__ = []
 
         # @property asdict: Dictonary (actually list) format of content model. 
         self.asdict = [ ]
@@ -51,24 +64,29 @@ class Content(list):
         """
         if isinstance(struct, Field):
             structname = struct.name
+            self.__allsnames__ +=  [structname]
             self.__snames__ +=  [structname]
+            if struct.required:
+                self.__rnames__ +=  [structname]
 
         elif isinstance(struct, Group):
             structname = struct.metadata.name
+            self.__allsnames__ +=  [structname]
             self.__snames__ +=  [structname]
-            duplicated = self.find_duplicated(self.__snames__,
-                                              struct.content.__snames__)
+            duplicated = self.find_duplicated(self.__allsnames__,
+                                              struct.content.__allsnames__)
             if duplicated:
                 raise NameError('Duplicated names detected: %s' % duplicated)
             else:
-                self.__snames__ +=  struct.content.__snames__
-                self.__structs__.update(struct.content.__structs__)
+                self.__allsnames__ +=  struct.content.__allsnames__
+                self.__allstructs__.update(struct.content.__allstructs__)
 
         else:
             raise TypeError('This should be an instance of Field or Group.\
                 Instead it is %s' % struct)
 
         self.asdict.append(struct.asdict)
+        self.__allstructs__[structname] = struct
         self.__structs__[structname] = struct
         return super(Content, self).__setitem__(index, struct)
 
@@ -77,24 +95,29 @@ class Content(list):
         """
         if isinstance(struct, Field):
             structname = struct.name
+            self.__allsnames__ +=  [structname]
             self.__snames__ +=  [structname]
+            if struct.required:
+                self.__rnames__ +=  [structname]
 
         elif isinstance(struct, Group):
             structname = struct.metadata.name
+            self.__allsnames__ +=  [structname]
             self.__snames__ +=  [structname]
-            duplicated = self.find_duplicated(self.__snames__,
-                                              struct.content.__snames__)
+            duplicated = self.find_duplicated(self.__allsnames__,
+                                              struct.content.__allsnames__)
             if duplicated:
                 raise NameError('Duplicated names detected: %s' % duplicated)
             else:
-                self.__snames__ +=  struct.content.__snames__
-                self.__structs__.update(struct.content.__structs__)
+                self.__allsnames__ +=  struct.content.__allsnames__
+                self.__allstructs__.update(struct.content.__allstructs__)
 
         else:
             raise TypeError('This should be an instance of Field or Group.\
                 Instead it is %s' % struct)
 
         self.asdict.append(struct.asdict)
+        self.__allstructs__[structname] = struct
         self.__structs__[structname] = struct
         return super(Content, self).append(struct)
 

@@ -142,7 +142,7 @@ class Base(object):
         This method return the structure corresponding to @sname.
         """
         try:
-            return self.__structs__[sname]
+            return self.__allstructs__[sname]
         except KeyError:
             raise KeyError("Field %s doesn't exist on base definition." % sname)
 
@@ -214,26 +214,27 @@ class Base(object):
         return lbutils.object2json(self.asdict)
 
     @property
-    def __structs__(self):
+    def __allstructs__(self):
         """ 
-        @property __structs__: Dictionany at the format {structure name: 
+        @property __allstructs__: Dictionany at the format {structure name: 
         structure}. Used for quickly access structure by name.
         """
-        return self.content.__structs__
+        return self.content.__allstructs__
 
     @property
-    def __snames__(self):
+    def __allsnames__(self):
         """ 
-        @property __snames__: List of all structure names. 
+        @property __allsnames__: List of all structure names. 
         """
-        return self.content.__snames__
+        return self.content.__allsnames__
 
     def metaclass(self):
         """ 
         Generate base metaclass. The base metaclass is an abstraction of 
         document model defined by base structures.
         """
-        snames = self.__snames__
+        snames = self.content.__snames__
+        rnames = self.content.__rnames__
         basename = self.metadata.name
 
         class BaseMetaClass(object):
@@ -245,6 +246,12 @@ class Base(object):
             def __init__(self, **kwargs):
                 """ Base metaclass constructor
                 """
+                a = set(rnames)
+                b = set(kwargs.keys())
+                if len(a-b) > 0:
+                    msg = 'Required key {} not provided'.format(a-b)
+                    raise TypeError(msg)
+
                 for arg in kwargs:
                     if arg in snames:
                         setattr(self, arg, kwargs[arg])
