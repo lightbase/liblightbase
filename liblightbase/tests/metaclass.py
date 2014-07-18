@@ -70,7 +70,7 @@ class LBDocumentTestCase(unittest.TestCase):
            'carros' : ['x', 'y', 'z'],
         }
 
-        pessoa2 = self.base.document2object(pessoa1)
+        pessoa2 = self.base.json2document(pessoa1)
 
         assert pessoa2.nome == pessoa1['nome']
         assert pessoa2.carros == pessoa1['carros']
@@ -78,6 +78,26 @@ class LBDocumentTestCase(unittest.TestCase):
         assert pessoa2.dependente.gmulti[0].teste == pessoa1['dependente']['gmulti'][0]['teste']
         assert pessoa2.dependente.idade_dep == pessoa1['dependente']['idade_dep']
 
+    def test_document2json(self):
+        pessoa1 = {
+           'nome' : 'Antony',
+            'dependente' : {
+                'nome_dep' : 'Neymar',
+                'idade_dep': 12,
+                'gmulti' : [
+                    {
+                        'teste' : 'False'
+                    },
+                    {
+                        'teste' : 'False'
+                    }
+                ]
+           },
+           'carros' : ['x', 'y', 'z'],
+        }
+
+        pessoa2 = self.base.json2document(pessoa1)
+        pessoa2.tojson()
 
 
 

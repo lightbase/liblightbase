@@ -295,13 +295,12 @@ class Base(object):
                 value = struct_metaclass(value)
             elif struct.is_group:
                 if struct.metadata.multivalued:
-                    assert isinstance(value, list)
-                    for element in value:
-                        pass
-                        #assert isinstance(element, struct_metaclass), 
-                        #'%s should be an instance of %s' % (value, struct_metaclass)
+                    assertion = [isinstance(element,
+                        struct_metaclass) for element in value]
+                    #assert all(assertion)
+                    #'%s should be an instance of %s' % (value, struct_metaclass)
                 else:
-                #assert isinstance(value, struct_metaclass), 
+                    #assert isinstance(value, struct_metaclass), 
                     #'%s should be an instance of %s' % (value, struct_metaclass)
                     pass
             setattr(self, attr_name, value)
@@ -313,7 +312,7 @@ class Base(object):
 
         return structname, property(getter, setter, deleter, structname)
 
-    def document2object(self, document, metaclass=None):
+    def json2document(self, document, metaclass=None):
         """
         Build metaclass object given document.
         @param document:
@@ -337,13 +336,13 @@ class Base(object):
                     meta_object = []
                     for element in document[member]:
 
-                        meta_inner_object = self.document2object(
+                        meta_inner_object = self.json2document(
                             document=element,
                             metaclass=struct.metaclass(self, 0)
                         )
                         meta_object.append(meta_inner_object)
                 else:
-                    meta_object = self.document2object(
+                    meta_object = self.json2document(
                         document=document[member],
                         metaclass=struct.metaclass(self, 0)
                     )
