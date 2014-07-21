@@ -1,8 +1,9 @@
-
+# -*- coding: utf-8 -*-  
 import requests
 from requests.exceptions import HTTPError
 from liblightbase import lbutils
 from liblightbase.lbbase.struct import Base
+import json
 
 SESSION_COOKIES = None
 

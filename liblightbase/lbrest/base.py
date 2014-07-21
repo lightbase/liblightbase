@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from liblightbase.lbrest.core import LBRest
 
 class BaseREST(LBRest):
