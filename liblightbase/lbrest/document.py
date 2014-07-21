@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from liblightbase.lbrest.core import LBRest
 
 class DocumentREST(LBRest):
@@ -8,14 +8,14 @@ class DocumentREST(LBRest):
     http to the LighBase REST API.
     """
 
-    def __init__(self, rest_url, base):
+    def __init__(self, rest_url, basename):
         """
         Class constructor.
         @param rest_url: The REST URL.
         @param base: String or Base object.
         """
-        super(LBRest, self).__init__(rest_url)
-        self.base =  base
+        super().__init__(rest_url)
+        self.basename = basename
 
     def research(self, search_obj):
         """
@@ -26,7 +26,7 @@ class DocumentREST(LBRest):
             url_path=[self.basename, self.doc_prefix],
             data={self.search_param: search_obj})
 
-    def get(id):
+    def get(self, id):
         """
         Retrieves document by id.
         @param id: The document identify.
@@ -34,7 +34,7 @@ class DocumentREST(LBRest):
         return self.send_request(self.httpget,
             url_path=[self.basename, self.doc_prefix, str(id)])
 
-    def create(document):
+    def insert(self, document):
         """
         Creates new document.
         @param document: Updated Document.

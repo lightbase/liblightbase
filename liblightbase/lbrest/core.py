@@ -1,8 +1,9 @@
-
+# -*- coding: utf-8 -*-  
 import requests
 from requests.exceptions import HTTPError
 from liblightbase import lbutils
 from liblightbase.lbbase.struct import Base
+import json
 
 SESSION_COOKIES = None
 
@@ -71,6 +72,7 @@ class LBRest(object):
         request_method = getattr(requests, method.lower())
         # Make http request
         full_url = self.to_url(self.rest_url, *url_path)
+        print(full_url)
         response = request_method(full_url, cookies=self.cookies, **kwargs)
         try:
             # Check if request has gone wrong
@@ -99,3 +101,9 @@ class LBRest(object):
         else:
             raise TypeError('base must be a Base object or a string.')
         self._base = value
+
+    #metódo serializa objeto para json
+    #existe o metodo serialize que esta em manutenção que ira substitui-lo
+    @classmethod
+    def to_json(cls, obj):
+        return json.dumps(obj, default = lambda o: o.__dict__)
