@@ -34,16 +34,13 @@ class Base(object):
         # present on both lists.
         self.__files__ = { }
 
-        # @property __cfiles__: A dictionary at the format { id_doc: list of 
-        # files to be created }. This property contains the new files present
-        # in document that do not exist on database yet. The routine should
-        # submit these files when submitting document. 
-        self.__cfiles__ = { }
-
         # @property __reldata__: A dictionary at the format {id_doc: {field
         # name: data}}. This property contains the data to be submitted at 
         # relational column at database.
         self.__reldata__ = { }
+
+        self.__metaclasses__ = {structname: self.get_struct(structname)\
+            .metaclass(self, 0) for structname in self.__allstructs__}
 
     @property
     def metadata(self):
@@ -90,7 +87,6 @@ class Base(object):
 
         # Create docs memory area
         self.__files__[id] = [ ]
-        self.__cfiles__[id] = [ ]
         self.__reldata__[id] = { }
 
         # Delete metadata from document
@@ -104,7 +100,6 @@ class Base(object):
         except Exception as e:
             # If process goes wrong, clear the docs memory area
             del self.__files__[id]
-            del self.__cfiles__[id]
             del self.__reldata__[id]
             raise Exception('document data is not according to base definition. \
                 Details: %s' % str(e))
@@ -115,7 +110,7 @@ class Base(object):
         return (document,
                self.__reldata__[id],
                self.__files__[id],
-               self.__cfiles__[id])
+               [])
 
     def schema(self, id):
         """ 
@@ -143,6 +138,16 @@ class Base(object):
         """
         try:
             return self.__allstructs__[sname]
+        except KeyError:
+            raise KeyError("Field %s doesn't exist on base definition." % sname)
+
+    def get_metaclass(self, sname):
+        """ 
+        @param sname: structure name to find
+        This method return the metaclass corresponding to sname.
+        """
+        try:
+            return self.__metaclasses__[sname]
         except KeyError:
             raise KeyError("Field %s doesn't exist on base definition." % sname)
 
@@ -249,7 +254,7 @@ class Base(object):
                 a = set(rnames)
                 b = set(kwargs.keys())
                 if len(a-b) > 0:
-                    msg = 'Required key {} not provided'.format(a-b)
+                    msg = 'Required structure {} not provided'.format(a-b)
                     raise TypeError(msg)
 
                 for arg in kwargs:
@@ -296,20 +301,28 @@ class Base(object):
         def setter(self, value):
             """ Property setter
             """
-            struct_metaclass = struct.metaclass(base, id)
+            struct_metaclass = base.__metaclasses__[structname]
 
             if struct.is_field:
                 value = struct_metaclass(value)
             elif struct.is_group:
                 if struct.metadata.multivalued:
-                    assertion = [isinstance(element,
-                        struct_metaclass) for element in value]
-                    #assert all(assertion)
-                    #'%s should be an instance of %s' % (value, struct_metaclass)
+
+                    msg = 'object {} should be instance of {}'.format(
+                        struct.metadata.name, list)
+                    assert isinstance(value, list), msg
+
+                    msg = '{} list elements should be instances of {}'.format(
+                        struct.metadata.name, struct_metaclass)
+                    assertion = all(isinstance(element, struct_metaclass) \
+                        for element in value)
+                    assert assertion, msg
+
                 else:
-                    #assert isinstance(value, struct_metaclass), 
-                    #'%s should be an instance of %s' % (value, struct_metaclass)
-                    pass
+                    msg = '{} object should be an instance of {}'.format(
+                        struct.metadata.name, struct_metaclass)
+                    assert isinstance(value, struct_metaclass), msg
+
             setattr(self, attr_name, value)
 
         def deleter(self):
@@ -319,44 +332,85 @@ class Base(object):
 
         return structname, property(getter, setter, deleter, structname)
 
-    def json2document(self, document, metaclass=None):
+    def json2document(self, jsonobj, metaclass=None):
         """
-        Build metaclass object given document.
-        @param document:
-        @param metaclass:
+        Convert a JSON string to BaseMetaClass object.
+        @param jsonobj: JSON string or dictionary.
+        @param metaclass: GroupMetaClass in question.
         """
 
         if metaclass is None:
             metaclass = self.metaclass()
 
         kwargs = { }
-        for member in document:
+        for member in jsonobj:
 
             struct = self.get_struct(member)
 
             if struct.is_field:
-                kwargs[member] = document[member]
+                kwargs[member] = jsonobj[member]
 
             elif struct.is_group:
 
                 if struct.metadata.multivalued:
                     meta_object = []
-                    for element in document[member]:
+                    for element in jsonobj[member]:
 
                         meta_inner_object = self.json2document(
-                            document=element,
-                            metaclass=struct.metaclass(self, 0)
+                            jsonobj=element,
+                            metaclass=self.get_metaclass(struct.metadata.name)
                         )
                         meta_object.append(meta_inner_object)
                 else:
                     meta_object = self.json2document(
-                        document=document[member],
-                        metaclass=struct.metaclass(self, 0)
+                        jsonobj=jsonobj[member],
+                        metaclass=self.get_metaclass(struct.metadata.name)
                     )
 
                 kwargs[member] = meta_object
 
         return metaclass(**kwargs)
 
+    def document2dict(self, document, struct=None):
+        """
+        Convert a BaseMetaClass object to dictionary object.
+        @param document: BaseMetaClass object
+        @param struct: Field or Group object 
+        """
+        dictobj = { }
+
+        if not struct: snames = self.content.__snames__
+        else: snames = struct.content.__snames__
+
+        for sname in snames:
+            try:
+                value = getattr(document, sname)
+            except AttributeError:
+                pass
+            else:
+                _struct = self.get_struct(sname)
+                if _struct.is_field:
+                    dictobj[sname] = value
+                elif _struct.is_group:
+                    if _struct.metadata.multivalued:
+                        _value = [ ]
+                        for element in value:
+                            _value.append(self.document2dict(
+                                document=element,
+                                struct=_struct))
+                    else:
+                        _value = self.document2dict(
+                            document=value,
+                            struct=_struct)
+                    dictobj[sname] = _value
+
+        return dictobj
+
+    def document2json(self, document):
+        """
+        Convert a BaseMetaClass object in JSON.
+        @param document: BaseMetaClass object
+        """
+        return lbutils.object2json(self.document2dict(document))
 
 

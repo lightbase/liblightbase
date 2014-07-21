@@ -324,7 +324,7 @@ class Group():
                 a = set(rnames)
                 b = set(kwargs.keys())
                 if len(a-b) > 0:
-                    msg = 'Required key {} not provided'.format(a-b)
+                    msg = 'Required structure {} not provided'.format(a-b)
                     raise TypeError(msg)
 
                 for arg in kwargs:
@@ -371,21 +371,27 @@ class Group():
         def setter(self, value):
             """ Property setter
             """
-            struct_metaclass = struct.metaclass(base, id)
+            struct_metaclass = base.__metaclasses__[structname]
 
             if struct.is_field:
                 value = struct_metaclass(value)
             elif struct.is_group:
                 if struct.metadata.multivalued:
-                    assert isinstance(value, list)
-                    for element in value:
-                        pass
-                        #assert isinstance(element, struct_metaclass), 
-                        #'%s should be an instance of %s' % (value, struct_metaclass)
+
+                    msg = 'object {} should be instance of {}'.format(
+                        struct.metadata.name, list)
+                    assert isinstance(value, list), msg
+
+                    msg = '{} list elements should be instances of {}'.format(
+                        struct.metadata.name, struct_metaclass)
+                    assertion = all(isinstance(element, struct_metaclass) \
+                        for element in value)
+                    assert assertion, msg
+
                 else:
-                #assert isinstance(value, struct_metaclass), 
-                    #'%s should be an instance of %s' % (value, struct_metaclass)
-                    pass
+                    msg = '{} object should be an instance of {}'.format(
+                        struct.metadata.name, struct_metaclass)
+                    assert isinstance(value, struct_metaclass), msg
 
             setattr(self, attr_name, value)
 

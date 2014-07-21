@@ -28,10 +28,10 @@ class LBDocumentTestCase(unittest.TestCase):
         for struct in self.base.__allstructs__:
            MetaClass = self.base.get_struct(struct).metaclass(self.base, 0)
 
-    def test_create_meta_object(self):
+    def test_create_document(self):
 
-        Dependente = self.base.get_struct('dependente').metaclass(self.base, 0)
-        Gmulti = self.base.get_struct('gmulti').metaclass(self.base, 0)
+        Dependente = self.base.get_metaclass('dependente')
+        Gmulti = self.base.get_metaclass('gmulti')
         Pessoa = self.base.metaclass()
 
         pessoa = Pessoa(
@@ -51,7 +51,7 @@ class LBDocumentTestCase(unittest.TestCase):
            carros = ['x', 'y', 'z'],
         )
 
-    def test_create_meta_object_from_json(self):
+    def test_json2document(self):
 
         pessoa1 = {
            'nome' : 'Antony',
@@ -78,6 +78,8 @@ class LBDocumentTestCase(unittest.TestCase):
         assert pessoa2.dependente.gmulti[0].teste == pessoa1['dependente']['gmulti'][0]['teste']
         assert pessoa2.dependente.idade_dep == pessoa1['dependente']['idade_dep']
 
+
+
     def test_document2json(self):
         pessoa1 = {
            'nome' : 'Antony',
@@ -96,8 +98,8 @@ class LBDocumentTestCase(unittest.TestCase):
            'carros' : ['x', 'y', 'z'],
         }
 
-        #pessoa2 = self.base.json2document(pessoa1)
-        #pessoa2.tojson()
+        pessoa2 = self.base.json2document(pessoa1)
+        self.base.document2json(pessoa2)
 
 
 
