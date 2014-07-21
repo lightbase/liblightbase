@@ -8,14 +8,14 @@ class DocumentREST(LBRest):
     http to the LighBase REST API.
     """
 
-    def __init__(self, rest_url, basename):
+    def __init__(self, rest_url, base):
         """
         Class constructor.
         @param rest_url: The REST URL.
         @param base: String or Base object.
         """
-        super().__init__(rest_url)
-        self.basename = basename
+        super(DocumentREST, self).__init__(rest_url)
+        self.base = base
 
     def research(self, search_obj):
         """
@@ -34,7 +34,7 @@ class DocumentREST(LBRest):
         return self.send_request(self.httpget,
             url_path=[self.basename, self.doc_prefix, str(id)])
 
-    def insert(self, document):
+    def create(self, document):
         """
         Creates new document.
         @param document: Updated Document.
