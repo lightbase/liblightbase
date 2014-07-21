@@ -16,7 +16,7 @@ class FileREST(LBRest):
         @param rest_url: The REST URL.
         @param base: String or Base object.
         """
-        super().__init__(rest_url)
+        super(FileREST, self).__init__(rest_url)
         self.base = base
 
     def get(self, id, sys_dir='/tmp'):
@@ -62,9 +62,9 @@ class FileREST(LBRest):
 
     def upload(self, files):
         """ 
-           Alias to @method create
-           @param files type: tuple
-           @param files: ('name.txt','content\nbinary\nfile')
+        Alias to @method create
+        @param files type: tuple
+        @param files: ('name.txt','content\nbinary\nfile')
         """
         return self.create(files)
 
