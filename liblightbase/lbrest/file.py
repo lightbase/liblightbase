@@ -6,7 +6,7 @@ import uuid
 class FileREST(LBRest):
 
     """
-    Contains methods for handling LightBase documents. The communicating is via 
+    Contains methods for handling LightBase documents. The communicating is via
     http to the LighBase REST API.
     """
 
@@ -16,10 +16,10 @@ class FileREST(LBRest):
         @param rest_url: The REST URL.
         @param base: String or Base object.
         """
-        super(REST, self).__init__(rest_url)
+        super().__init__(rest_url)
         self.base = base
 
-    def get(id, sys_dir='/tmp'):
+    def get(self, id, sys_dir='/tmp'):
         """
         Retrieves file by id, returning file headers and file path on local 
         file system. 
@@ -46,31 +46,34 @@ class FileREST(LBRest):
             'mimetype': response.headers['Content-Type']
         }
 
-    def download(id, sys_dir):
+    def download(self, id, sys_dir):
         """ Alias to @method get 
         """
         return self.get(id, sys_dir)
 
-    def create(files):
+    def create(self, files):
         """
         Creates files.
-        @param files:
+        @param files:('name.txt','\04nx\0content\nfile')}
         """
         return self.send_request(self.httppost,
-            url_path=[self.basename, self.file_prefix, str(id)],
-            files=files)
+            url_path=[self.basename, self.file_prefix],
+            files={self.file_param : files})
 
     def upload(self, files):
-        """ Alias to @method create
+        """ 
+           Alias to @method create
+           @param files type: tuple
+           @param files: ('name.txt','content\nbinary\nfile')
         """
         return self.create(files)
 
-    def update():
+    def update(self):
         """
         """
         pass
 
-    def delete():
+    def delete(self):
         """
         """
         pass
