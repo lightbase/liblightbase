@@ -247,7 +247,6 @@ class Base(object):
             Top-level metaclass. Describes the structures defifined by
             document structure model.
             """
-
             def __init__(self, **kwargs):
                 """ Base metaclass constructor
                 """
@@ -256,7 +255,6 @@ class Base(object):
                 if len(a-b) > 0:
                     msg = 'Required structure {} not provided'.format(a-b)
                     raise TypeError(msg)
-
                 for arg in kwargs:
                     if arg in snames:
                         setattr(self, arg, kwargs[arg])
@@ -266,11 +264,8 @@ class Base(object):
                         raise AttributeError(msg)
 
         for struct in self.content:
-
-            # make class properties
             structname, prop = self._make_meta_prop(self, struct)
             setattr(BaseMetaClass, structname, prop)
-
         BaseMetaClass.__name__ = self.metadata.name
         return BaseMetaClass
 
@@ -301,7 +296,7 @@ class Base(object):
         def setter(self, value):
             """ Property setter
             """
-            struct_metaclass = base.__metaclasses__[structname]
+            struct_metaclass = base.get_metaclass(structname)
 
             if struct.is_field:
                 value = struct_metaclass(value)
@@ -331,86 +326,3 @@ class Base(object):
             delattr(self, attr_name)
 
         return structname, property(getter, setter, deleter, structname)
-
-    def json2document(self, jsonobj, metaclass=None):
-        """
-        Convert a JSON string to BaseMetaClass object.
-        @param jsonobj: JSON string or dictionary.
-        @param metaclass: GroupMetaClass in question.
-        """
-
-        if metaclass is None:
-            metaclass = self.metaclass()
-
-        kwargs = { }
-        for member in jsonobj:
-
-            struct = self.get_struct(member)
-
-            if struct.is_field:
-                kwargs[member] = jsonobj[member]
-
-            elif struct.is_group:
-
-                if struct.metadata.multivalued:
-                    meta_object = []
-                    for element in jsonobj[member]:
-
-                        meta_inner_object = self.json2document(
-                            jsonobj=element,
-                            metaclass=self.get_metaclass(struct.metadata.name)
-                        )
-                        meta_object.append(meta_inner_object)
-                else:
-                    meta_object = self.json2document(
-                        jsonobj=jsonobj[member],
-                        metaclass=self.get_metaclass(struct.metadata.name)
-                    )
-
-                kwargs[member] = meta_object
-
-        return metaclass(**kwargs)
-
-    def document2dict(self, document, struct=None):
-        """
-        Convert a BaseMetaClass object to dictionary object.
-        @param document: BaseMetaClass object
-        @param struct: Field or Group object 
-        """
-        dictobj = { }
-
-        if not struct: snames = self.content.__snames__
-        else: snames = struct.content.__snames__
-
-        for sname in snames:
-            try:
-                value = getattr(document, sname)
-            except AttributeError:
-                pass
-            else:
-                _struct = self.get_struct(sname)
-                if _struct.is_field:
-                    dictobj[sname] = value
-                elif _struct.is_group:
-                    if _struct.metadata.multivalued:
-                        _value = [ ]
-                        for element in value:
-                            _value.append(self.document2dict(
-                                document=element,
-                                struct=_struct))
-                    else:
-                        _value = self.document2dict(
-                            document=value,
-                            struct=_struct)
-                    dictobj[sname] = _value
-
-        return dictobj
-
-    def document2json(self, document):
-        """
-        Convert a BaseMetaClass object in JSON.
-        @param document: BaseMetaClass object
-        """
-        return lbutils.object2json(self.document2dict(document))
-
-

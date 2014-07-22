@@ -2,6 +2,10 @@ import liblightbase
 from liblightbase import lbutils
 from liblightbase import lbbase
 from liblightbase.lbbase import genesis
+from liblightbase.lbconv import document2json
+from liblightbase.lbconv import document2dict
+from liblightbase.lbconv import json2document
+from liblightbase.lbconv import dict2document
 import datetime
 import json
 
@@ -70,7 +74,7 @@ class LBDocumentTestCase(unittest.TestCase):
            'carros' : ['x', 'y', 'z'],
         }
 
-        pessoa2 = self.base.json2document(pessoa1)
+        pessoa2 = dict2document(self.base, pessoa1)
 
         assert pessoa2.nome == pessoa1['nome']
         assert pessoa2.carros == pessoa1['carros']
@@ -97,9 +101,14 @@ class LBDocumentTestCase(unittest.TestCase):
            },
            'carros' : ['x', 'y', 'z'],
         }
+        pessoa1 = lbutils.object2json(pessoa1)
 
-        pessoa2 = self.base.json2document(pessoa1)
-        self.base.document2json(pessoa2)
+        pessoa2 = json2document(self.base, pessoa1)
+        j = document2json(self.base, pessoa2, indent=4)
+
+        fd = open('/tmp/document.json', 'w+')
+        fd.write(j)
+        fd.close()
 
 
 

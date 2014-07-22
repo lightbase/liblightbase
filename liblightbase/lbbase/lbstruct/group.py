@@ -371,7 +371,7 @@ class Group():
         def setter(self, value):
             """ Property setter
             """
-            struct_metaclass = base.__metaclasses__[structname]
+            struct_metaclass = base.get_metaclass(structname)
 
             if struct.is_field:
                 value = struct_metaclass(value)
