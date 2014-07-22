@@ -1,7 +1,7 @@
 import liblightbase
 from liblightbase import lbutils
 from liblightbase import lbbase
-from liblightbase.lbbase import genesis
+from liblightbase.lbconv import json2base
 from liblightbase.lbconv import document2json
 from liblightbase.lbconv import document2dict
 from liblightbase.lbconv import json2document
@@ -26,7 +26,7 @@ class LBDocumentTestCase(unittest.TestCase):
 
         self.json_base =  '''{"metadata":{"id_base":5,"dt_base":"10/05/2014 10:21:49","file_ext":false,"idx_exp":false,"idx_exp_url":"","idx_exp_time":"0","file_ext_time":"0","name":"pessoa","description":"qqqqqqq","password":"qqqqqqqq","color":""},"content":[{"field":{"name":"nome","alias":"c5","description":"efdewf","datatype":"Text","required":true,"multivalued":false,"indices":["Textual"]}},{"field":{"name":"carros","alias":"","description":"","datatype":"Text","required":true,"multivalued":true,"indices":["Textual"]}},{"group":{"metadata":{"name":"dependente","alias":"c3","description":"yrjt","multivalued":false},"content":[{"group":{"metadata":{"name":"gmulti","alias":"c3","description":"yrjt","multivalued":true},"content":[{"field":{"name":"teste","alias":"c1","description":"gtrgtr","datatype":"Text","required":false,"multivalued":false,"indices":["Textual"]}}]}},{"field":{"name":"nome_dep","alias":"c1","description":"gtrgtr","datatype":"Text","required":true,"multivalued":false,"indices":["Textual"]}},{"field":{"name":"idade_dep","alias":"c2","description":"rgregetg","datatype":"Integer","required":false,"multivalued":false,"indices":["Textual"]}}]}}]}'''
 
-        self.base = genesis.json_to_base(json.loads(self.json_base))
+        self.base = json2base(self.json_base)
 
     def test_create_metaclasses(self):
         for struct in self.base.__allstructs__:
