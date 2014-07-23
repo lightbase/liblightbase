@@ -1,11 +1,11 @@
 import liblightbase
 from liblightbase import lbutils
 from liblightbase import lbbase
-from liblightbase.lbconv import json2base
-from liblightbase.lbconv import document2json
-from liblightbase.lbconv import document2dict
-from liblightbase.lbconv import json2document
-from liblightbase.lbconv import dict2document
+from liblightbase.lbutils.conv import json2base
+from liblightbase.lbutils.conv import document2json
+from liblightbase.lbutils.conv import document2dict
+from liblightbase.lbutils.conv import json2document
+from liblightbase.lbutils.conv import dict2document
 import datetime
 import json
 

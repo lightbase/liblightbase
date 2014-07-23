@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import voluptuous
 from liblightbase.lbbase.lbstruct.properties import Multivalued
-from liblightbase.lbbase.const import RESERVED_STRUCT_NAMES
+from liblightbase.lbutils.const import RESERVED_STRUCT_NAMES
 from liblightbase import lbutils
 import liblightbase.lbbase.content
 

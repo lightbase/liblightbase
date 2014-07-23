@@ -1,7 +1,7 @@
 #!/usr/env python
 # -*- coding: utf-8 -*-
 from liblightbase.lbbase.lbstruct.properties import *
-from liblightbase.lbbase.const import RESERVED_STRUCT_NAMES
+from liblightbase.lbutils.const import RESERVED_STRUCT_NAMES
 from liblightbase import lbutils
 
 class Field(object):

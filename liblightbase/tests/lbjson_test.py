@@ -8,8 +8,7 @@ from liblightbase.lbbase.struct import Base, BaseMetadata
 from liblightbase.lbbase.lbstruct.group import *
 from liblightbase.lbbase.lbstruct.field import *
 from liblightbase.lbbase.content import Content
-from liblightbase.lbbase import genesis
-from liblightbase import lbconv
+from liblightbase.lbutils.conv import json2base
 
 
 class TestJSON(unittest.TestCase):
@@ -188,7 +187,7 @@ class TestJSON(unittest.TestCase):
         )
 
         j = base.json
-        b = lbconv.json2base(j)
+        b = json2base(j)
         assert(isinstance(b, Base))
 
     def tearDown(self):
