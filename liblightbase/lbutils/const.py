@@ -1,3 +1,12 @@
+import sys
+
+PY3 = sys.version_info[0] == 3
+
+if PY3:
+    PYSTR = str
+else:
+    PYSTR = basestring
+
 
 RESERVED_STRUCT_NAMES = [
 
@@ -33,4 +42,5 @@ RESERVED_STRUCT_NAMES = [
 
     # Other restrictions.
     '_metadata',
+    '__init__'
 ]
