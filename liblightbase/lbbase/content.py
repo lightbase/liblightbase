@@ -120,11 +120,3 @@ class Content(list):
         self.__allstructs__[structname] = struct
         self.__structs__[structname] = struct
         return super(Content, self).append(struct)
-
-    def _encoded(self):
-        """
-
-        :return: Object JSON
-        """
-
-        return self.asdict

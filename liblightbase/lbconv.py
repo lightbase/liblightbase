@@ -54,7 +54,7 @@ def dict2base(dictobj):
                 if group_metadata.multivalued:
                     _dimension = _dimension + 1
                 group_content = assemble_content(obj['group']['content'],
-                        dimension=_dimension)
+                    dimension=_dimension)
                 group = Group(metadata = group_metadata,
                     content = group_content)
                 content_list.append(group)
@@ -66,15 +66,14 @@ def dict2base(dictobj):
                     field.__dim__ = dimension
                 content_list.append(field)
         return content_list
-    base_metadata = dictobj['metadata']
-    base_content = assemble_content(dictobj['content'])
-    base = Base(metadata=BaseMetadata(**base_metadata),
-        content=base_content)
+    base = Base(metadata=BaseMetadata(**dictobj['metadata']),
+        content=assemble_content(dictobj['content']))
     return base
 
 def dict2document(base, dictobj, metaclass=None):
     """
     Convert a dictionary object to BaseMetaClass object.
+    @param base: Base object.
     @param dictobj: dictionary object.
     @param metaclass: GroupMetaClass in question.
     """
@@ -105,6 +104,7 @@ def dict2document(base, dictobj, metaclass=None):
 def document2dict(base, document, struct=None):
     """
     Convert a BaseMetaClass object to dictionary object.
+    @param base: Base object.
     @param document: BaseMetaClass object
     @param struct: Field or Group object 
     """
