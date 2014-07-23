@@ -1,5 +1,6 @@
 import datetime
 from liblightbase import lbutils
+from liblightbase.lbutils.const import PYSTR
 
 class BaseMetadata(object):
     """ 
@@ -16,9 +17,9 @@ class BaseMetadata(object):
     # description property.
     _descmaxlen = 5000
 
-    def __init__(self, name=None, description=None, password=None, color=None,
-        model=None, dt_base=None, id_base=None, idx_exp=False , idx_exp_url=None,
-        idx_exp_time=5, file_ext=False, file_ext_time=5):
+    def __init__(self, name=None, description='', password='', color='',
+        model=None, dt_base=None, id_base=0, idx_exp=False , idx_exp_url='',
+        idx_exp_time=300, file_ext=False, file_ext_time=300):
 
         """ Base Metadata Attributes
         """
@@ -77,27 +78,11 @@ class BaseMetadata(object):
     def name(self, value):
         """ @property name setter
         """
-        try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            # Check for valid unicode strings
-            try:
-                assert(isinstance(value,unicode))
-            except:
-                raise ValueError('Invalid chars on name. It must be an ascii string')
-        try:
-            assert(len(value) <= self._namemaxlen)
-        except AssertionError:
-            raise ValueError('Base name %s max length must be %i!' % (value,
-                self._namemaxlen))
-        try:
-            # check ascii characters
-            assert all(ord(c) < 128 for c in value)
-        except AssertionError:
-            raise ValueError('''Base name %s must contains ascii characters
-                only!''' % value)
-        else:
-            self._name = value.lower()
+        msg = 'Invalid chars on Base name. It must be an ascii string'
+        assert(isinstance(value, PYSTR)), msg
+        # check ascii characters
+        assert all(ord(c) < 128 for c in value), msg
+        self._name = value.lower()
 
     @property
     def description(self):
@@ -109,15 +94,9 @@ class BaseMetadata(object):
     def description(self, value):
         """ @property description setter
         """
-        if not isinstance(value,str):
-            if not isinstance(value,unicode):
-                raise ValueError('Description must be string or unicode!')
-        try:
-            assert(len(value) <= self._descmaxlen)
-        except AssertionError:
-            raise ValueError('Description max length is %i!' % self._descmaxlen)
-        else:
-            self._description= value
+        msg = 'Base description must be string or unicode!'
+        assert(isinstance(value, PYSTR)), msg
+        self._description= value
 
     @property
     def id_base(self):
@@ -129,12 +108,9 @@ class BaseMetadata(object):
     def id_base(self, value):
         """ @property id_base setter
         """
-        try:
-            assert(isinstance(value, int))
-        except AssertionError:
-            raise ValueError('id_base value must be integer!')
-        else:
-            self._id_base = value
+        msg = 'id_base value must be integer!'
+        assert(isinstance(value, int)), msg
+        self._id_base = value
 
     @property
     def dt_base(self):
@@ -155,8 +131,8 @@ class BaseMetadata(object):
             try:
                 value = datetime.datetime.strptime(value, '%d/%m/%Y %H:%M:%S')
             except ValueError:
-                raise ValueError('dt_base value must be instance of datetime! \
-                    or str in the format %d/%m/%Y %H:%M:%S. Instead it is {}'\
+                raise ValueError('dt_base value must be instance of datetime'+\
+                    ' or str in the format %d/%m/%Y %H:%M:%S. Instead it is {}'\
                     .format(value))
             else:
                 self._dt_base = value
@@ -171,12 +147,9 @@ class BaseMetadata(object):
     def idx_exp(self, value):
         """ @property idx_exp setter
         """
-        try:
-            assert(isinstance(value, bool))
-        except AssertionError:
-            raise ValueError('idx_exp value must be boolean!')
-        else:
-            self._idx_exp = value
+        msg = 'idx_exp value must be boolean!'
+        assert(isinstance(value, bool))
+        self._idx_exp = value
 
     @property
     def idx_exp_url(self):
@@ -188,14 +161,8 @@ class BaseMetadata(object):
     def idx_exp_url(self, value):
         """ @property idx_exp_url setter
         """
-        try:
-            assert(isinstance(value, str) or type(value) is type(None))
-        except AssertionError:
-            # Check for valid unicode strings
-            try:
-                assert(isinstance(value,unicode))
-            except:
-                raise ValueError('Invalid chars on URL. It must be an ascii string')
+        if value is not None:
+            assert isinstance(value, PYSTR)
         if self.idx_exp:
             url = lbutils.validate_url(value)
             if len(url.split('/')) is not 5:
@@ -220,8 +187,7 @@ class BaseMetadata(object):
         else:
             try:
                 value = int(value)
-                assert(isinstance(value, int))
-            except AssertionError:
+            except ValueError:
                 raise ValueError('idx_exp_time value must be integer!')
             else:
                 self._idx_exp_time = value
@@ -235,15 +201,12 @@ class BaseMetadata(object):
     @file_ext.setter
     def file_ext(self, value):
         if value is None:
-            # Default to true
-            self._file_ext = True
+            # Default to false 
+            self._file_ext = False
         else:
-            try:
-                assert(isinstance(value, bool))
-            except AssertionError:
-                raise ValueError('file_ext value must be boolean!')
-            else:
-                self._file_ext = value
+            msg = 'file_ext value must be boolean!'
+            assert isinstance(value, bool), msg
+            self._file_ext = value
 
     @property
     def file_ext_time(self):
@@ -261,8 +224,7 @@ class BaseMetadata(object):
         else:
             try:
                 value = int(value)
-                assert(isinstance(value, int))
-            except AssertionError:
+            except ValueError:
                 raise ValueError('file_ext_time value must be integer!')
             else:
                 self._file_ext_time = value

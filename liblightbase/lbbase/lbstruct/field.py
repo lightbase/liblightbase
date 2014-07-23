@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 from liblightbase.lbbase.lbstruct.properties import *
 from liblightbase.lbutils.const import RESERVED_STRUCT_NAMES
+from liblightbase.lbutils.const import PYSTR
 from liblightbase import lbutils
 
 class Field(object):
@@ -11,18 +12,6 @@ class Field(object):
 
     is_group = False
     is_field = True
-
-    # @property _namemaxlen: The maximum number of characters allowed in the
-    # name property.
-    #_namemaxlen = 5000
-
-    # @property _aliasmaxlen: The maximum number of characters allowed in the
-    # alias property.
-    #_aliasmaxlen = 5000
-
-    # @property _descmaxlen: The maximum number of characters allowed in the
-    # description property.
-    #_descmaxlen = 5000
 
     def __init__(self, name, alias, description, datatype, indices, multivalued,
             required):
@@ -79,38 +68,14 @@ class Field(object):
     def name(self, value):
         """ @property name setter
         """
-        try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            # Check for valid unicode strings
-            try:
-                assert(isinstance(value,unicode))
-            except:
-                raise ValueError('Invalid chars on name. It must be an ascii string')
-        #try:
-        #    assert(len(value) <= self._namemaxlen)
-        #except AssertionError:
-        #    raise ValueError('Field name %s max length must be %i!' % (value,
-        #        self._namemaxlen))
-        try:
-            # check ascii characters
-
-            msg = 'Field name %s is a reserved name. Please use another name.'\
-                % value
-            assert value not in RESERVED_STRUCT_NAMES
-
-            #msg = 'Field name %s max length must be %i!' % (value,
-            #    self._namemaxlen)
-            #assert len(value) <= self._namemaxlen
-
-            msg = 'Field name %s must contains ascii characters\
-                only!' % value
-            assert all(ord(c) < 128 for c in value)
-
-        except AssertionError:
-            raise ValueError(msg)
-        else:
-            self._name = value.lower()
+        msg = 'Invalid chars on Field name. It must be an ascii string'
+        assert(isinstance(value, PYSTR)), msg
+        # check ascii characters
+        assert all(ord(c) < 128 for c in value), msg
+        value = value.lower()
+        msg = 'Field name %s is a reserved name' % value
+        assert value not in RESERVED_STRUCT_NAMES, msg
+        self._name = value
 
     @property
     def alias(self):
@@ -122,20 +87,8 @@ class Field(object):
     def alias(self, value):
         """ @property alias setter
         """
-        try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            # Check for valid unicode strings
-            try:
-                assert(isinstance(value,unicode))
-            except:
-                raise ValueError('Invalid chars on alias. It must be an ascii string')
-        #try:
-        #    assert(len(value) <= self._aliasmaxlen)
-        #except AssertionError:
-        #    raise ValueError('Field alias %s max length must be %i!' % (value,
-        #        self._aliasmaxlen))
-
+        msg = 'Field {} alias attribute must be string or unicode!'
+        assert(isinstance(value, PYSTR)), msg.format(self.name)
         self._alias = value
 
     @property
@@ -146,14 +99,8 @@ class Field(object):
 
     @description.setter
     def description(self, value):
-        if not isinstance(value,str):
-            if not isinstance(value,unicode):
-                raise ValueError('Description must be string or unicode!')
-        #try:
-        #    assert(len(value) <= self._descmaxlen)
-        #except AssertionError:
-        #    raise ValueError('Description max length is %i!' % self._descmaxlen)
-
+        msg = 'Field {} description attribute must be string or unicode!'
+        assert(isinstance(value, PYSTR)), msg.format(self.name)
         self._description= value
 
     @property
@@ -166,13 +113,10 @@ class Field(object):
     def datatype(self, value):
         """ @property datatype setter
         """
-        try:
-            assert isinstance(value, DataType)
-        except AssertionError:
-            raise ValueError('This must be a instance of datatype. Instead it is\
-             %s' % value)
-        else:
-            self._datatype = value
+        msg = 'Field {} datatype attribute must be a Datatype object.'+\
+            'Instead it is {}'
+        assert isinstance(value, DataType), msg.format(self.name, value)
+        self._datatype = value
 
     @property
     def indices(self):
@@ -184,13 +128,11 @@ class Field(object):
     def indices(self, value):
         """ @property indices setter
         """
-        if type(value) is not list:
-            raise TypeError('indices must be a list instead of %s' % value)
-        if all(isinstance(index, Index) for index in value):
-            self._indices = value
-        else:
-            raise ValueError('This should be an instance of Indice. Instead it \
-                 is %s' % value)
+        msg = 'Field indices attribute must be a list instead of {}'
+        assert isinstance(value, list), msg.format(value)
+        msg = 'Field indices elements must be instances of Indice.'
+        assert all(isinstance(index, Index) for index in value)
+        self._indices = value
 
     @property
     def multivalued(self):
@@ -202,13 +144,10 @@ class Field(object):
     def multivalued(self, value):
         """ @property multivalued setter
         """
-        try:
-            assert isinstance(value, Multivalued)
-        except AssertionError:
-            raise ValueError('This should be an instance of Multivalued. Instead\
-                it is %s' % value)
-        else:
-            self._multivalued = value
+        msg = 'Field {} multivalued attribute must instance of Multivalued.'+\
+            ' Instead it is {}'
+        assert isinstance(value, Multivalued), msg.format(self.name, value)
+        self._multivalued = value
 
     @property
     def required(self):
@@ -220,13 +159,10 @@ class Field(object):
     def required(self, value):
         """ @property required setter
         """
-        try:
-            assert isinstance(value, Required)
-        except AssertionError:
-            raise ValueError('This should be an instance of Required. instead it\
-                is %s' % value)
-        else:
-            self._required = value
+        msg = 'Field {} required attribute must be instance of Required.'+\
+            ' Instead it is %s'
+        assert isinstance(value, Required), msg.format(self.name, value)
+        self._required = value
 
     def schema(self, base, id=None):
         """ 
