@@ -2,6 +2,7 @@
 import voluptuous
 from liblightbase.lbbase.lbstruct.properties import Multivalued
 from liblightbase.lbutils.const import RESERVED_STRUCT_NAMES
+from liblightbase.lbutils.const import PYSTR
 from liblightbase import lbutils
 import liblightbase.lbbase.content
 
@@ -12,18 +13,6 @@ class GroupMetadata(object):
     metadata is to facilitate in the discovery of relevant information, more 
     often classified as resource discovery.
     """
-
-    # @property _namemaxlen: The maximum number of characters allowed in the
-    # name property.
-    #_namemaxlen = 5000
-
-    # @property _aliasmaxlen: The maximum number of characters allowed in the
-    # alias property.
-    #_aliasmaxlen = 5000
-
-    # @property _descmaxlen: The maximum number of characters allowed in the
-    # description property.
-    #_descmaxlen = 5000
 
     def __init__(self, name, alias, description, multivalued):
 
@@ -58,37 +47,14 @@ class GroupMetadata(object):
     def name(self, value):
         """ @property name setter
         """
-        try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            # Check for valid unicode strings
-            try:
-                assert(isinstance(value,unicode))
-            except:
-                raise ValueError('Invalid chars on name. It must be an ascii string')
-        #try:
-        #    assert(len(value) <= self._namemaxlen)
-        #except AssertionError:
-        #    raise ValueError('Group name %s max length must be %i!' % (value,
-        #        self._namemaxlen))
-        try:
-
-            msg = 'Group name %s is a reserved name. Please use another name.'\
-                % value
-            assert value not in RESERVED_STRUCT_NAMES
-
-            #msg = 'Group name %s max length must be %i!' % (value,
-            #    self._namemaxlen)
-            #assert len(value) <= self._namemaxlen
-
-            msg = 'Group name %s must contains ascii characters\
-                only!' % value
-            assert all(ord(c) < 128 for c in value)
-
-        except AssertionError:
-            raise ValueError(msg)
-        else:
-            self._name = value.lower()
+        msg = 'Invalid chars on Group name. It must be an ascii string'
+        assert(isinstance(value, PYSTR)), msg
+        # check ascii characters
+        assert all(ord(c) < 128 for c in value), msg
+        value = value.lower()
+        msg = 'Group name %s is a reserved name' % value
+        assert value not in RESERVED_STRUCT_NAMES, msg
+        self._name = value
 
     @property
     def alias(self):
@@ -100,20 +66,8 @@ class GroupMetadata(object):
     def alias(self, value):
         """ @property alias setter
         """
-        try:
-            assert(isinstance(value, str))
-        except AssertionError:
-            # Check for valid unicode strings
-            try:
-                assert(isinstance(value,unicode))
-            except:
-                raise ValueError('Invalid chars on alias. It must be an ascii string')
-        #try:
-        #    assert(len(value) <= self._aliasmaxlen)
-        #except AssertionError:
-        #    raise ValueError('Group alias %s max length must be %i!' % (value,
-        #        self._aliasmaxlen))
-
+        msg = 'Group {} alias attribute must be string or unicode!'
+        assert(isinstance(value, PYSTR)), msg.format(self.name)
         self._alias = value
 
     @property
@@ -126,14 +80,8 @@ class GroupMetadata(object):
     def description(self, value):
         """ @property description setter
         """
-        if not isinstance(value,str):
-            if not isinstance(value,unicode):
-                raise ValueError('Description must be string or unicode!')
-        #try:
-        #    assert(len(value) <= self._descmaxlen)
-        #except AssertionError:
-        #    raise ValueError('Description max length is %i!' % self._descmaxlen)
-
+        msg = 'Group {} description attribute must be string or unicode!'
+        assert(isinstance(value, PYSTR)), msg.format(self.name)
         self._description= value
 
     @property
@@ -146,13 +94,10 @@ class GroupMetadata(object):
     def multivalued(self, value):
         """ @property multivalued setter
         """
-        try:
-            assert(isinstance(value, Multivalued))
-        except AssertionError:
-            raise ValueError('This should be an instance of Multivalued. \
-                Instead it is %s' % value)
-        else:
-            self._multivalued = value
+        msg = 'Group {} multivalued attribute must instance of Multivalued.'+\
+            ' Instead it is {}'
+        assert isinstance(value, Multivalued), msg.format(self.name, value)
+        self._multivalued = value
 
     @property
     def asdict(self):
@@ -202,13 +147,9 @@ class Group():
     def metadata(self, value):
         """ @property metadata setter
         """
-        try:
-            assert isinstance(value, GroupMetadata)
-        except AssertionError:
-            raise ValueError('Group metadata must be of type GroupMetadata \
-            instead of %s' % value)
-        else:
-            self._metadata = value
+        msg = 'Group metadata must be of type GroupMetadata. Instead it is {}'
+        assert isinstance(value, GroupMetadata), msg.format(value)
+        self._metadata = value
 
     @property
     def content(self):
@@ -220,17 +161,12 @@ class Group():
     def content(self, value):
         """ @property content setter
         """
-        try:
-            assert isinstance(value, liblightbase.lbbase.content.Content)
-        except AssertionError:
-            raise ValueError('Group content must be of type Content \
-            instead of %s' % value)
-            assert len(value) > 0, 'Group content must have at least one \
-                structure.'
-        except AssertionError as e:
-            raise ValueError(' '.join(str(e).split()))
-        else:
-            self._content = value
+        msg = 'Group content must be of type Content. Instead it is {}'
+        assert isinstance(value, liblightbase.lbbase.content.Content), msg\
+            .format(value)
+        msg = 'Group content must have at least one structure.'
+        assert len(value) > 0, msg
+        self._content = value
 
     def schema(self, base, id):
         """ 

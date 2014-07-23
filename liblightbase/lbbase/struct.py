@@ -52,13 +52,9 @@ class Base(object):
     def metadata(self, value):
         """ @property metadata setter
         """
-        try:
-            assert isinstance(value, BaseMetadata)
-        except AssertionError:
-            raise ValueError('Base metadata must be of type BaseMetadata \
-                instead of %s' % value)
-        else:
-            self._metadata = value
+        msg = 'Base metadata must be of type BaseMetadata. Instead it is {}'
+        assert isinstance(value, BaseMetadata), msg.format(value)
+        self._metadata = value
 
     @property
     def content(self):
@@ -70,15 +66,11 @@ class Base(object):
     def content(self, value):
         """ @property content setter
         """
-        try:
-            assert isinstance(value, Content), 'Base content must be of type \
-                Content instead of %s' % value;
-            assert len(value) > 0, 'Base content must have at least one \
-                structure.'
-        except AssertionError as e:
-            raise ValueError(' '.join(str(e).split()))
-        else:
-            self._content = value
+        msg = 'Base content must be of type Content. Instead it is {}'
+        assert isinstance(value, Content), msg.format(value)
+        msg = 'Base content must have at least one structure.'
+        assert len(value) > 0, msg
+        self._content = value
 
     def validate(self, document, _meta):
         """ Validate document data structure.

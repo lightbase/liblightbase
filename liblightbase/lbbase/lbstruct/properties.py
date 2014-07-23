@@ -37,12 +37,9 @@ class Index(object):
     def index(self, value):
         """ @property index setter 
         """
-        try:
-            assert value in self.valid_indices
-        except AssertionError:
-            raise ValueError('Supplied value for index %s is not valid' % value)
-        else:
-            self._index = value
+        msg = '%s is not a valid Index.' % value
+        assert value in self.valid_indices, msg
+        self._index = value
 
 class DataType():
 
@@ -95,13 +92,9 @@ class DataType():
     def datatype(self, value):
         """ @property datatype setter
         """
-        try:
-            assert value in self.valid_types
-        except AssertionError:
-            raise ValueError('''Wrong DataType. The value you supllied is not
-                valid: %s''' % value)
-        else:
-            self._datatype = value
+        msg = '%s is not a valid Datatype.' % value
+        assert value in self.valid_types, msg
+        self._datatype = value
 
 class Multivalued():
 
@@ -126,13 +119,9 @@ class Multivalued():
     def multivalued(self, value):
         """ @property multivalued getter
         """
-        try:
-            assert isinstance(value, bool)
-        except AssertionError:
-            raise ValueError('''Wrong DataType. The value you supllied is not
-                valid: %s''' % value)
-        else:
-            self._multivalued = value
+        msg = 'Multivalued attributes must be boolean.'
+        assert isinstance(value, bool), msg
+        self._multivalued = value
 
 class Required():
 
@@ -158,10 +147,6 @@ class Required():
     def required(self, value):
         """ @property required setter
         """
-        try:
-            assert isinstance(value, bool)
-        except AssertionError:
-            raise ValueError('''Wrong required. The value you supllied for
-                required is not valid: %s''' % value)
-        else:
-            self._required = value
+        msg = 'Required attributes must be boolean.'
+        assert isinstance(value, bool), msg
+        self._required = value
