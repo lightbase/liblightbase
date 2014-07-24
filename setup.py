@@ -20,7 +20,6 @@ LightBase Library""",
       install_requires=[
           'voluptuous',
           'bcrypt',
-          'sqlalchemy',
           'requests'
       ]
       )
