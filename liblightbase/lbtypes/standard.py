@@ -2,7 +2,6 @@
 from liblightbase.lbtypes import BaseDataType
 from liblightbase.lbtypes.extended import FileExtension
 from liblightbase import lbutils
-import sqlalchemy.types as dbtypes
 import datetime
 import bcrypt
 
@@ -28,7 +27,7 @@ class Image(FileExtension):
 
 class Text(BaseDataType):
     """ Represents a Text Field """
-    __dbtype__ = dbtypes.String
+    __dbtype__ = 'String'
     __pytype__ = str
 
     @staticmethod
@@ -41,7 +40,7 @@ class Text(BaseDataType):
 
 class Password(BaseDataType):
     """ Represents a Password Field """
-    __dbtype__ = dbtypes.String
+    __dbtype__ = 'String'
     __pytype__ = str
 
     @staticmethod
@@ -63,7 +62,7 @@ class Password(BaseDataType):
 
 class TextArea(BaseDataType):
     """ Represents a TextArea Field """
-    __dbtype__ = dbtypes.String
+    __dbtype__ = 'String'
     __pytype__ = str
 
     @staticmethod
@@ -76,7 +75,7 @@ class TextArea(BaseDataType):
 
 class Integer(BaseDataType):
     """ Represents an Integer Field """
-    __dbtype__ = dbtypes.Integer
+    __dbtype__ = 'Integer'
     __pytype__ = int
 
     @staticmethod
@@ -89,7 +88,7 @@ class Integer(BaseDataType):
 
 class Decimal(BaseDataType):
     """ Represents a Decimal Field """
-    __dbtype__ = dbtypes.Float
+    __dbtype__ = 'Float'
     __pytype__ = float
 
     @staticmethod
@@ -102,7 +101,7 @@ class Decimal(BaseDataType):
 
 class Money(BaseDataType):
     """ Represents a Money Field """
-    __dbtype__ = dbtypes.Float
+    __dbtype__ = 'Float'
     __pytype__ = float
 
     @staticmethod
@@ -115,7 +114,7 @@ class Money(BaseDataType):
 
 class SelfEnumerated(BaseDataType):
     """ Represents a SelfEnumerated Field """
-    __dbtype__ = dbtypes.Integer
+    __dbtype__ = 'Integer'
     __pytype__ = int
 
     @staticmethod
@@ -129,7 +128,7 @@ class SelfEnumerated(BaseDataType):
 
 class Date(BaseDataType):
     """ Represents a Date Field """
-    __dbtype__ = dbtypes.Date
+    __dbtype__ = 'Date'
     __pytype__ = (str, datetime.date)
 
     @staticmethod
@@ -145,7 +144,7 @@ class Date(BaseDataType):
 
 class Time(BaseDataType):
     """ Represents a Time Field """
-    __dbtype__ = dbtypes.Time
+    __dbtype__ = 'Time'
     __pytype__ = (str, datetime.time)
 
     @staticmethod
@@ -161,7 +160,7 @@ class Time(BaseDataType):
 
 class DateTime(BaseDataType):
     """ Represents a DateTime Field """
-    __dbtype__ = dbtypes.DateTime
+    __dbtype__ = 'DateTime'
     __pytype__ = (str, datetime.datetime)
 
     @staticmethod
@@ -177,7 +176,7 @@ class DateTime(BaseDataType):
 
 class Url(BaseDataType):
     """ Represents an Url Field """
-    __dbtype__ = dbtypes.String
+    __dbtype__ = 'String'
     __pytype__ = str
 
     @staticmethod
@@ -190,7 +189,7 @@ class Url(BaseDataType):
 
 class Boolean(BaseDataType):
     """ Represents a Boolean Field """
-    __dbtype__ = dbtypes.Boolean
+    __dbtype__ = 'Boolean'
     __pytype__ = bool
 
     @staticmethod
@@ -208,7 +207,7 @@ class Boolean(BaseDataType):
 
 class Html(BaseDataType):
     """ Represents a Html Field """
-    __dbtype__ = dbtypes.String
+    __dbtype__ = 'String'
     __pytype__ = str
 
     @staticmethod
@@ -221,7 +220,7 @@ class Html(BaseDataType):
 
 class Email(BaseDataType):
     """ Represents an Email Field """
-    __dbtype__ = dbtypes.String
+    __dbtype__ = 'String'
     __pytype__ = str
 
     @staticmethod
@@ -234,7 +233,7 @@ class Email(BaseDataType):
 
 class Json(BaseDataType):
     """ Represents a Json Field """
-    __dbtype__ = dbtypes.String
+    __dbtype__ = 'String'
     __pytype__ = (int, bool, float, list, dict, str, type(None))
 
     @staticmethod
