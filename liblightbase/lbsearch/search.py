@@ -1,4 +1,4 @@
-import json
+from liblightbase import lbutils
 
 class OrderBy(object):
     """ 
@@ -44,7 +44,14 @@ class OrderBy(object):
         assert isinstance(value, list), msg
         self._desc = value
 
-    def _json(self, **kw):
+    def _asjson(self, **kw):
+        dict_orderby = {} 
+        for key in dir(self):
+            if not key[0] == "_":
+                dict_orderby[key] = getattr(self, key)
+        return lbutils.object2json(dict_orderby)
+
+    def _asdict(self, **kw):
         dict_orderby = {} 
         for key in dir(self):
             if not key[0] == "_":
@@ -74,17 +81,27 @@ class Search(object):
         # @property offset:
         self.offset = offset
 
-    def _json(self, **kw):
+    def _asjson(self, **kw):
         dict_search = {} 
         for key in dir(self):
             if not key[0] == "_":
                 if isinstance(getattr(self, key), OrderBy):
-                    value = getattr(self, key)._json()
+                    value = getattr(self, key)._asdict()
                 else:
                     value = getattr(self, key)
                 dict_search[key] = value 
-        return json.dumps(dict_search)
+        return lbutils.object2json(dict_search)
 
+    def _asdict(self, **kw):
+        dict_search = {} 
+        for key in dir(self):
+            if not key[0] == "_":
+                if isinstance(getattr(self, key), OrderBy):
+                    value = getattr(self, key)._asdict()
+                else:
+                    value = getattr(self, key)
+                dict_search[key] = value 
+        return  dict_search
 
     @property
     def select(self):

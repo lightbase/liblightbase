@@ -35,6 +35,6 @@ class ClassSearchTest(unittest.TestCase):
 
         self.obj_Search = Search(select, obj_orderby,
             literal, limit, offset)
-        self.obj_Search._json()
+        self.obj_Search._asjson()
     	
     
