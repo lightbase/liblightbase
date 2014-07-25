@@ -30,12 +30,12 @@ class LBDocumentTestCase(unittest.TestCase):
 
     def test_create_metaclasses(self):
         for struct in self.base.__allstructs__:
-           MetaClass = self.base.get_struct(struct).metaclass(self.base, 0)
+           MetaClass = self.base.get_struct(struct)._metaclass(self.base, 0)
 
     def test_create_document(self):
 
-        Dependente = self.base.get_metaclass('dependente')
-        Gmulti = self.base.get_metaclass('gmulti')
+        Dependente = self.base.metaclass('dependente')
+        Gmulti = self.base.metaclass('gmulti')
         Pessoa = self.base.metaclass()
 
         pessoa = Pessoa(

@@ -39,8 +39,12 @@ class Base(object):
         # relational column at database.
         self.__reldata__ = { }
 
+        # @property __metaclasses__: A dictionary at the format {structname:
+        # metaclass}. All metaclasses are created here, so user can acces them
+        # to user later, using the @method metaclass().
         self.__metaclasses__ = {structname: self.get_struct(structname)\
-            .metaclass(self, 0) for structname in self.__allstructs__}
+            ._metaclass(self, 0) for structname in self.__allstructs__}
+        self.__metaclasses__['__base__'] = self._metaclass()
 
     @property
     def metadata(self):
@@ -93,8 +97,7 @@ class Base(object):
             # If process goes wrong, clear the docs memory area
             del self.__files__[id]
             del self.__reldata__[id]
-            raise Exception('document data is not according to base definition. \
-                Details: %s' % str(e))
+            raise e.__class__(e)
 
         # Put document metadata back
         document['_metadata'] = _meta.__dict__
@@ -133,11 +136,13 @@ class Base(object):
         except KeyError:
             raise KeyError("Field %s doesn't exist on base definition." % sname)
 
-    def get_metaclass(self, sname):
+    def metaclass(self, sname=None):
         """ 
         @param sname: structure name to find
         This method return the metaclass corresponding to sname.
         """
+        if sname is None:
+            return self.__metaclasses__['__base__']
         try:
             return self.__metaclasses__[sname]
         except KeyError:
@@ -225,7 +230,7 @@ class Base(object):
         """
         return self.content.__allsnames__
 
-    def metaclass(self):
+    def _metaclass(self):
         """ 
         Generate base metaclass. The base metaclass is an abstraction of 
         document model defined by base structures.
@@ -233,6 +238,8 @@ class Base(object):
         snames = self.content.__snames__
         rnames = self.content.__rnames__
         basename = self.metadata.name
+        self.__files__[0] = [ ]
+        self.__reldata__[0] = { }
 
         class BaseMetaClass(object):
             """ 
@@ -288,7 +295,7 @@ class Base(object):
         def setter(self, value):
             """ Property setter
             """
-            struct_metaclass = base.get_metaclass(structname)
+            struct_metaclass = base.metaclass(structname)
 
             if struct.is_field:
                 value = struct_metaclass(value)

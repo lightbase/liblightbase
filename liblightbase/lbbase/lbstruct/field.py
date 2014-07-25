@@ -56,8 +56,6 @@ class Field(object):
         # in which user must enter data or not. 
         self.required = Required(required)
 
-        self._asdict = None
-
     @property
     def name(self):
         """ @property name getter
@@ -171,15 +169,11 @@ class Field(object):
         "layout" of a database or the blueprint that outlines the way data is 
         organized into tables. This method build the field schema, returning it.
         """
-
         datatype = self._datatype.__schema__
-
         if self.multivalued is True:
             return [datatype(base, self, id)]
         elif self.multivalued is False:
             return datatype(base, self, id)
-        assert False, 'Multivalued property is not True nor False, instead is \
-            %s' % self.multivalued
 
     def document_model(self, base):
         """
@@ -219,7 +213,7 @@ class Field(object):
         """
         return lbutils.object2json(self.asdict)
 
-    def metaclass(self, base, id):
+    def _metaclass(self, base, id):
 
         field_schema = self._datatype.__schema__
         field = self

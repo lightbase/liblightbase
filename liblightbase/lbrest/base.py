@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
+
 from liblightbase.lbrest.core import LBRest
+from liblightbase.lbbase.struct import Base
+from liblightbase.lbutils.const import PYSTR
+from liblightbase.lbutils.conv import json2base
 
 class BaseREST(LBRest):
 
@@ -24,8 +28,15 @@ class BaseREST(LBRest):
         """
         @param name: base's name
         """
-        return self.send_request(self.httpget,
-            url_path=[base.metadata.name])
+        if isinstance(base, Base):
+            basename = base.metadata.name
+        else:
+            msg = 'Base must be Base object or string.'
+            assert isinstance(base, PYSTR), msg
+            basename = base
+        response = self.send_request(self.httpget,
+            url_path=[basename])
+        return json2base(response)
 
     def create(self, base):
         """
@@ -46,5 +57,11 @@ class BaseREST(LBRest):
         """
         @param base:
         """
+        if isinstance(base, Base):
+            basename = base.metadata.name
+        else:
+            msg = 'Base must be Base object or string.'
+            assert isinstance(base, PYSTR), msg
+            basename = base.metadata.name
         return self.send_request(self.httpdelete,
-            url_path=[base.metadata.name])
+            url_path=[basename])

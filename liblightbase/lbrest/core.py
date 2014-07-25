@@ -3,7 +3,6 @@ import requests
 from requests.exceptions import HTTPError
 from liblightbase import lbutils
 from liblightbase.lbbase.struct import Base
-import json
 
 SESSION_COOKIES = None
 
@@ -81,7 +80,7 @@ class LBRest(object):
             raise HTTPError(response.text)
         else:
             # Everything is alright, return response
-            return response
+            return response.text
 
     @property
     def base(self):
