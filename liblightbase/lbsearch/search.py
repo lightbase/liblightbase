@@ -1,4 +1,5 @@
 from liblightbase import lbutils
+from liblightbase.lbutils.conv import dict2document
 
 class OrderBy(object):
     """ 
@@ -62,7 +63,7 @@ class Search(object):
     """
     """
 
-    def __init__(self, select=[], order_by=OrderBy(),
+    def __init__(self, select=['*'], order_by=OrderBy(),
             literal='', limit=10, offset=10):
         """
         """
@@ -172,3 +173,33 @@ class Search(object):
         msg = "offset property must be a int"
         assert isinstance(value, int), msg
         self._offset = value
+
+class Results(list):
+
+    def __init__(self, base, results):
+        results_object = [dict2document(base, dictobj) for dictobj in results]
+        super(Results, self).__init__(results_object)
+
+class Collection(object):
+
+    def __init__(self, base, results, result_count, limit, offset):
+
+        # @property results:
+        self.results = Results(base, results)
+
+        # @property result_count:
+        self.result_count = result_count
+
+        # @property limit:
+        self.limit = limit
+
+        # @property offset:
+        self.offset = offset
+
+
+
+
+
+
+
+

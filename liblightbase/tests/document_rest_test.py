@@ -1,19 +1,10 @@
 
-import liblightbase
-from liblightbase import lbutils
-from liblightbase import lbbase
 from liblightbase.lbutils.conv import json2base
 from liblightbase.lbutils.conv import document2json
-from liblightbase.lbutils.conv import document2dict
 from liblightbase.lbutils.conv import json2document
-from liblightbase.lbutils.conv import dict2document
-import datetime
-import json
-
 from liblightbase.lbrest.base import BaseREST
 from liblightbase.lbrest.document import DocumentREST
-
-
+from liblightbase.lbsearch.search import Collection
 import unittest
 
 class DocumentRESTTest(unittest.TestCase):
@@ -41,6 +32,12 @@ class DocumentRESTTest(unittest.TestCase):
 
         with open('/tmp/document.json', 'w+') as f:
             f.write(document2json(self.base, document))
+
+    def test_get_doc_colletion(self):
+
+        collection = self.doc_rest.get_collection()
+        assert isinstance(collection, Collection)
+        assert isinstance(collection.results[0], self.base.metaclass())
 
 
 
