@@ -9,14 +9,6 @@ class BaseMetadata(object):
     often classified as resource discovery.
     """
 
-    # @property _namemaxlen: The maximum number of characters allowed in the
-    # name property.
-    _namemaxlen = 5000
-
-    # @property _descmaxlen: The maximum number of characters allowed in the
-    # description property.
-    _descmaxlen = 5000
-
     def __init__(self, name=None, description='', password='', color='',
         model=None, dt_base=None, id_base=0, idx_exp=False , idx_exp_url='',
         idx_exp_time=300, file_ext=False, file_ext_time=300):
@@ -147,9 +139,12 @@ class BaseMetadata(object):
     def idx_exp(self, value):
         """ @property idx_exp setter
         """
-        msg = 'idx_exp value must be boolean!'
-        assert(isinstance(value, bool))
-        self._idx_exp = value
+        try:
+            assert(isinstance(value, bool))
+        except AssertionError:
+            raise ValueError('idx_exp value must be boolean!')
+        else:
+            self._idx_exp = value
 
     @property
     def idx_exp_url(self):

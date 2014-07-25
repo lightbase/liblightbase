@@ -237,7 +237,7 @@ class Group():
         """
         return lbutils.object2json(self.asdict)
 
-    def metaclass(self, base, id):
+    def _metaclass(self, base, id):
         """ 
         Generate group metaclass. The group metaclass is an abstraction of 
         document model defined by group structures.
@@ -307,7 +307,7 @@ class Group():
         def setter(self, value):
             """ Property setter
             """
-            struct_metaclass = base.get_metaclass(structname)
+            struct_metaclass = base.metaclass(structname)
 
             if struct.is_field:
                 value = struct_metaclass(value)

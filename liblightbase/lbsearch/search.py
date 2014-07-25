@@ -1,4 +1,5 @@
-
+from liblightbase import lbutils
+from liblightbase.lbutils.conv import dict2document
 
 class OrderBy(object):
     """ 
@@ -17,38 +18,52 @@ class OrderBy(object):
         self.desc = desc
 
     @property
-    def asc(self)
+    def asc(self):
         """ @property asc getter
         """
         return self._asc
 
     @asc.setter
-    def asc(self, value)
+    def asc(self, value):
         """ @property asc setter
         """
         msg = 'asc property must be list object.'
         assert isinstance(value, list), msg
-        self._asc = asc
+        self._asc = value
 
     @property
-    def desc(self)
+    def desc(self):
         """ @property asc getter
         """
         return self._desc
 
     @desc.setter
-    def desc(self, value)
+    def desc(self, value):
         """ @property asc setter
         """
         msg = 'desc property must be list object.'
         assert isinstance(value, list), msg
-        self._desc = desc
+        self._desc = value
+
+    def _asjson(self, **kw):
+        dict_orderby = {} 
+        for key in dir(self):
+            if not key[0] == "_":
+                dict_orderby[key] = getattr(self, key)
+        return lbutils.object2json(dict_orderby)
+
+    def _asdict(self, **kw):
+        dict_orderby = {} 
+        for key in dir(self):
+            if not key[0] == "_":
+                dict_orderby[key] = getattr(self, key)
+        return dict_orderby
 
 class Search(object):
     """
     """
 
-    def __init__(self, select=[], order_by=OrderBy(),
+    def __init__(self, select=['*'], order_by=OrderBy(),
             literal='', limit=10, offset=10):
         """
         """
@@ -67,5 +82,124 @@ class Search(object):
         # @property offset:
         self.offset = offset
 
-    def json(self, **kw):
+    def _asjson(self, **kw):
+        dict_search = {} 
+        for key in dir(self):
+            if not key[0] == "_":
+                if isinstance(getattr(self, key), OrderBy):
+                    value = getattr(self, key)._asdict()
+                else:
+                    value = getattr(self, key)
+                dict_search[key] = value 
+        return lbutils.object2json(dict_search)
+
+    def _asdict(self, **kw):
+        dict_search = {} 
+        for key in dir(self):
+            if not key[0] == "_":
+                if isinstance(getattr(self, key), OrderBy):
+                    value = getattr(self, key)._asdict()
+                else:
+                    value = getattr(self, key)
+                dict_search[key] = value 
+        return  dict_search
+
+    @property
+    def select(self):
+        """@property select getter
+        """
+        return self._select
+
+    @select.setter
+    def select(self, value):
+        """@property select setter
+        """
+        msg = 'select property must be list object.'
+        assert isinstance(value, list), msg
+        self._select = value
+
+    @property
+    def order_by(self):
+        """@property order_by getter
+        """
+        return self._order_by
+
+    @order_by.setter
+    def order_by(self, value):
+        """@property order_by setter
+        """
+        msg = "order_by propert mut be a OrderBy instance"
+        assert isinstance(value, OrderBy), msg
+        self._order_by = value
+
+    @property
+    def literal(self):
+        """@property literal getter
+        """
+        return self._literal
+
+    @literal.setter
+    def literal(self, value):
+        """@property literal setter
+        """
+        msg = "literal property must be a string"
+        assert isinstance(value, str), msg
+        self._literal = value
+
+    @property
+    def limit(self):
+        """@property limit getter
+        """
+        return self._limit
+
+    @limit.setter
+    def limit(self, value):
+        """@property limit setter
+        """
+        msg = "limit property must be a int"
+        assert isinstance(value, int), msg
+        self._limit = value
+
+    @property
+    def offset(self):
+        """@property offset getter
+        """
+        return self._offset
+
+    @offset.setter
+    def offset(self, value):
+        """@property offset setter
+        """
+        msg = "offset property must be a int"
+        assert isinstance(value, int), msg
+        self._offset = value
+
+class Results(list):
+
+    def __init__(self, base, results):
+        results_object = [dict2document(base, dictobj) for dictobj in results]
+        super(Results, self).__init__(results_object)
+
+class Collection(object):
+
+    def __init__(self, base, results, result_count, limit, offset):
+
+        # @property results:
+        self.results = Results(base, results)
+
+        # @property result_count:
+        self.result_count = result_count
+
+        # @property limit:
+        self.limit = limit
+
+        # @property offset:
+        self.offset = offset
+
+
+
+
+
+
+
 

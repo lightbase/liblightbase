@@ -11,8 +11,6 @@ class Content(list):
     """
 
     def __init__(self):
-        #FIXME: Fix repeated name check for structs in global scope
-
         # @property __structs__: All structures from this level to down.
         # Dictionary in the format {structure name: structure}. This data
         # structure helps to get structure by it's name,

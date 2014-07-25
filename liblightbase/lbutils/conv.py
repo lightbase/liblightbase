@@ -79,6 +79,8 @@ def dict2document(base, dictobj, metaclass=None):
     """
     if metaclass is None:
         metaclass = base.metaclass()
+        if dictobj.get('_metadata'):
+            dictobj.pop('_metadata')
     kwargs = { }
     for member in dictobj:
         struct = base.get_struct(member)
@@ -91,13 +93,13 @@ def dict2document(base, dictobj, metaclass=None):
                     meta_inner_object = dict2document(
                         base=base,
                         dictobj=element,
-                        metaclass=base.get_metaclass(struct.metadata.name))
+                        metaclass=base.metaclass(struct.metadata.name))
                     meta_object.append(meta_inner_object)
             else:
                 meta_object = dict2document(
                     base=base,
                     dictobj=dictobj[member],
-                    metaclass=base.get_metaclass(struct.metadata.name))
+                    metaclass=base.metaclass(struct.metadata.name))
             kwargs[member] = meta_object
     return metaclass(**kwargs)
 

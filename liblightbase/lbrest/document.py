@@ -1,5 +1,12 @@
 # -*- coding: utf-8 -*-
 from liblightbase.lbrest.core import LBRest
+from liblightbase.lbutils.conv import json2base
+from liblightbase.lbutils.conv import document2json
+from liblightbase.lbutils.conv import json2document
+from liblightbase import lbutils
+from liblightbase.lbbase.struct import Base
+from liblightbase.lbsearch.search import Collection
+from liblightbase.lbsearch.search import Search
 
 class DocumentREST(LBRest):
 
@@ -15,33 +22,43 @@ class DocumentREST(LBRest):
         @param base: String or Base object.
         """
         super(DocumentREST, self).__init__(rest_url)
+        msg = 'base must be a Base object.'
+        assert isinstance(base, Base), msg
         self.base = base
 
-    def research(self, search_obj):
+    def get_collection(self, search_obj=None):
         """
         Retrieves collection of documents according to search object.
         @param search_obj: JSON which represents a search object.
         """
-        return self.send_request(self.httpget,
+        if search_obj is not None:
+            msg = 'search_obj must be a Search object.'
+            assert isinstance(search_obj, Search), msg
+        else:
+            search_obj = Search()
+        response = self.send_request(self.httpget,
             url_path=[self.basename, self.doc_prefix],
-            data={self.search_param: search_obj})
+            data={self.search_param: search_obj._asjson()})
+        return Collection(self.base, **lbutils.json2object(response))
 
     def get(self, id):
         """
         Retrieves document by id.
         @param id: The document identify.
         """
-        return self.send_request(self.httpget,
+        response = self.send_request(self.httpget,
             url_path=[self.basename, self.doc_prefix, str(id)])
+        return json2document(self.base, response)
 
     def create(self, document):
         """
         Creates new document.
         @param document: Updated Document.
         """
-        return self.send_request(self.httppost,
+        response = self.send_request(self.httppost,
             url_path=[self.basename, self.doc_prefix],
             data={self.doc_param: document})
+        return int(response)
 
     def update(id, document):
         """

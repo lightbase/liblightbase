@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import inspect
 import json
+from liblightbase.lbutils.exc import ValidationError
 
 class BaseDataType(object):
 
@@ -15,17 +16,18 @@ class BaseDataType(object):
     def __call__(self, value):
         if value == '' or value == None:
             if self.field.required:
-                raise Exception('ValidationError(%s): Required value not provided.' % self.field.name)
+                msg = 'Structure {}: Required value not provided.'
+                raise ValidationError(msg.format(self.field.name))
             if value == None:
                 self._obj = value
                 return value
         try:
             value = self.validate(value)
         except Exception as e:
-            raise Exception('ValidationError(%s): %s' % (self.field.name, e))
+            raise ValidationError('Structure %s: %s' % (self.field.name, e))
 
         if self.field.is_rel:
-            path = inspect.currentframe().f_back.f_locals['path']
+            path = inspect.currentframe().f_back.f_locals.get('path', [])
             path_indices = self._path_indices(path)
 
             if len(path_indices) > 0:
@@ -98,12 +100,4 @@ class Matrix(list):
             m = Matrix()
             self.__setitem__(index, m)
             return super(Matrix, self).__getitem__(index)
-
-class BaseEncoder(json.JSONEncoder):
-
-    def default(self, obj):
-        if isinstance(obj, BaseDataType):
-            return obj._encoded()
-        else:
-            return obj
 
