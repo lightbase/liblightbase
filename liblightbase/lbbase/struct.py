@@ -136,17 +136,21 @@ class Base(object):
         except KeyError:
             raise KeyError("Field %s doesn't exist on base definition." % sname)
 
-    def metaclass(self, sname=None):
+    def metaclass(self, sname=None, valreq=True):
         """ 
         @param sname: structure name to find
         This method return the metaclass corresponding to sname.
         """
         if sname is None:
-            return self.__metaclasses__['__base__']
-        try:
-            return self.__metaclasses__[sname]
-        except KeyError:
-            raise KeyError("Field %s doesn't exist on base definition." % sname)
+            metaclass = self.__metaclasses__['__base__']
+        else:
+            try:
+                metaclass = self.__metaclasses__[sname]
+            except KeyError:
+                msg = "Field %s doesn't exist on base definition." % sname
+                raise KeyError(msg)
+        metaclass.__valreq__ = valreq
+        return metaclass
 
     @property
     def document_model(self):
@@ -236,6 +240,7 @@ class Base(object):
         document model defined by base structures.
         """
         snames = self.content.__snames__
+        slots = ['_' + sname for sname in snames]
         rnames = self.content.__rnames__
         basename = self.metadata.name
         self.__files__[0] = [ ]
@@ -246,14 +251,14 @@ class Base(object):
             Top-level metaclass. Describes the structures defifined by
             document structure model.
             """
+            __valreq__ = True
+            __slots__ = slots
+
             def __init__(self, **kwargs):
                 """ Base metaclass constructor
                 """
-                a = set(rnames)
-                b = set(kwargs.keys())
-                if len(a-b) > 0:
-                    msg = 'Required structure {} not provided'.format(a-b)
-                    raise TypeError(msg)
+                if self.__valreq__:
+                    lbutils.validate_required(rnames, kwargs)
                 for arg in kwargs:
                     if arg in snames:
                         setattr(self, arg, kwargs[arg])

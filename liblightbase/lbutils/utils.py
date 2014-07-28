@@ -39,3 +39,9 @@ def validate_url(url):
     else:
         raise ValueError('"%s" is not a valid url' % url)
 
+def validate_required(rnames, kwargs):
+    a = set(rnames)
+    b = set(kwargs.keys())
+    if len(a-b) > 0:
+        msg = 'Required structure {} not provided'.format(a-b)
+        raise TypeError(msg)

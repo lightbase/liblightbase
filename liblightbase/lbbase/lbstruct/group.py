@@ -253,16 +253,13 @@ class Group():
             Group-level metaclass. Describes the structures defifined by
             document structure model.
             """
+            __valreq__ = True
 
             def __init__(self, **kwargs):
                 """ Group metaclass constructor
                 """
-                a = set(rnames)
-                b = set(kwargs.keys())
-                if len(a-b) > 0:
-                    msg = 'Required structure {} not provided'.format(a-b)
-                    raise TypeError(msg)
-
+                if self.__valreq__:
+                    lbutils.validate_required(rnames, kwargs)
                 for arg in kwargs:
                     if arg in snames:
                         setattr(self, arg, kwargs[arg])
