@@ -2,6 +2,7 @@
 from liblightbase.lbtypes import BaseDataType
 from liblightbase.lbtypes.extended import FileExtension
 from liblightbase import lbutils
+from liblightbase.lbutils.const import PYSTR
 import datetime
 import bcrypt
 
@@ -194,22 +195,20 @@ class Boolean(BaseDataType):
 
     @staticmethod
     def cast_str(value):
+        mapping = {True: True, False: False,
+                   'y': True, 'n': False,
+                   'yes': True, 'no': False,
+                   't': True, 'f': False,
+                   'true': True,'false': False,
+                   'on': True, 'off': False,
+                   '1': True, '0': False}
 
-        validBoolenStrs = {'y': True, 'yes': True, 't': True, 'true': True, 
-            'on': True, '1': True, 'n': False, 'no': False, 
-            'f': False, 'false': False, 'off': False, '0': False}
-
-        if value == True or value == False:
-            return value
-
-        if not isinstance(value, str):
-            raise ValueError('Invalid literal for boolean! Not a string!')
-
-        lower_value = value.lower()
-        if lower_value in validBoolenStrs:
-          return validBoolenStrs[lower_value]
-        else:
-          raise ValueError('Invalid literal for boolean: "%s"' % value)
+        if isinstance(value, PYSTR):
+            value = value.lower()
+        try:
+            return mapping[value]
+        except KeyError:
+            raise ValueError('Invalid literal for boolean: "%s"' % str(value))
 
     def validate(self, value):
         self.__obj__ = value
