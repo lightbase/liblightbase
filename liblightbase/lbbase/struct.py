@@ -240,9 +240,7 @@ class Base(object):
         document model defined by base structures.
         """
         snames = self.content.__snames__
-        slots = ['_' + sname for sname in snames]
         rnames = self.content.__rnames__
-        basename = self.metadata.name
         self.__files__[0] = [ ]
         self.__reldata__[0] = { }
 
@@ -252,7 +250,7 @@ class Base(object):
             document structure model.
             """
             __valreq__ = True
-            __slots__ = slots
+            __slots__ = ['_' + sname for sname in snames]
 
             def __init__(self, **kwargs):
                 """ Base metaclass constructor
@@ -260,12 +258,7 @@ class Base(object):
                 if self.__valreq__:
                     lbutils.validate_required(rnames, kwargs)
                 for arg in kwargs:
-                    if arg in snames:
-                        setattr(self, arg, kwargs[arg])
-                    else:
-                        msg = 'Base {} has no structure named {}'\
-                            .format(basename, arg)
-                        raise AttributeError(msg)
+                    setattr(self, arg, kwargs[arg])
 
         for struct in self.content:
             structname, prop = self._make_meta_prop(self, struct)

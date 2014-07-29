@@ -245,8 +245,6 @@ class Group():
 
         snames = self.content.__snames__
         rnames = self.content.__rnames__
-        structs = self.content.__structs__
-        gname = self.metadata.name
 
         class GroupMetaClass(object):
             """ 
@@ -254,6 +252,7 @@ class Group():
             document structure model.
             """
             __valreq__ = True
+            __slots__ = ['_' + sname for sname in snames]
 
             def __init__(self, **kwargs):
                 """ Group metaclass constructor
@@ -261,19 +260,11 @@ class Group():
                 if self.__valreq__:
                     lbutils.validate_required(rnames, kwargs)
                 for arg in kwargs:
-                    if arg in snames:
-                        setattr(self, arg, kwargs[arg])
-                    else:
-                        msg = 'Group {} has no structure named {}'\
-                            .format(gname, arg)
-                        raise AttributeError(msg)
+                    setattr(self, arg, kwargs[arg])
 
         for struct in self.content:
-
-            # make class properties
             structname, prop = self._make_meta_prop(base, struct)
             setattr(GroupMetaClass, structname, prop)
-
         GroupMetaClass.__name__ = self.metadata.name
         return GroupMetaClass
 
