@@ -74,7 +74,7 @@ class BaseMetadata(object):
         assert(isinstance(value, PYSTR)), msg
         # check ascii characters
         assert all(ord(c) < 128 for c in value), msg
-        self._name = value.lower()
+        self._name = str(value).lower()
 
     @property
     def description(self):

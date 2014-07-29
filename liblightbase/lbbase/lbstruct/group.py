@@ -54,7 +54,7 @@ class GroupMetadata(object):
         value = value.lower()
         msg = 'Group name %s is a reserved name' % value
         assert value not in RESERVED_STRUCT_NAMES, msg
-        self._name = value
+        self._name = str(value)
 
     @property
     def alias(self):
