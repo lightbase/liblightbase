@@ -117,6 +117,8 @@ def document2dict(base, document, struct=None):
         try: value = getattr(document, sname)
         except AttributeError: pass
         else:
+            if isinstance(value, property):
+                continue
             _struct = base.get_struct(sname)
             if _struct.is_field:
                 dictobj[sname] = value
