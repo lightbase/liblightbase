@@ -194,12 +194,22 @@ class Boolean(BaseDataType):
 
     @staticmethod
     def cast_str(value):
-        if value == 'true':
-            return True
-        elif value == 'false':
-            return False
+
+        validBoolenStrs = {'y': True, 'yes': True, 't': True, 'true': True, 
+            'on': True, '1': True, 'n': False, 'no': False, 
+            'f': False, 'false': False, 'off': False, '0': False}
+
+        if value == True or value == False:
+            return value
+
+        if not isinstance(value, str):
+            raise ValueError('Invalid literal for boolean! Not a string!')
+
+        lower_value = value.lower()
+        if lower_value in validBoolenStrs:
+          return validBoolenStrs[lower_value]
         else:
-            raise ValueError('Value must be true or false.')
+          raise ValueError('Invalid literal for boolean: "%s"' % value)
 
     def validate(self, value):
         self.__obj__ = value
