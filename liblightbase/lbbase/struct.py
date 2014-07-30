@@ -1,5 +1,6 @@
 
 from liblightbase.lbbase.metadata import BaseMetadata
+from liblightbase.lbdoc.metaclass import generate_metaclass
 from liblightbase.lbbase.content import Content
 from liblightbase import lbtypes
 from liblightbase import lbutils
@@ -43,7 +44,7 @@ class Base(object):
         # metaclass}. All metaclasses are created here, so user can acces them
         # to user later, using the @method metaclass().
         self.__metaclasses__ = {structname: self.get_struct(structname)\
-            ._metaclass(self, 0) for structname in self.__allstructs__}
+            ._metaclass(self) for structname in self.__allstructs__}
         self.__metaclasses__['__base__'] = self._metaclass()
 
     @property
@@ -239,87 +240,6 @@ class Base(object):
         Generate base metaclass. The base metaclass is an abstraction of 
         document model defined by base structures.
         """
-        snames = self.content.__snames__
-        rnames = self.content.__rnames__
         self.__files__[0] = [ ]
         self.__reldata__[0] = { }
-
-        class BaseMetaClass(object):
-            """ 
-            Top-level metaclass. Describes the structures defifined by
-            document structure model.
-            """
-            __valreq__ = True
-            __slots__ = ['_' + sname for sname in snames]
-
-            def __init__(self, **kwargs):
-                """ Base metaclass constructor
-                """
-                if self.__valreq__:
-                    lbutils.validate_required(rnames, kwargs)
-                for arg in kwargs:
-                    setattr(self, arg, kwargs[arg])
-
-        for struct in self.content:
-            structname, prop = self._make_meta_prop(self, struct)
-            setattr(BaseMetaClass, structname, prop)
-        BaseMetaClass.__name__ = self.metadata.name
-        return BaseMetaClass
-
-    def _make_meta_prop(self, base, struct):
-        """
-        Make python's property based on structure attributes.
-        @param base: Base object.
-        @param struct: Field or Group object.
-        """
-
-        # Get structure name.
-        if struct.is_field:
-            structname = struct.name
-        elif struct.is_group:
-            structname = struct.metadata.name
-
-        # create "private" attribute name
-        attr_name = '_' + structname
-
-        def getter(self):
-            """ Property getter
-            """
-            value = getattr(self, attr_name)
-            if struct.is_field:
-                return getattr(value, '__value__')
-            return value
-
-        def setter(self, value):
-            """ Property setter
-            """
-            struct_metaclass = base.metaclass(structname)
-
-            if struct.is_field:
-                value = struct_metaclass(value)
-            elif struct.is_group:
-                if struct.metadata.multivalued:
-
-                    msg = 'object {} should be instance of {}'.format(
-                        struct.metadata.name, list)
-                    assert isinstance(value, list), msg
-
-                    msg = '{} list elements should be instances of {}'.format(
-                        struct.metadata.name, struct_metaclass)
-                    assertion = all(isinstance(element, struct_metaclass) \
-                        for element in value)
-                    assert assertion, msg
-
-                else:
-                    msg = '{} object should be an instance of {}'.format(
-                        struct.metadata.name, struct_metaclass)
-                    assert isinstance(value, struct_metaclass), msg
-
-            setattr(self, attr_name, value)
-
-        def deleter(self):
-            """ Property deleter
-            """
-            delattr(self, attr_name)
-
-        return structname, property(getter, setter, deleter, structname)
+        return generate_metaclass(self, self)

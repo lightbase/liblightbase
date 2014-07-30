@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import voluptuous
 from liblightbase.lbbase.lbstruct.properties import Multivalued
+from liblightbase.lbdoc.metaclass import generate_metaclass
 from liblightbase.lbutils.const import RESERVED_STRUCT_NAMES
 from liblightbase.lbutils.const import PYSTR
 from liblightbase import lbutils
@@ -237,93 +238,10 @@ class Group():
         """
         return lbutils.object2json(self.asdict)
 
-    def _metaclass(self, base, id):
+    def _metaclass(self, base):
         """ 
         Generate group metaclass. The group metaclass is an abstraction of 
         document model defined by group structures.
         """
-
-        snames = self.content.__snames__
-        rnames = self.content.__rnames__
-
-        class GroupMetaClass(object):
-            """ 
-            Group-level metaclass. Describes the structures defifined by
-            document structure model.
-            """
-            __valreq__ = True
-            __slots__ = ['_' + sname for sname in snames]
-
-            def __init__(self, **kwargs):
-                """ Group metaclass constructor
-                """
-                if self.__valreq__:
-                    lbutils.validate_required(rnames, kwargs)
-                for arg in kwargs:
-                    setattr(self, arg, kwargs[arg])
-
-        for struct in self.content:
-            structname, prop = self._make_meta_prop(base, struct)
-            setattr(GroupMetaClass, structname, prop)
-        GroupMetaClass.__name__ = self.metadata.name
-        return GroupMetaClass
-
-    def _make_meta_prop(self, base, struct):
-        """
-        Make python's property based on structure attributes.
-        @param base: Base object.
-        @param struct: Field or Group object.
-        """
-
-        # Get structure name.
-        if struct.is_field:
-            structname = struct.name
-        elif struct.is_group:
-            structname = struct.metadata.name
-
-        # create "private" attribute name
-        attr_name = '_' + structname
-
-        def getter(self):
-            """ Property getter
-            """
-            value = getattr(self, attr_name)
-            if struct.is_field:
-                return getattr(value, '__value__')
-            return value
-
-        def setter(self, value):
-            """ Property setter
-            """
-            struct_metaclass = base.metaclass(structname)
-
-            if struct.is_field:
-                value = struct_metaclass(value)
-            elif struct.is_group:
-                if struct.metadata.multivalued:
-
-                    msg = 'object {} should be instance of {}'.format(
-                        struct.metadata.name, list)
-                    assert isinstance(value, list), msg
-
-                    msg = '{} list elements should be instances of {}'.format(
-                        struct.metadata.name, struct_metaclass)
-                    assertion = all(isinstance(element, struct_metaclass) \
-                        for element in value)
-                    assert assertion, msg
-
-                else:
-                    msg = '{} object should be an instance of {}'.format(
-                        struct.metadata.name, struct_metaclass)
-                    assert isinstance(value, struct_metaclass), msg
-
-            setattr(self, attr_name, value)
-
-        def deleter(self):
-            """ Property deleter
-            """
-            delattr(self, attr_name)
-
-        return structname, property(getter,
-            setter, deleter, structname)
+        return generate_metaclass(self, base)
 

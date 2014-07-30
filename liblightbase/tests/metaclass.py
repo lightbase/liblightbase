@@ -27,7 +27,7 @@ class LBDocumentTestCase(unittest.TestCase):
 
     def test_create_metaclasses(self):
         for struct in self.base.__allstructs__:
-           MetaClass = self.base.get_struct(struct)._metaclass(self.base, 0)
+           MetaClass = self.base.get_struct(struct)._metaclass(self.base)
 
     def test_create_document(self):
 
@@ -92,7 +92,7 @@ class LBDocumentTestCase(unittest.TestCase):
                         'teste' : 'False'
                     },
                     {
-                        'teste' : 'False'
+                        'teste' : 'True'
                     }
                 ]
            },
@@ -101,6 +101,10 @@ class LBDocumentTestCase(unittest.TestCase):
         pessoa1 = lbutils.object2json(pessoa1)
 
         pessoa2 = json2document(self.base, pessoa1)
+        #Gmulti = self.base.metaclass('gmulti')
+        #Gmulti.teste= True
+        #pessoa2.dependente.gmulti[1] = Gmulti() 
+        #pessoa2.dependente.gmulti.append(55)
         j = document2json(self.base, pessoa2, indent=4)
 
         fd = open('/tmp/document.json', 'w+')
