@@ -3,6 +3,7 @@ from liblightbase.lbbase.metadata import BaseMetadata
 from liblightbase.lbdoc.metaclass import generate_metaclass
 from liblightbase.lbbase.content import Content
 from liblightbase import lbutils
+from liblightbase.lbutils import exc
 from liblightbase.lbdocument import Tree
 import voluptuous
 
@@ -97,7 +98,7 @@ class Base(object):
             # If process goes wrong, clear the docs memory area
             del self.__files__[id]
             del self.__reldata__[id]
-            raise e.__class__(e)
+            raise exc.ValidationError(e)
 
         # Put document metadata back
         document['_metadata'] = _meta.__dict__
