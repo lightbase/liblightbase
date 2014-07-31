@@ -124,7 +124,7 @@ class FileExtension(BaseDataType):
 
     """ Represents an extension for file-based Fields
     """
-    def __init__(self, base, field, id, tmp_dir=None):
+    def __init__(self, base, field, id):
         super(FileExtension, self).__init__(base, field, id)
 
     @staticmethod
@@ -132,6 +132,8 @@ class FileExtension(BaseDataType):
         return lbutils.json2object(value)
 
     def __call__(self, value):
+        if value is None:
+            return value
         try:
             filemask = FileMask(**value)
         except TypeError as e:
