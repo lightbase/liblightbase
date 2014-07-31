@@ -242,4 +242,4 @@ class Base(object):
         """
         self.__files__[0] = [ ]
         self.__reldata__[0] = { }
-        return generate_metaclass(self, self)
+        return generate_metaclass(self)

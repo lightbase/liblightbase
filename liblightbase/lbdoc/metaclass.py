@@ -1,21 +1,22 @@
 from liblightbase import lbutils
 
-def generate_metaclass(self, base):
+def generate_metaclass(struct, base=None):
     """ 
     Generate document metaclass. The document metaclass 
     is an abstraction of document model defined by base 
     structures.
+    @param struct: Field or Group object.
+    @param base: Base object or None.
     """
-
-    snames = self.content.__snames__
-    rnames = self.content.__rnames__
+    if base is None: base = struct
+    snames = struct.content.__snames__
+    rnames = struct.content.__rnames__
 
     class MetaClass(object):
         """ 
         Document metaclass. Describes the structures defifined by
         document structure model.
         """
-
         # @property __valreq__: Flag used to validate required
         # fields or not.
         __valreq__ = True
@@ -33,19 +34,18 @@ def generate_metaclass(self, base):
             for arg in kwargs:
                 setattr(self, arg, kwargs[arg])
 
-    for struct in self.content:
-        structname, prop = generate_property(self, base, struct)
+    for childstruct in struct.content:
+        structname, prop = generate_property(base, childstruct)
         setattr(MetaClass, structname, prop)
-    MetaClass.__name__ = self.metadata.name
+    MetaClass.__name__ = struct.metadata.name
     return MetaClass
 
-def generate_property(self, base, struct):
+def generate_property(base, struct):
     """
     Make python's property based on structure attributes.
     @param base: Base object.
     @param struct: Field or Group object.
     """
-    this = self
     if struct.is_field:
         structname = struct.name
     elif struct.is_group:
@@ -72,7 +72,8 @@ def generate_property(self, base, struct):
                 assertion = all(isinstance(element, struct_metaclass) \
                     for element in value)
                 assert assertion, msg
-                value = generate_multimetaclass(this, struct, struct_metaclass)(value)
+                value = generate_multimetaclass(struct,
+                    struct_metaclass)(value)
             else:
                 msg = '{} object should be an instance of {}'.format(
                     struct.metadata.name, struct_metaclass)
@@ -85,7 +86,7 @@ def generate_property(self, base, struct):
     return structname, property(getter,
         setter, deleter, structname)
 
-def generate_multimetaclass(self, struct, struct_metaclass):
+def generate_multimetaclass(struct, struct_metaclass):
     """ 
     Generate metaclass to use with multivalued groups.
     @param struct: Field or Group object
@@ -117,25 +118,24 @@ def generate_multimetaclass(self, struct, struct_metaclass):
 
     return MultiGroupMetaClass
 
-def generate_field_metaclass(self, base):
+def generate_field_metaclass(field, base):
     """
     Generate field metaclass. The field metaclass 
     validates incoming value against fields' datatype. 
+    @param field: Field object.
+    @param base: Base object.
     """
-    field_schema = self._datatype.__schema__
-    field = self
 
     class FieldMetaClass(object):
         """ 
         Field MetaClass. validates incoming 
         value against fields' datatype.
         """
-
         def __init__(self, value):
             self.__value__ = value
 
         def __setattr__(self, obj, value):
-            validator = field_schema(base, field, 0)
+            validator = field._datatype.__schema__(base, field, 0)
             if field.multivalued is True:
                 msg = 'Expected type list for {}, but found {}'
                 assert isinstance(value, list), msg.format(
@@ -148,5 +148,5 @@ def generate_field_metaclass(self, base):
         def __getattr__(self, obj):
             return super(FieldMetaClass, self).__getattribute__('__value__')
 
-    FieldMetaClass.__name__ = self.name
+    FieldMetaClass.__name__ = field.name
     return FieldMetaClass
