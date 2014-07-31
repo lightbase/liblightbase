@@ -9,14 +9,14 @@ class FileMask(object):
     """
 
     def __init__(self, id_file, filename, mimetype, filesize, uuid):
-        if id_file:
+        if id_file is not None:
             self.id_file = UUID(id_file)
         else:
             self.id_file = id_file
         self.filename = filename
         self.mimetype = mimetype
         self.filesize = filesize
-        if uuid:
+        if uuid is not None:
             self.uuid = UUID(uuid)
         else:
             self.uuid = uuid
@@ -117,8 +117,8 @@ class FileMask(object):
         if isinstance(value, accepted_types):
             self._uuid = value
         else:
-            raise TypeError('uuid must be of type %s but got %s.' % (
-                accepted_types, value))
+            msg = 'Invalid UUID: {}'
+            raise TypeError(msg.format(str(value)))
 
 class FileExtension(BaseDataType):
 
@@ -137,7 +137,9 @@ class FileExtension(BaseDataType):
         try:
             filemask = FileMask(**value)
         except TypeError as e:
-            raise Exception('Malformed file mask: %s' % e)
+            msg = 'Structure {}: Malformed file mask. {}'
+            raise Exception(msg.format(self.field.name,
+                e))
 
         filemask = filemask.__dict__
         if any([filemask[v] for v in filemask]):
