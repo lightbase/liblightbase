@@ -42,5 +42,7 @@ RESERVED_STRUCT_NAMES = [
 
     # Other restrictions.
     '_metadata',
-    '__init__'
+    '__init__',
+    '__base__',
+    '__valreq__'
 ]

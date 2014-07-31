@@ -2,7 +2,6 @@
 from liblightbase.lbbase.metadata import BaseMetadata
 from liblightbase.lbdoc.metaclass import generate_metaclass
 from liblightbase.lbbase.content import Content
-from liblightbase import lbtypes
 from liblightbase import lbutils
 from liblightbase.lbdocument import Tree
 import voluptuous

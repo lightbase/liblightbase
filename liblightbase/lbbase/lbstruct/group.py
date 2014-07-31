@@ -212,13 +212,11 @@ class Group():
         """ Get relational fields
         """
         rel_fields = { }
-
         for struct in self.content:
             if struct.is_field and struct.is_rel:
                 rel_fields[struct.name] = struct
             elif struct.is_group:
                 rel_fields.update(struct.relational_fields)
-
         return rel_fields
 
     @property
