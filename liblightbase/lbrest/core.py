@@ -19,10 +19,10 @@ class LBRest(object):
     httpdelete = 'DELETE'
 
     # @property doc_prefix:
-    doc_prefix = 'reg'
+    doc_prefix = 'doc'
 
     # @property file_prefix:
-    file_prefix = 'doc'
+    file_prefix = 'file'
 
     # @property base_param:
     base_param = 'json_base'
