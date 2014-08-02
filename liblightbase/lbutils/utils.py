@@ -1,4 +1,5 @@
-
+#!/usr/env python
+# -*- coding: utf-8 -*-
 import re
 
 class reify(object):
@@ -39,3 +40,26 @@ def validate_url(url):
     else:
         raise ValueError('"%s" is not a valid url' % url)
 
+def validate_required(rnames, kwargs):
+    a = set(rnames)
+    b = set(kwargs.keys())
+    if len(a-b) > 0:
+        msg = 'Required structure {} not provided'.format(a-b)
+        raise TypeError(msg)
+
+def get_attr(obj):
+    """
+    Get a dict with attributes and types
+    :param obj: Python object
+    :return: List with elements
+    """
+    out = []
+    for elm in obj.__dict__.keys():
+        a = {
+            'name': elm,
+            'type': type(obj.__dict__.get(elm)),
+            'value': getattr(obj, elm)
+        }
+        out.append(a)
+
+    return out

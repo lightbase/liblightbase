@@ -5,6 +5,7 @@ from liblightbase.lbbase.content import Content
 from liblightbase.lbbase.lbstruct.field import Field
 from liblightbase.lbbase.lbstruct.group import Group
 from liblightbase.lbbase.lbstruct.group import GroupMetadata
+from liblightbase import pytypes
 
 def json2base(jsonobj):
     """
@@ -117,6 +118,8 @@ def document2dict(base, document, struct=None):
         try: value = getattr(document, sname)
         except AttributeError: pass
         else:
+            if isinstance(value, property):
+                continue
             _struct = base.get_struct(sname)
             if _struct.is_field:
                 dictobj[sname] = value
@@ -136,3 +139,138 @@ def document2dict(base, document, struct=None):
                 dictobj[sname] = _value
     return dictobj
 
+def pyobject2base(obj):
+    """
+    Convert python object to base
+    :param obj: Python object
+    :return: LBBase instance
+    """
+    base_metadata = dict(
+            #id_base=1,
+            name = getattr(type(obj), '__name__'),
+            description = getattr(type(obj), '__name__'),
+            password=None,
+            idx_exp = False,
+            #idx_exp_url = 'index_url',
+            idx_exp_time=300,
+            file_ext=True,
+            file_ext_time=300,
+            color='#FFFFFF'
+        )
+
+    content_list = Content()
+    base_metadata = BaseMetadata(**base_metadata)
+
+    attributes = lbutils.get_attr(obj)
+    for elm in attributes:
+        # Generate field object for every class attribute
+        content_list.append(attribute2lbfield(elm))
+
+
+    base = Base(
+            metadata=base_metadata,
+            content=content_list
+        )
+
+    return base
+
+def attribute2lbfield(elm):
+    """
+    Convert object attributes to LB Field
+    :param elm: Elm dictionary of attributes description
+    :return: LB Field Object
+    """
+    if elm['type'] == dict:
+        # Consider it a group
+        content_list = Content()
+
+        for group_elm in elm['value'].keys():
+            # Now convert to field every group element
+            dict_elm = {
+                    'name': group_elm,
+                    'type': type(elm['value'][group_elm]),
+                    'value': elm['value'][group_elm]
+                }
+            print(group_elm)
+            group_field = attribute2lbfield(group_elm)
+            content_list.append(group_field)
+
+        group_metadata = dict(
+            name = elm['name'],
+            alias= elm['name'],
+            description = elm['name'],
+            multivalued = False
+        )
+        group_metadata = GroupMetadata(**group_metadata)
+
+        group = Group(
+            metadata=group_metadata,
+            content=content_list,
+        )
+        return group
+
+    elif elm['type'] == list:
+        # Check for multivalued group
+        if type(elm['value'][0]) == dict:
+            content_list = Content()
+            # Now convert to field every group element
+            for dict_key in elm['value'][0].keys():
+                dict_elm = {
+                    'name': dict_key,
+                    'type': type(elm['value'][0][dict_key]),
+                    'value': elm['value'][0][dict_key]
+                }
+
+                group_field = attribute2lbfield(dict_elm)
+                content_list.append(group_field)
+
+            group_metadata = dict(
+                name = elm['name'],
+                alias= elm['name'],
+                description = elm['name'],
+                multivalued = True
+            )
+            group_metadata = GroupMetadata(**group_metadata)
+
+            group = Group(
+                metadata=group_metadata,
+                content=content_list,
+            )
+            return group
+
+        # Consider it a list
+        lbtype = pytypes.pytype2lbtype(type(elm['value'][0]))
+        #print(type(elm['value'][0]))
+        #print(lbtype)
+        field = dict(
+            name = elm['name'],
+            description = elm['name'],
+            alias=elm['name'],
+            datatype = lbtype,
+            indices = ['Textual'],
+            multivalued = True,
+            required = True
+        )
+
+        field = Field(**field)
+        return field
+    else:
+        lbtype = pytypes.pytype2lbtype(elm['type'])
+
+        # Defaults to Text
+        if lbtype is None:
+            lbtype = 'Text'
+
+        field = dict(
+            name = elm['name'],
+            description = elm['name'],
+            alias=elm['name'],
+            datatype = lbtype,
+            indices = ['Textual'],
+            multivalued = False,
+            required = True
+        )
+
+        field = Field(**field)
+
+        return field

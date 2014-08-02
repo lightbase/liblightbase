@@ -1,6 +1,7 @@
 #!/usr/env python
 # -*- coding: utf-8 -*-
 from liblightbase.lbbase.lbstruct.properties import *
+from liblightbase.lbdoc.metaclass import generate_field_metaclass
 from liblightbase.lbutils.const import RESERVED_STRUCT_NAMES
 from liblightbase.lbutils.const import PYSTR
 from liblightbase import lbutils
@@ -73,7 +74,7 @@ class Field(object):
         value = value.lower()
         msg = 'Field name %s is a reserved name' % value
         assert value not in RESERVED_STRUCT_NAMES, msg
-        self._name = value
+        self._name = str(value)
 
     @property
     def alias(self):
@@ -213,34 +214,9 @@ class Field(object):
         """
         return lbutils.object2json(self.asdict)
 
-    def _metaclass(self, base, id):
-
-        field_schema = self._datatype.__schema__
-        field = self
-
-        class FieldMetaClass(object):
-
-            def __init__(self, value):
-                self.__value__ = value
-
-            def __setattr__(self, obj, value):
-                validator = field_schema(base, field, id)
-                if field.multivalued is True:
-                    try:
-                        assert isinstance(value, list)
-                    except AssertionError:
-                        msg = 'Expected type list for {}, but found {}'
-                        raise ValueError(msg.format(field.name, type(value)))
-                    value = [validator(element) for element in value]
-                else:
-                    value = validator(value)
-                super(FieldMetaClass, self).__setattr__('__value__', value)
-
-            def __getattr__(self, obj):
-                return super(FieldMetaClass, self).__getattribute__('__value__')
-
-        FieldMetaClass.__name__ = self.name
-        return FieldMetaClass
-
-
-
+    def _metaclass(self, base):
+        """
+        Generate field metaclass. The field metaclass 
+        validates incoming value against fields' datatype. 
+        """
+        return generate_field_metaclass(self, base)

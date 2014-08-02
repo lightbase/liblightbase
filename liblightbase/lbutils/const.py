@@ -4,8 +4,10 @@ PY3 = sys.version_info[0] == 3
 
 if PY3:
     PYSTR = str
+    PYUNICODE = str
 else:
     PYSTR = basestring
+    PYUNICODE = unicode
 
 
 RESERVED_STRUCT_NAMES = [
@@ -42,5 +44,7 @@ RESERVED_STRUCT_NAMES = [
 
     # Other restrictions.
     '_metadata',
-    '__init__'
+    '__init__',
+    '__base__',
+    '__valreq__'
 ]

@@ -21,6 +21,7 @@ LightBase Library""",
           'voluptuous',
           'bcrypt',
           'requests',
-          'python-dateutil'
+          'python-dateutil',
+          'six'
       ]
       )

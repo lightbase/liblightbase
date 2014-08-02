@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from liblightbase.lbrest.core import LBRest
-from liblightbase.lbutils.conv import json2base
 from liblightbase.lbutils.conv import document2json
 from liblightbase.lbutils.conv import json2document
-from liblightbase import lbutils
 from liblightbase.lbbase.struct import Base
 from liblightbase.lbsearch.search import Collection
 from liblightbase.lbsearch.search import Search
+from liblightbase import lbutils
 
 class DocumentREST(LBRest):
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ..lbutils import Property, isiterable
+from ..lbutils.pyutils import Property, isiterable
 
 class lbtype(object):
     """ Base for all lbtype classes

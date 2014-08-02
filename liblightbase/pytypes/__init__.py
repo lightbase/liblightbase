@@ -35,3 +35,20 @@ def get_lbtype(type_name, allow_meta=False):
         raise TypeError('%s is not a valid lbtype or lbtype meta' %lbtype_function)
     
     return lbtype_function
+
+def pytype2lbtype(type_name, return_class=False):
+    """
+    Convert a Python type in an LBType
+    :param type_name: Python type to be converted
+    :return: LBType class name
+    """
+    get_class = lambda x: globals()[x]
+    for lbtype in globals():
+        lbtype_class = get_class(lbtype)
+        inner_type = getattr(lbtype_class, 'inner_type', None)
+        if inner_type == type_name:
+            if return_class:
+                return getattr(lbtype_class, 'lb_type')
+            else:
+                class_instance = getattr(lbtype_class, 'lb_type')
+                return getattr(class_instance, '__name__')

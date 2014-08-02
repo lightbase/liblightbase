@@ -8,6 +8,9 @@ class lbtype(object):
     """
     # A type or list of types that this lbtype should allow
     inner_type = None
+
+    # Data type mapping for lightbase
+    lb_type = None
     
     # Inner value, should not be externally used
     _value = None
@@ -22,7 +25,15 @@ class lbtype(object):
             a list of values
         """
         return self.inner_type if isiterable(self.inner_type, allow_string=False) else (self.inner_type,)
-    
+
+    @property
+    def lb_types(self):
+        """ As inner_type can be a single value or
+            a list of values, inner_types always return
+            a list of values
+        """
+        return self.lb_type if isiterable(self.lb_type, allow_string=False) else (self.lb_type,)
+
     def __eq__(self,value):
         """ Comparing equals with this class
         """
