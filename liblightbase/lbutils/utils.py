@@ -54,7 +54,6 @@ def get_attr(obj):
     :return: List with elements
     """
     out = []
-    print(obj)
     for elm in obj.__dict__.keys():
         a = {
             'name': elm,
