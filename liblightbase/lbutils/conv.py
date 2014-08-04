@@ -180,7 +180,7 @@ def attribute2lbfield(elm):
     :param elm: Elm dictionary of attributes description
     :return: LB Field Object
     """
-    print(elm)
+    #print(elm)
     # First theck if it's an object
     try:
         content_list = Content()
