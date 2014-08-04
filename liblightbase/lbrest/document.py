@@ -14,13 +14,13 @@ class DocumentREST(LBRest):
     http to the LighBase REST API.
     """
 
-    def __init__(self, rest_url, base):
+    def __init__(self, rest_url, base, response_object=False):
         """
         Class constructor.
         @param rest_url: The REST URL.
         @param base: String or Base object.
         """
-        super(DocumentREST, self).__init__(rest_url)
+        super(DocumentREST, self).__init__(rest_url, response_object)
         msg = 'base must be a Base object.'
         assert isinstance(base, Base), msg
         self.base = base
