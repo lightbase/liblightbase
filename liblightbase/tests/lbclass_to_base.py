@@ -37,6 +37,10 @@ class TestClassToBase(unittest.TestCase):
             ],
             courses=['Computação', 'Matemática'],
             foundation_date=datetime.strptime('2014-08-02', '%Y-%m-%d'),
+            graduation={
+                'grad_name': 'Ensino Fundamental',
+                'grad_alias': 'Grau 1'
+            },
             address='Rua Saturnino de Brito'
         )
         pass

@@ -10,13 +10,14 @@ class School(object):
     Test class to map as object
     """
 
-    def __init__(self, name, city, country, teachers, courses, foundation_date, address=None, cep=None):
+    def __init__(self, name, city, country, teachers, courses, foundation_date, graduation, address=None, cep=None):
         self.name = name
         self.city = city
         self.country = country
         self.teachers = teachers
         self.courses = courses
         self.foundation_date = foundation_date
+        self.graduation = graduation
         self.address = address
         self.cep = cep
 
@@ -121,3 +122,20 @@ class School(object):
         """
         assert isinstance(value, datetime.datetime), "Foundation should be date"
         self._foundation_date = value
+
+    @property
+    def graduation(self):
+        """
+        @property university
+        """
+        return self._graduation
+
+    @graduation.setter
+    def graduation(self, value):
+        assert isinstance(value, dict), "This should be a dict"
+        valid_keys = ['grad_name', 'grad_alias']
+        for key in value.keys():
+            if key not in valid_keys:
+                raise TypeError('Invalid key %s on dict',key)
+
+        self._graduation = value

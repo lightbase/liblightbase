@@ -53,7 +53,7 @@ class LBRestTestCase(lbjson_test.TestJSON):
 
         #self.rest_url = "http://localhost/api"
         self.rest_url = "http://127.0.0.1/api"
-        self.baserest = lbrest.BaseREST(rest_url=self.rest_url)
+        self.baserest = lbrest.BaseREST(rest_url=self.rest_url, response_object=True)
         pass
 
     def test_rest_communication(self):

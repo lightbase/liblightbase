@@ -36,8 +36,9 @@ class LBRest(object):
     # @property search_param:
     search_param = '$$'
 
-    def __init__(self, rest_url):
+    def __init__(self, rest_url, response_object=False):
         self.rest_url = rest_url
+        self.response_object = response_object
 
     def to_url(self, *args):
         """ Make a list of args and join "/" between list elements
@@ -72,6 +73,9 @@ class LBRest(object):
         # Make http request
         full_url = self.to_url(self.rest_url, *url_path)
         response = request_method(full_url, cookies=self.cookies, **kwargs)
+        if self.response_object:
+            # Return response object for application level error handling
+            return response
         try:
             # Check if request has gone wrong
             response.raise_for_status()

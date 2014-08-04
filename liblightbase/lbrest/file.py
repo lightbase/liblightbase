@@ -10,13 +10,13 @@ class FileREST(LBRest):
     http to the LighBase REST API.
     """
 
-    def __init__(self, rest_url, base):
+    def __init__(self, rest_url, base, response_object=False):
         """
         Class constructor.
         @param rest_url: The REST URL.
         @param base: String or Base object.
         """
-        super(FileREST, self).__init__(rest_url)
+        super(FileREST, self).__init__(rest_url, response_object)
         self.base = base
 
     def get(self, id, sys_dir='/tmp'):

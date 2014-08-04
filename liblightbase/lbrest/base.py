@@ -10,12 +10,12 @@ class BaseREST(LBRest):
     """
     """
 
-    def __init__(self, rest_url):
+    def __init__(self, rest_url, response_object=False):
         """
         @param rest_url:
         @param basename:
         """
-        super(BaseREST, self).__init__(rest_url)
+        super(BaseREST, self).__init__(rest_url, response_object)
 
     def search(self, search_obj='{}'):
         """
