@@ -7,6 +7,7 @@ from liblightbase.lbbase.lbstruct.group import Group
 from liblightbase.lbbase.lbstruct.group import GroupMetadata
 from liblightbase import pytypes
 
+
 def json2base(jsonobj):
     """
     Convert a JSON string to liblightbase.lbbase.struct.Base object.
@@ -14,12 +15,14 @@ def json2base(jsonobj):
     """
     return dict2base(dictobj=lbutils.json2object(jsonobj))
 
+
 def base2json(base):
     """
     Convert a liblightbase.lbbase.struct.Base object to JSON string.
     @param jsonobj: JSON string.
     """
     return base.json
+
 
 def json2document(base, jsonobj):
     """
@@ -29,12 +32,14 @@ def json2document(base, jsonobj):
     """
     return dict2document(base=base, dictobj=lbutils.json2object(jsonobj))
 
+
 def document2json(base, document, **kw):
     """
     Convert a BaseMetaClass object to JSON string.
     @param document: BaseMetaClass object
     """
     return lbutils.object2json(document2dict(base, document), **kw)
+
 
 def dict2base(dictobj):
     """
@@ -53,7 +58,7 @@ def dict2base(dictobj):
                 group_metadata = GroupMetadata(**obj['group']['metadata'])
                 _dimension = dimension
                 if group_metadata.multivalued:
-                    _dimension = _dimension + 1
+                    _dimension += 1
                 group_content = assemble_content(obj['group']['content'],
                     dimension=_dimension)
                 group = Group(metadata = group_metadata,
@@ -70,6 +75,7 @@ def dict2base(dictobj):
     base = Base(metadata=BaseMetadata(**dictobj['metadata']),
         content=assemble_content(dictobj['content']))
     return base
+
 
 def dict2document(base, dictobj, metaclass=None):
     """
@@ -103,6 +109,7 @@ def dict2document(base, dictobj, metaclass=None):
                     metaclass=base.metaclass(struct.metadata.name))
             kwargs[member] = meta_object
     return metaclass(**kwargs)
+
 
 def document2dict(base, document, struct=None):
     """
@@ -139,6 +146,7 @@ def document2dict(base, document, struct=None):
                 dictobj[sname] = _value
     return dictobj
 
+
 def pyobject2base(obj):
     """
     Convert python object to base
@@ -173,6 +181,7 @@ def pyobject2base(obj):
         )
 
     return base
+
 
 def attribute2lbfield(elm):
     """
