@@ -78,7 +78,7 @@ class TestClassToBase(unittest.TestCase):
         Test pytype conversion to LB Field
         """
         saida = lbutils.get_attr(self.school)
-        lba = conv.attribute2lbfield(saida[0])
+        lba = conv.attribute2lbfield(*saida[0])
         print(lba)
         self.assertIsInstance(lba, Field)
 

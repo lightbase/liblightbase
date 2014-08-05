@@ -1,4 +1,7 @@
 
+from datetime import datetime
+from liblightbase.lbutils.const import PYSTR
+
 class DocumentMetadata(object):
 
     """ 
@@ -86,6 +89,8 @@ class DocumentMetadata(object):
     def dt_doc(self, value):
         """ @property dt_doc setter
         """
+        if isinstance(value, PYSTR):
+            value = datetime.strptime(value, '%d/%m/%Y %H:%M:%S')
         accepted_types = (datetime,)
         self._attr_setter('dt_doc', value, accepted_types)
 
@@ -99,6 +104,8 @@ class DocumentMetadata(object):
     def dt_last_up(self, value):
         """ @property dt_last_up setter
         """
+        if isinstance(value, PYSTR):
+            value = datetime.strptime(value, '%d/%m/%Y %H:%M:%S')
         accepted_types = (datetime,)
         self._attr_setter('dt_last_up', value, accepted_types)
 
@@ -112,6 +119,8 @@ class DocumentMetadata(object):
     def dt_idx(self, value):
         """ @property dt_idx setter
         """
+        if isinstance(value, PYSTR):
+            value = datetime.strptime(value, '%d/%m/%Y %H:%M:%S')
         accepted_types = (datetime, type(None))
         self._attr_setter('dt_idx', value, accepted_types)
 
@@ -125,5 +134,7 @@ class DocumentMetadata(object):
     def dt_del(self, value):
         """ @property dt_del setter
         """
+        if isinstance(value, PYSTR):
+            value = datetime.strptime(value, '%d/%m/%Y %H:%M:%S')
         accepted_types = (datetime, type(None))
         self._attr_setter('dt_del', value, accepted_types)

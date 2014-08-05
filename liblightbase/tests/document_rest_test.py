@@ -38,6 +38,10 @@ class DocumentRESTTest(unittest.TestCase):
         collection = self.doc_rest.get_collection()
         assert isinstance(collection, Collection)
         assert isinstance(collection.results[0], self.base.metaclass())
+        print (collection.results[0]._metadata)
+        from liblightbase.lbutils.conv import document2json
+        print(document2json(self.base, collection.results[0]))
+        raise Exception('efewfv')
 
 
 

@@ -6,6 +6,7 @@ from liblightbase.lbbase.lbstruct.field import Field
 from liblightbase.lbbase.lbstruct.group import Group
 from liblightbase.lbbase.lbstruct.group import GroupMetadata
 from liblightbase import pytypes
+from liblightbase.lbdoc.metadata import DocumentMetadata
 
 
 def json2base(jsonobj):
@@ -59,10 +60,12 @@ def dict2base(dictobj):
                 _dimension = dimension
                 if group_metadata.multivalued:
                     _dimension += 1
-                group_content = assemble_content(obj['group']['content'],
+                group_content = assemble_content(
+                    obj['group']['content'],
                     dimension=_dimension)
-                group = Group(metadata = group_metadata,
-                    content = group_content)
+                group = Group(
+                    metadata=group_metadata,
+                    content=group_content)
                 content_list.append(group)
             elif obj.get('field'):
                 field = Field(**obj['field'])
@@ -87,8 +90,9 @@ def dict2document(base, dictobj, metaclass=None):
     if metaclass is None:
         metaclass = base.metaclass()
         if dictobj.get('_metadata'):
-            dictobj.pop('_metadata')
-    kwargs = { }
+            metadata = dictobj.pop('_metadata')
+            metaclass._metadata = DocumentMetadata(**metadata)
+    kwargs = {}
     for member in dictobj:
         struct = base.get_struct(member)
         if struct.is_field:
@@ -123,10 +127,9 @@ def document2dict(base, document, struct=None):
     else: snames = struct.content.__snames__
     for sname in snames:
         try: value = getattr(document, sname)
-        except AttributeError: pass
+        except AttributeError:
+            pass
         else:
-            if isinstance(value, property):
-                continue
             _struct = base.get_struct(sname)
             if _struct.is_field:
                 dictobj[sname] = value
@@ -150,170 +153,94 @@ def document2dict(base, document, struct=None):
 def pyobject2base(obj):
     """
     Convert python object to base
-    :param obj: Python object
-    :return: LBBase instance
+    @param obj: Python object
+    @return: LBBase instance
     """
-    base_metadata = dict(
-            #id_base=1,
-            name = getattr(type(obj), '__name__'),
-            description = getattr(type(obj), '__name__'),
-            password=None,
-            idx_exp = False,
-            #idx_exp_url = 'index_url',
-            idx_exp_time=300,
-            file_ext=True,
-            file_ext_time=300,
-            color='#FFFFFF'
-        )
-
-    content_list = Content()
-    base_metadata = BaseMetadata(**base_metadata)
-
-    attributes = lbutils.get_attr(obj)
-    for elm in attributes:
-        # Generate field object for every class attribute
-        content_list.append(attribute2lbfield(elm))
+    content = Content()
+    elms = lbutils.get_attr(obj)
+    for elm in elms:
+        content.append(attribute2lbfield(*elm))
+    return Base(
+        metadata=BaseMetadata(getattr(type(obj), '__name__')),
+        content=content)
 
 
-    base = Base(
-            metadata=base_metadata,
-            content=content_list
-        )
-
-    return base
-
-
-def attribute2lbfield(elm):
+def attribute2lbfield(attr_name, attr_type, attr_value):
     """
     Convert object attributes to LB Field
-    :param elm: Elm dictionary of attributes description
-    :return: LB Field Object
+    @param elm: Elm dictionary of attributes description
+    @return: LB Field Object
     """
-    #print(elm)
-    # First theck if it's an object
     try:
         content_list = Content()
-        for group_elm in elm['value'].__dict__.keys():
+        for group_elm in attr_value.__dict__.keys():
             # Now convert to field every group element
-            dict_elm = {
-                    'name': elm['name']+'_'+group_elm,
-                    'type': type(elm['value'].__dict__.get(group_elm)),
-                    'value': getattr(elm['value'], group_elm)
-                }
-            #print(group_elm)
-            group_field = attribute2lbfield(dict_elm)
-            content_list.append(group_field)
-
-        group_metadata = dict(
-            name = elm['name'],
-            alias= elm['name'],
-            description = elm['name'],
-            multivalued = False
-        )
-        group_metadata = GroupMetadata(**group_metadata)
-
-        group = Group(
+            content_list.append(attribute2lbfield(
+                attr_name + '_' + group_elm,
+                type(attr_value.__dict__.get(group_elm)),
+                getattr(attr_value, group_elm)))
+        group_metadata = GroupMetadata(
+            name=attr_name,
+            alias=attr_name,
+            description=attr_name,
+            multivalued=False)
+        return Group(
             metadata=group_metadata,
-            content=content_list,
-        )
-        return group
+            content=content_list)
     except:
         # Now proccess field regularly
-        if elm['type'] == dict:
+        if attr_type == dict:
             # Consider it a group
             content_list = Content()
-
-            for group_elm in elm['value'].keys():
-                # Now convert to field every group element
-                dict_elm = {
-                        'name': elm['name']+'_'+group_elm,
-                        'type': type(elm['value'][group_elm]),
-                        'value': elm['value'][group_elm]
-                    }
-                #print(group_elm)
-                group_field = attribute2lbfield(dict_elm)
-                content_list.append(group_field)
-
-            group_metadata = dict(
-                name = elm['name'],
-                alias= elm['name'],
-                description = elm['name'],
-                multivalued = False
-            )
-            group_metadata = GroupMetadata(**group_metadata)
-
-            group = Group(
+            for group_elm in attr_value.keys():
+                content_list.append(attribute2lbfield(
+                    attr_name + '_' + group_elm,
+                    type(attr_value[group_elm]),
+                    attr_value[group_elm]))
+            group_metadata = GroupMetadata(
+                name=attr_name,
+                alias=attr_name,
+                description=attr_name,
+                multivalued = False)
+            return Group(
                 metadata=group_metadata,
-                content=content_list,
-            )
-            return group
+                content=content_list)
 
-        elif elm['type'] == list:
+        elif attr_type == list:
             # Check for multivalued group
             lbtype = 'Text'
-            if len(elm['value']) > 0:
-                # Consider it a list
-                lbtype = pytypes.pytype2lbtype(type(elm['value'][0]))
-                #print(type(elm['value'][0]))
-                #print(lbtype)
-                if type(elm['value'][0]) == dict:
+            if len(attr_value) > 0:
+                lbtype = pytypes.pytype2lbtype(type(attr_value[0]))
+                if type(attr_value[0]) == dict:
                     content_list = Content()
                     # Now convert to field every group element
-                    for dict_key in elm['value'][0].keys():
-                        dict_elm = {
-                            'name': dict_key,
-                            'type': type(elm['value'][0][dict_key]),
-                            'value': elm['value'][0][dict_key]
-                        }
-
-                        group_field = attribute2lbfield(dict_elm)
-                        content_list.append(group_field)
-
-                    group_metadata = dict(
-                        name = elm['name'],
-                        alias= elm['name'],
-                        description = elm['name'],
-                        multivalued = True
-                    )
-                    group_metadata = GroupMetadata(**group_metadata)
-
-                    group = Group(
+                    for dict_key in attr_value[0].keys():
+                        content_list.append(attribute2lbfield(
+                            dict_key,
+                            type(attr_value[0][dict_key]),
+                            attr_value[0][dict_key]))
+                    group_metadata = GroupMetadata(
+                        name=attr_name,
+                        alias=attr_name,
+                        description=attr_name,
+                        multivalued=True)
+                    return Group(
                         metadata=group_metadata,
-                        content=content_list,
-                    )
-
-                    return group
-
-
-            field = dict(
-                name = elm['name'],
-                description = elm['name'],
-                alias=elm['name'],
+                        content=content_list)
+            return Field(
+                name=attr_name,
+                description=attr_name,
+                alias=attr_name,
                 datatype = lbtype,
                 indices = ['Textual'],
                 multivalued = True,
-                required = True
-            )
-
-            field = Field(**field)
-            return field
+                required = True)
         else:
-            lbtype = pytypes.pytype2lbtype(elm['type'])
-
-            # Defaults to Text
-            if lbtype is None:
-                lbtype = 'Text'
-
-            field = dict(
-                name = elm['name'],
-                description = elm['name'],
-                alias=elm['name'],
-                datatype = lbtype,
+            return Field(
+                name=attr_name,
+                description=attr_name,
+                alias=attr_name,
+                datatype = pytypes.pytype2lbtype(attr_type) or 'Text',
                 indices = ['Textual'],
                 multivalued = False,
-                required = True
-            )
-
-            field = Field(**field)
-
-            return field
+                required = True)

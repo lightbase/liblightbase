@@ -55,11 +55,7 @@ def get_attr(obj):
     """
     out = []
     for elm in obj.__dict__.keys():
-        a = {
-            'name': elm,
-            'type': type(obj.__dict__.get(elm)),
-            'value': getattr(obj, elm)
-        }
-        out.append(a)
-
+        out.append((elm,
+        type(obj.__dict__.get(elm)),
+        getattr(obj, elm)))
     return out
