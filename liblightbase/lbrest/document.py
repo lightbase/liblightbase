@@ -37,7 +37,7 @@ class DocumentREST(LBRest):
             search_obj = Search()
         response = self.send_request(self.httpget,
             url_path=[self.basename, self.doc_prefix],
-            data={self.search_param: search_obj._asjson()})
+            params={self.search_param: search_obj._asjson()})
         return Collection(self.base, **lbutils.json2object(response))
 
     def get(self, id):
