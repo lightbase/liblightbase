@@ -170,12 +170,14 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
     @param elm: Elm dictionary of attributes description
     @return: LB Field Object
     """
+
     try:
         content_list = Content()
         for group_elm in attr_value.__dict__.keys():
             # Now convert to field every group element
             content_list.append(attribute2lbfield(
-                attr_name + '_' + group_elm,
+                #attr_name + '_' + group_elm,
+                group_elm,
                 type(attr_value.__dict__.get(group_elm)),
                 getattr(attr_value, group_elm)))
         group_metadata = GroupMetadata(
@@ -193,7 +195,8 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
             content_list = Content()
             for group_elm in attr_value.keys():
                 content_list.append(attribute2lbfield(
-                    attr_name + '_' + group_elm,
+                    #attr_name + '_' + group_elm,
+                    group_elm,
                     type(attr_value[group_elm]),
                     attr_value[group_elm]))
             group_metadata = GroupMetadata(
@@ -210,14 +213,16 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
             lbtype = 'Text'
             if len(attr_value) > 0:
                 lbtype = pytypes.pytype2lbtype(type(attr_value[0]))
-                if type(attr_value[0]) == dict:
+                #print(type(attr_value[0]))
+                try:
                     content_list = Content()
-                    # Now convert to field every group element
-                    for dict_key in attr_value[0].keys():
+                    for group_elm in attr_value[0].__dict__.keys():
+                        # Now convert to field every group element
                         content_list.append(attribute2lbfield(
-                            dict_key,
-                            type(attr_value[0][dict_key]),
-                            attr_value[0][dict_key]))
+                            #attr_name + '_' + group_elm,
+                            group_elm,
+                            type(attr_value[0].__dict__.get(group_elm)),
+                            getattr(attr_value[0], group_elm)))
                     group_metadata = GroupMetadata(
                         name=attr_name,
                         alias=attr_name,
@@ -226,6 +231,27 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
                     return Group(
                         metadata=group_metadata,
                         content=content_list)
+                except:
+                    # Now proccess field regularly
+                    if type(attr_value[0]) == dict:
+                        # Consider it a group
+                        content_list = Content()
+                        for group_elm in attr_value[0].keys():
+                            content_list.append(attribute2lbfield(
+                                #attr_name + '_' + group_elm,
+                                group_elm,
+                                type(attr_value[0][group_elm]),
+                                attr_value[0][group_elm]))
+                        group_metadata = GroupMetadata(
+                            name=attr_name,
+                            alias=attr_name,
+                            description=attr_name,
+                            multivalued = True)
+                        return Group(
+                            metadata=group_metadata,
+                            content=content_list)
+
+            #print(lbtype)
             return Field(
                 name=attr_name,
                 description=attr_name,

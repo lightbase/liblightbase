@@ -29,7 +29,7 @@ class Image(FileExtension):
 class Text(BaseDataType):
     """ Represents a Text Field """
     __dbtype__ = 'String'
-    __pytype__ = str
+    __pytype__ = PYSTR
 
     @staticmethod
     def cast_str(value):
@@ -42,7 +42,7 @@ class Text(BaseDataType):
 class Password(BaseDataType):
     """ Represents a Password Field """
     __dbtype__ = 'String'
-    __pytype__ = str
+    __pytype__ = PYSTR
 
     @staticmethod
     def cast_str(value):
@@ -64,7 +64,7 @@ class Password(BaseDataType):
 class TextArea(BaseDataType):
     """ Represents a TextArea Field """
     __dbtype__ = 'String'
-    __pytype__ = str
+    __pytype__ = PYSTR
 
     @staticmethod
     def cast_str(value):
@@ -130,7 +130,7 @@ class SelfEnumerated(BaseDataType):
 class Date(BaseDataType):
     """ Represents a Date Field """
     __dbtype__ = 'Date'
-    __pytype__ = (str, datetime.date)
+    __pytype__ = (PYSTR, datetime.date)
 
     @staticmethod
     def cast_str(value):
@@ -146,7 +146,7 @@ class Date(BaseDataType):
 class Time(BaseDataType):
     """ Represents a Time Field """
     __dbtype__ = 'Time'
-    __pytype__ = (str, datetime.time)
+    __pytype__ = (PYSTR, datetime.time)
 
     @staticmethod
     def cast_str(value):
@@ -162,7 +162,7 @@ class Time(BaseDataType):
 class DateTime(BaseDataType):
     """ Represents a DateTime Field """
     __dbtype__ = 'DateTime'
-    __pytype__ = (str, datetime.datetime)
+    __pytype__ = (PYSTR, datetime.datetime)
 
     @staticmethod
     def cast_str(value):
@@ -178,7 +178,7 @@ class DateTime(BaseDataType):
 class Url(BaseDataType):
     """ Represents an Url Field """
     __dbtype__ = 'String'
-    __pytype__ = str
+    __pytype__ = PYSTR
 
     @staticmethod
     def cast_str(value):
@@ -217,7 +217,7 @@ class Boolean(BaseDataType):
 class Html(BaseDataType):
     """ Represents a Html Field """
     __dbtype__ = 'String'
-    __pytype__ = str
+    __pytype__ = PYSTR
 
     @staticmethod
     def cast_str(value):
@@ -230,7 +230,7 @@ class Html(BaseDataType):
 class Email(BaseDataType):
     """ Represents an Email Field """
     __dbtype__ = 'String'
-    __pytype__ = str
+    __pytype__ = PYSTR
 
     @staticmethod
     def cast_str(value):
@@ -243,7 +243,7 @@ class Email(BaseDataType):
 class Json(BaseDataType):
     """ Represents a Json Field """
     __dbtype__ = 'String'
-    __pytype__ = (int, bool, float, list, dict, str, type(None))
+    __pytype__ = (int, bool, float, list, dict, PYSTR, type(None))
 
     @staticmethod
     def cast_str(value):
