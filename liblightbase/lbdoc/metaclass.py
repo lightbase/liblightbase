@@ -1,4 +1,5 @@
 from liblightbase import lbutils
+from liblightbase.lbdoc.metadata import DocumentMetadata
 
 def generate_metaclass(struct, base=None):
     """ 
@@ -8,7 +9,10 @@ def generate_metaclass(struct, base=None):
     @param struct: Field or Group object.
     @param base: Base object or None.
     """
-    if base is None: base = struct
+    build_metadata = False
+    if base is None:
+        base = struct
+        build_metadata = True
     snames = struct.content.__snames__
     rnames = struct.content.__rnames__
 
@@ -25,6 +29,8 @@ def generate_metaclass(struct, base=None):
         # variables and prevents the automatic creation of 
         # __dict__ and __weakref__ for each instance.
         __slots__ = ['_' + sname for sname in snames]
+        if build_metadata:
+            __slots__.append('__metadata__')
 
         def __init__(self, **kwargs):
             """ Document MetaClass constructor
@@ -37,6 +43,8 @@ def generate_metaclass(struct, base=None):
     for childstruct in struct.content:
         structname, prop = generate_property(base, childstruct)
         setattr(MetaClass, structname, prop)
+    if build_metadata:
+        MetaClass._metadata = build_metadata_prop()
     MetaClass.__name__ = struct.metadata.name
     return MetaClass
 
@@ -85,6 +93,22 @@ def generate_property(base, struct):
 
     return structname, property(getter,
         setter, deleter, structname)
+
+def build_metadata_prop():
+
+    def fget(self):
+        return self.__metadata__
+
+    def fset(self, value):
+        msg = '_metadata attribute should be a DocumentMetadata object.'
+        assert isinstance(value, DocumentMetadata)
+        self.__metadata__ = value
+
+    def fdel(self):
+        del self.__metadata__
+
+    return property(fget, fset, fdel, '_metadata')
+
 
 def generate_multimetaclass(struct, struct_metaclass):
     """ 

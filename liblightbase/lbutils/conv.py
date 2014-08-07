@@ -87,12 +87,11 @@ def dict2document(base, dictobj, metaclass=None):
     @param dictobj: dictionary object.
     @param metaclass: GroupMetaClass in question.
     """
+    kwargs = {}
     if metaclass is None:
         metaclass = base.metaclass()
         if dictobj.get('_metadata'):
-            metadata = dictobj.pop('_metadata')
-            metaclass._metadata = DocumentMetadata(**metadata)
-    kwargs = {}
+            kwargs['_metadata'] = DocumentMetadata(**dictobj.pop('_metadata'))
     for member in dictobj:
         struct = base.get_struct(member)
         if struct.is_field:
