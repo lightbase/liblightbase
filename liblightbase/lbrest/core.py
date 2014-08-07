@@ -72,7 +72,10 @@ class LBRest(object):
         request_method = getattr(requests, method.lower())
         # Make http request
         full_url = self.to_url(self.rest_url, *url_path)
+        print(full_url)
+        print(kwargs)
         response = request_method(full_url, cookies=self.cookies, **kwargs)
+        print(response.text)
         if self.response_object:
             # Return response object for application level error handling
             return response

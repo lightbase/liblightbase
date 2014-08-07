@@ -64,7 +64,7 @@ class Search(object):
     """
 
     def __init__(self, select=['*'], order_by=OrderBy(),
-            literal='', limit=10, offset=10):
+            literal='', limit=10, offset=0):
         """
         """
         # @property select:
@@ -156,8 +156,9 @@ class Search(object):
     def limit(self, value):
         """@property limit setter
         """
-        msg = "limit property must be a int"
-        assert isinstance(value, int), msg
+        if not value == None:
+            msg = "limit property must be a int"
+            assert isinstance(value, int), msg
         self._limit = value
 
     @property
