@@ -259,7 +259,7 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
                 datatype = lbtype,
                 indices = ['Textual'],
                 multivalued = True,
-                required = True)
+                required = False)
         else:
             return Field(
                 name=attr_name,
@@ -268,4 +268,4 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
                 datatype = pytypes.pytype2lbtype(attr_type) or 'Text',
                 indices = ['Textual'],
                 multivalued = False,
-                required = True)
+                required = False)
