@@ -59,7 +59,7 @@ class DocumentREST(LBRest):
             data={self.doc_param: document})
         return int(response)
 
-    def update(id, document):
+    def update(self, id, document):
         """
         Updates document by id.
         @param id: The document identify.
@@ -69,7 +69,7 @@ class DocumentREST(LBRest):
             url_path=[self.basename, self.doc_prefix, str(id)],
             data={self.doc_param: document})
 
-    def delete(id):
+    def delete(self, id):
         """
         Deletes document by id.
         @param id: The document identify.
@@ -77,7 +77,7 @@ class DocumentREST(LBRest):
         return self.send_request(self.httpdelete,
             url_path=[self.base.metadata.name, self.doc_prefix, str(id)])
 
-    def get_path(id, path):
+    def get_path(self, id, path):
         """
         Retrieves given path on document.
         @param id: The document identify.
@@ -86,7 +86,7 @@ class DocumentREST(LBRest):
         return self.send_request(self.httpget,
             url_path=(self.basename, self.doc_prefix, str(id))+tuple(path))
 
-    def create_path(id, path, value):
+    def create_path(self, id, path, value):
         """
         Creates given path on document.
         @param id: The document identify.
@@ -97,7 +97,7 @@ class DocumentREST(LBRest):
             url_path=(self.basename, self.doc_prefix, str(id))+tuple(path),
             data={self.doc_param:value})
 
-    def update_path(id, path, value):
+    def update_path(self, id, path, value):
         """
         Updates given path on document.
         @param id: The document identify.
@@ -108,7 +108,7 @@ class DocumentREST(LBRest):
             url_path=(self.basename, self.doc_prefix, str(id))+tuple(path),
             data={self.doc_param:value})
 
-    def delete_path(id, path):
+    def delete_path(self, id, path):
         """
         Deletes given path on document.
         @param id: The document identify.
