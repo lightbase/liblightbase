@@ -122,30 +122,38 @@ def document2dict(base, document, struct=None):
     @param struct: Field or Group object 
     """
     dictobj = { }
-    if not struct: snames = base.content.__snames__
-    else: snames = struct.content.__snames__
+    if not struct:
+        snames = base.content.__snames__
+    else:
+        snames = struct.content.__snames__
+
     for sname in snames:
-        try: value = getattr(document, sname)
+        try:
+            value = getattr(document, sname)
         except AttributeError:
-            pass
-        else:
-            _struct = base.get_struct(sname)
-            if _struct.is_field:
-                dictobj[sname] = value
-            elif _struct.is_group:
-                if _struct.metadata.multivalued:
-                    _value = [ ]
-                    for element in value:
-                        _value.append(document2dict(
-                            base=base,
-                            document=element,
-                            struct=_struct))
-                else:
-                    _value = document2dict(
+            # Try to get dict key
+            value = document.get(sname)
+            if value is None:
+                continue
+
+        _struct = base.get_struct(sname)
+        if _struct.is_field:
+            dictobj[sname] = value
+        elif _struct.is_group:
+            if _struct.metadata.multivalued:
+                _value = [ ]
+                for element in value:
+                    _value.append(document2dict(
                         base=base,
-                        document=value,
-                        struct=_struct)
-                dictobj[sname] = _value
+                        document=element,
+                        struct=_struct))
+            else:
+                _value = document2dict(
+                    base=base,
+                    document=value,
+                    struct=_struct)
+            dictobj[sname] = _value
+
     return dictobj
 
 
