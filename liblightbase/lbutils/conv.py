@@ -132,7 +132,10 @@ def document2dict(base, document, struct=None):
             value = getattr(document, sname)
         except AttributeError:
             # Try to get dict key
-            value = document.get(sname)
+            try:
+                value = document.get(sname)
+            except AttributeError:
+                continue
             if value is None:
                 continue
 
