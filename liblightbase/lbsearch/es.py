@@ -4,15 +4,19 @@
 import requests
 
 class ElasticSearch():
-	def search(self, urlNParameters, jsonRequest):
+	def search(self, resourceURL, baseName, jsonQuery, additionalParams={'fields': '_metadata.id_doc'}):
+		completeURL = resourceURL + "/" + baseName + "/es/_search"
 
-		# dataTest = {"eventType": jsonRequestUTF8, "fields": "_metadata.id_doc"}
-		paramsTest = {"fields": "_metadata.id_doc"}
 
-		jsonRequestUTF8 = jsonRequest.encode(encoding='UTF-8',errors='strict')
-		response = requests.post(urlNParameters, 
-			params=paramsTest, 
-			data=jsonRequestUTF8, 
+		# Note: Essa conversão para UTF-8 é necessária principalmente por causa 
+		# dos caracteres latinos! By Questor
+		jsonQueryUTF8 = jsonQuery.encode(encoding='UTF-8',errors='strict')
+
+		headersForRequest = {'content-type': 'application/json'}
+		response = requests.post(completeURL, 
+			params=additionalParams, 
+			data=jsonQueryUTF8, 
+			headers=headersForRequest, 
 			timeout=120)
 		return response.text
 
