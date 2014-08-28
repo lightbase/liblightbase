@@ -126,19 +126,11 @@ def document2dict(base, document, struct=None):
         snames = base.content.__snames__
     else:
         snames = struct.content.__snames__
-
     for sname in snames:
         try:
             value = getattr(document, sname)
         except AttributeError:
-            # Try to get dict key
-            try:
-                value = document.get(sname)
-            except AttributeError:
                 continue
-            if value is None:
-                continue
-
         _struct = base.get_struct(sname)
         if _struct.is_field:
             dictobj[sname] = value
