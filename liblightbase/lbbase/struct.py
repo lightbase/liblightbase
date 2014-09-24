@@ -1,11 +1,11 @@
 
-from liblightbase.lbbase.metadata import BaseMetadata
-from liblightbase.lbdoc.metaclass import generate_metaclass
-from liblightbase.lbbase.content import Content
+import voluptuous
 from liblightbase import lbutils
 from liblightbase.lbutils import exc
-from liblightbase.lbdocument import Tree
-import voluptuous
+from liblightbase.lbbase.content import Content
+from liblightbase.lbdoc.doctree import DocumentTree
+from liblightbase.lbbase.metadata import BaseMetadata
+from liblightbase.lbdoc.metaclass import generate_metaclass
 
 class Base(object):
 
@@ -170,23 +170,23 @@ class Base(object):
     def get_path(self, document, path):
         """ Get value from given path in document
         """
-        return Tree(document, self).get_path(path)
+        return DocumentTree(document, self).get_path(path)
 
     def set_path(self, document, path, value):
         """ Set value from given path in document
         """
-        index, document = Tree(document, self, True).set_path(path, value)
+        index, document = DocumentTree(document, self, True).set_path(path, value)
         return index, document.todict()
 
     def put_path(self, document, path, value):
         """ Put value from given path in document
         """
-        return Tree(document, self, True).put_path(path, value).todict()
+        return DocumentTree(document, self, True).put_path(path, value).todict()
 
     def delete_path(self, document, path):
         """ Delete value from given path in document
         """
-        return Tree(document, self).delete_path(path).todict()
+        return DocumentTree(document, self).delete_path(path).todict()
 
     @property
     def relational_fields(self):
