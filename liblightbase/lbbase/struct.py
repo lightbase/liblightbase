@@ -178,10 +178,10 @@ class Base(object):
         index, document = DocumentTree(document, self, True).set_path(path, value)
         return index, document.todict()
 
-    def put_path(self, document, path, value):
+    def put_path(self, document, path, value, fn=None):
         """ Put value from given path in document
         """
-        return DocumentTree(document, self, True).put_path(path, value).todict()
+        return DocumentTree(document, self, True).put_path(path, value, fn=fn).todict()
 
     def delete_path(self, document, path):
         """ Delete value from given path in document

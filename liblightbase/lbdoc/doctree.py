@@ -1,8 +1,11 @@
 
+import re
 import copy
+import jsonpath_rw
 from datetime import datetime
 from liblightbase import lbutils
 from liblightbase.lbdoc.treetypes import Object
+from liblightbase.lbdoc.treetypes import Array
 
 class DocumentTree():
 
@@ -54,20 +57,33 @@ class DocumentTree():
         @ param path: List of nodes that indicates where to get the value.
         @ returns value contained in Tree indicated by path.
         """
+        jpath = self.lbpath2jpath(path)
+        matches = jpath.find(self.root)
+        if len(matches) == 1:
+            return matches[0].value
+        elif len(matches) > 1:
+            return {str(match.full_path): match.value for match in matches}
+        else:
+            raise IndexError('Could not find any matches for index -> %s' %
+                '/'.join(path))
 
-        root = self.root
-        for node in path:
+    def insert_on_leaf(self, branch, path, value):
+        parent = None
+        for ipath, node in enumerate(path):
             node = self.toint(node)
-            try:
-                root = root[node]
-            except KeyError:
-                raise KeyError('Field %s does not exist.' % node)
-            except TypeError:
-                raise TypeError('array index must be int, not "%s".' % node)
-            except IndexError:
-                raise IndexError('array index out of range')
-
-        return root
+            if ipath == len(path) - 1:
+                sname = parent if isinstance(node, int) else node
+                value = self.str2lbtype(node,
+                    self.base.get_struct(sname),
+                    value)
+                break
+            parent = node
+            branch = branch[node]
+        try:
+            branch[node].append(value)
+        except AttributeError:
+            raise AttributeError('Structure %s must be array. Use PUT instead.'
+                % node)
 
     def set_path(self, path, value):
         """ 
@@ -79,43 +95,18 @@ class DocumentTree():
         then the value may be a JSON value.
         @ returns tree structure.
         """
+        jpath = self.lbpath2jpath(path)
+        matches = jpath.find(self.root)
+        if len(matches) > 0:
+            for match in matches:
+                lbpath = self.jpath2lbpath(str(match.full_path))
+                self.insert_on_leaf(self.root, lbpath, value)
+        else:
+            raise IndexError('Could not find any matches for index -> %s' %
+                '/'.join(path))
+        return 0, self.root
 
-        root = self.root
-        parent = None
-        for ipath, node in enumerate(path):
-            node = self.toint(node)
-            if ipath == len(path) - 1:
-                sname = parent if isinstance(node, int) else node
-                value = self.str2lbtype(node,
-                    self.base.get_struct(sname),
-                    value)
-                break
-            parent = node
-            root = root[node]
-        try:
-            root[node].append(value)
-        except AttributeError:
-            raise AttributeError('Structure %s must be array. Use PUT instead.'
-                % node)
-        return len(root[node])-1, self.root
-
-    def put_path(self, path, value):
-        """ 
-        This method traverse the tree object following the path, until
-        it ends, than update the value to @value.
-        @ param path: List of nodes that indicates where to put the value.
-        @ param value: The value to update. If the current struct is a group
-        then the value may be a JSON value.
-        @ returns tree structure.
-        """
-        root = self.root
-
-        # Special treatment for metadata
-        if path == ['_metadata', 'dt_idx']:
-            root[path[0]][path[1]] = datetime\
-                .strptime(value, '%d/%m/%Y %H:%M:%S')
-            return self.root
-
+    def update_leaf(self, branch, path, value):
         parent = None
         for ipath, node in enumerate(path):
             node = self.toint(node)
@@ -125,10 +116,46 @@ class DocumentTree():
                     self.base.get_struct(sname),
                     value, 'put')
                 break
-            root = root[node]
+            branch = branch[node]
             parent = node
-        root[node] = value
+        branch[node] = value
+
+    def put_path(self, path, value, fn=None):
+        """ 
+        This method traverse the tree object following the path, until
+        it ends, than update the value to @value.
+        @ param path: List of nodes that indicates where to put the value.
+        @ param value: The value to update. If the current struct is a group
+        then the value may be a JSON value.
+        @ returns tree structure.
+        """
+        # Special treatment for metadata
+        if path == ['_metadata', 'dt_idx']:
+            self.root[path[0]][path[1]] = datetime\
+                .strptime(value, '%d/%m/%Y %H:%M:%S')
+            return self.root
+
+        jpath = self.lbpath2jpath(path)
+        matches = jpath.find(self.root)
+        if len(matches) > 0:
+            for match in matches:
+                if fn is not None and not fn(match.value):
+                        continue
+                lbpath = self.jpath2lbpath(str(match.full_path))
+                self.update_leaf(self.root, lbpath, value)
+        else:
+            raise IndexError('Could not find any matches for index -> %s' %
+                '/'.join(path))
+
         return self.root
+
+    def delete_leaf(self, branch, path):
+        for ipath, node in enumerate(path):
+            node = self.toint(node)
+            if ipath == len(path) - 1:
+                break
+            branch = branch[node]
+        del branch[node]
 
     def delete_path(self, path):
         """ 
@@ -137,14 +164,26 @@ class DocumentTree():
         @ param path: List of nodes that indicates where to put the value.
         @ returns tree structure.
         """
+        jpath = self.lbpath2jpath(path)
+        matches = jpath.find(self.root)
 
-        root = self.root
-        for ipath, node in enumerate(path):
-            node = self.toint(node)
-            if ipath == len(path) - 1:
-                break
-            root = root[node]
-        del root[node]
+        def keyfunc(match):
+            # sort by last index descending
+            return int(str(match.full_path)[-2:-1])
+
+        if len(matches) > 0:
+
+            if str(matches[0].full_path).endswith(']'):
+                # if it is a multivalued field have to sort because need
+                # to delete last indexes before firsts
+                matches = sorted(matches, key=keyfunc, reverse=True)
+
+            for match in matches:
+                lbpath = self.jpath2lbpath(str(match.full_path))
+                self.delete_leaf(self.root, lbpath)
+        else:
+            raise IndexError('Could not find any matches for index -> %s' %
+                '/'.join(path))
         return self.root
 
     def toint(self, obj):
@@ -163,3 +202,18 @@ class DocumentTree():
         else:
             _lbtype = struct._datatype.__schema__.cast_str(value)
         return _lbtype
+
+    def lbpath2jpath(self, lbpath):
+        dot_notation = '.'.join(lbpath)
+        jpath_notation = re.sub(r'(^|\.)([0-9]+|\*)($|\.)',
+            r'[\2]\3', dot_notation)
+        return jsonpath_rw.parse(jpath_notation)
+
+    def jpath2lbpath(self, jpath):
+        lbpath = jpath.replace('.[', '/')\
+            .replace('].', '/')\
+            .replace('.', '/')
+        if lbpath.endswith(']'):
+            #remove last char
+            lbpath = lbpath[:-1]
+        return lbpath.split('/')
