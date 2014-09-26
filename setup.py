@@ -22,6 +22,7 @@ LightBase Library""",
           'bcrypt',
           'requests',
           'python-dateutil',
-          'six'
+          'six',
+          'jsonpath-rw'
       ]
       )
