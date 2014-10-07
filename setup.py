@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.2'
+version = '0.3'
 
 setup(name='liblightbase',
       version=version,
@@ -19,7 +19,6 @@ LightBase Library""",
       zip_safe=True,
       install_requires=[
           'voluptuous',
-          'bcrypt',
           'requests',
           'python-dateutil',
           'six',

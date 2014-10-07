@@ -4,7 +4,6 @@ from liblightbase.lbtypes.extended import FileExtension
 from liblightbase import lbutils
 from liblightbase.lbutils.const import PYSTR
 import datetime
-import bcrypt
 
 class File(FileExtension):
     """ Represents a File Field """
@@ -52,6 +51,7 @@ class Password(BaseDataType):
         if value == '':
             self.__obj__ = value
         else:
+            import bcrypt
             value = value.encode('utf-8')
             value = bcrypt.hashpw(value, bcrypt.gensalt())
             value = value.decode('utf-8')
