@@ -43,9 +43,12 @@ class Base(object):
         # @property __metaclasses__: A dictionary at the format {structname:
         # metaclass}. All metaclasses are created here, so user can acces them
         # to user later, using the @method metaclass().
-        self.__metaclasses__ = {structname: self.get_struct(structname)\
-            ._metaclass(self) for structname in self.__allstructs__}
+        self.__metaclasses__ = dict()
+        for structname in self.__allstructs__:
+            self.__metaclasses__[structname] =  self.get_struct(structname)._metaclass(self)
+        #self.__metaclasses__ = {structname: self.get_struct(structname)._metaclass(self) for structname in self.__allstructs__}
         self.__metaclasses__['__base__'] = self._metaclass()
+        #print(self.__metaclasses__)
 
     @property
     def metadata(self):

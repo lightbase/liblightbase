@@ -59,7 +59,13 @@ class Object(dict):
                 return v.tolist()
             else:
                 return v
-        return {k: conv(v) for k, v in self.items()}
+        
+        saida = dict()
+        for k, v in self.items():
+            saida[k] = conv(v)
+
+        return saida        
+        #eturn {k: conv(v) for k, v in self.items()}
 
     def _getregobj(self, sname):
         """ @param sname: structure name to find
