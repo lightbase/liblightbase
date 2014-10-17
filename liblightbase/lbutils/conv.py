@@ -128,15 +128,17 @@ def document2dict(base, document, struct=None):
         snames = struct.content.__snames__
     for sname in snames:
         value = None
+        has_value = True
         try:
             value = getattr(document, sname)
         except AttributeError:
             try:
                 value = document.get(sname)
             except AttributeError:
+                has_value = False
                 pass
             pass
-        if value is None:
+        if has_value:
             continue
         _struct = base.get_struct(sname)
         if _struct.is_field:
