@@ -138,7 +138,7 @@ def document2dict(base, document, struct=None):
                 has_value = False
                 pass
             pass
-        if has_value:
+        if not has_value:
             continue
         _struct = base.get_struct(sname)
         if _struct.is_field:
