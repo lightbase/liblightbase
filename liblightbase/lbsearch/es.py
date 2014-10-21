@@ -6,7 +6,7 @@ from liblightbase.lbsearch.search import Collection
 import requests
 
 class ElasticSearch():
-    def search(self, resourceURL, lbBaseInstance, jsonQuery, additionalParams={'fields': '_metadata.id_doc', 'lbquery': '1'}):
+    def search(self, resourceURL, lbBaseInstance, jsonQuery, additionalParams={'lbquery': '1'}):
 
         baseName = lbBaseInstance.metadata.name
         completeURL = resourceURL + "/" + baseName + "/es/_search"
