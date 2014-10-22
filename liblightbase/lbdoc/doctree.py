@@ -143,6 +143,7 @@ class DocumentTree():
             actual_value = self.root['_metadata']['dt_idx']
             match = type("Match", (), {'value': actual_value})()
             ok, value = fn(match)
+            if value == 'null': value = None
             self.root['_metadata']['dt_idx'] = value
             return self.root
 
