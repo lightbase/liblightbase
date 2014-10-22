@@ -62,7 +62,13 @@ class DocumentTree():
         if len(matches) == 1:
             return matches[0].value
         elif len(matches) > 1:
-            return {str(match.full_path): match.value for match in matches}
+            saida = dict()
+            for match in matches:
+                saida[str(match.full_path)] = match.value
+
+            return saida
+                
+            #return {str(match.full_path): match.value for match in matches}
         else:
             raise IndexError('Could not find any matches for index -> %s' %
                 '/'.join(path))
