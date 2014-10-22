@@ -140,8 +140,10 @@ class DocumentTree():
         """
         # Special treatment for metadata
         if path == ['_metadata', 'dt_idx']:
-            self.root[path[0]][path[1]] = datetime\
-                .strptime(value, '%d/%m/%Y %H:%M:%S')
+            actual_value = self.root['_metadata']['dt_idx']
+            match = type("Match", (), {'value': actual_value})()
+            ok, value = fn(match)
+            self.root['_metadata']['dt_idx'] = value
             return self.root
 
         jpath = self.lbpath2jpath(path)
