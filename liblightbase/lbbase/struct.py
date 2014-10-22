@@ -172,21 +172,21 @@ class Base(object):
         """
         return DocumentTree(document, self).get_path(path)
 
-    def set_path(self, document, path, value):
+    def set_path(self, document, path, fn):
         """ Set value from given path in document
         """
-        index, document = DocumentTree(document, self, True).set_path(path, value)
-        return index, document.todict()
+        document = DocumentTree(document, self, True).set_path(path, fn)
+        return document.todict()
 
-    def put_path(self, document, path, value, fn=None):
+    def put_path(self, document, path, fn):
         """ Put value from given path in document
         """
-        return DocumentTree(document, self, True).put_path(path, value, fn=fn).todict()
+        return DocumentTree(document, self, True).put_path(path, fn).todict()
 
-    def delete_path(self, document, path):
+    def delete_path(self, document, path, fn):
         """ Delete value from given path in document
         """
-        return DocumentTree(document, self).delete_path(path).todict()
+        return DocumentTree(document, self).delete_path(path, fn).todict()
 
     @property
     def relational_fields(self):

@@ -85,7 +85,7 @@ class DocumentTree():
             raise AttributeError('Structure %s must be array. Use PUT instead.'
                 % node)
 
-    def set_path(self, path, value):
+    def set_path(self, path, fn):
         """ 
         This method traverse the tree object following the path, until
         it ends, than appends @value to the current node, that must be
@@ -99,12 +99,15 @@ class DocumentTree():
         matches = jpath.find(self.root)
         if len(matches) > 0:
             for match in matches:
+                ok, value = fn(match)
+                if not ok:
+                    continue
                 lbpath = self.jpath2lbpath(str(match.full_path))
                 self.insert_on_leaf(self.root, lbpath, value)
         else:
             raise IndexError('Could not find any matches for index -> %s' %
                 '/'.join(path))
-        return 0, self.root
+        return self.root
 
     def update_leaf(self, branch, path, value):
         parent = None
@@ -120,7 +123,7 @@ class DocumentTree():
             parent = node
         branch[node] = value
 
-    def put_path(self, path, value, fn=None):
+    def put_path(self, path, fn):
         """ 
         This method traverse the tree object following the path, until
         it ends, than update the value to @value.
@@ -139,8 +142,9 @@ class DocumentTree():
         matches = jpath.find(self.root)
         if len(matches) > 0:
             for match in matches:
-                if fn is not None and not fn(match.value):
-                        continue
+                ok, value = fn(match)
+                if not ok:
+                    continue
                 lbpath = self.jpath2lbpath(str(match.full_path))
                 self.update_leaf(self.root, lbpath, value)
         else:
@@ -157,7 +161,7 @@ class DocumentTree():
             branch = branch[node]
         del branch[node]
 
-    def delete_path(self, path):
+    def delete_path(self, path, fn):
         """ 
         This method traverse the tree object following the path, until
         it ends, than deletes the current node.
@@ -179,6 +183,9 @@ class DocumentTree():
                 matches = sorted(matches, key=keyfunc, reverse=True)
 
             for match in matches:
+                ok = fn(match)
+                if not ok:
+                    continue
                 lbpath = self.jpath2lbpath(str(match.full_path))
                 self.delete_leaf(self.root, lbpath)
         else:
