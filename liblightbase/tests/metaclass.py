@@ -111,6 +111,50 @@ class LBDocumentTestCase(unittest.TestCase):
         fd.write(j)
         fd.close()
 
+    def test_x(self):
+        Pessoa = self.base.metaclass()
+        Gmulti = self.base.metaclass('gmulti')
+        Dependente = self.base.metaclass('dependente')
+        class X(Pessoa):
+
+            def __init__(self, **args):
+                super(X, self).__init__(**args)
+            
+            @property
+            def nome(self):
+                return Pessoa.nome.__get__(self)
+
+            @nome.setter
+            def nome(self, v):
+                Pessoa.nome.__set__(self, v)
+
+            @property
+            def dependente(self):
+                return Pessoa.dependente.__get__(self)
+
+            @dependente.setter
+            def dependente(self, v):
+                Pessoa.dependente.__set__(self, v)
+
+        class Y(Gmulti):
+
+            @property
+            def teste(self):
+                return Gmulti.teste.__get__(self)
+
+            @teste.setter
+            def teste(self, v):
+                Gmulti.teste.__set__(self, v)
+        
+        g1 = Y(teste='ww')
+        d1 = Dependente(nome_dep='xxx', gmulti=[g1])
+        x = X(nome='aa', carros=['d'], dependente=d1)
+        x2 = X(nome=5, carros=['d'])
+        j = document2json(self.base, x, indent=4)
+        print(x.nome)
+        print(x2.nome)
+        raise Exception(j)
+
 
 
 
