@@ -24,13 +24,28 @@ class FileREST(LBRest):
         Retrieves file by id, returning file headers and file path on local 
         file system. 
         @param id: The file identify.
-        @param sys_dir: The file identify.
         """
         response = self.send_request(self.httpget,
             url_path=[self.basename, self.file_prefix, str(id), 'download'],
             stream=True)
         binary = response.content
         return self.get_file_headers(response), binary
+
+    def get_path(self, id, path):
+        """
+        Retrieves a file attribute by id.
+        @param id: The file identify.
+        @param path: The file attribute to retrieve. Possible values are:
+            -filetext;
+            -filesize;
+            -filename;
+            -mimetype;
+            -id_doc;
+            -id_file;
+            -dt_ext_text
+        """
+        return self.send_request(self.httpget,
+            url_path=[self.basename, self.file_prefix, str(id), path])
 
     def get_file_headers(self, response):
         cd = response.headers['Content-Disposition']
