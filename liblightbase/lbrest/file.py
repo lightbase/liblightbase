@@ -2,6 +2,9 @@
 from liblightbase.lbrest.core import LBRest
 import os
 import uuid
+from liblightbase.lbsearch.search import Search
+from liblightbase.lbsearch.search import FileCollection
+from liblightbase import lbutils
 
 class FileREST(LBRest):
 
@@ -30,6 +33,21 @@ class FileREST(LBRest):
             stream=True)
         binary = response.content
         return self.get_file_headers(response), binary
+
+    def get_collection(self, search_obj=None):
+        """
+        Retrieves collection of "file text" according to search object.
+        @param search_obj: JSON which represents a search object.
+        """
+        if search_obj is not None:
+            msg = 'search_obj must be a Search object.'
+            assert isinstance(search_obj, Search), msg
+        else:
+            search_obj = Search()
+        response = self.send_request(self.httpget,
+            url_path=[self.basename, self.file_prefix],
+            params={self.search_param: search_obj._asjson()})
+        return FileCollection(**lbutils.json2object(response))
 
     def get_path(self, id, path):
         """

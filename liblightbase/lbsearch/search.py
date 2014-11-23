@@ -175,11 +175,46 @@ class Search(object):
         assert isinstance(value, int), msg
         self._offset = value
 
+class LBFile(object):
+        def __init__(self, id_file=None, id_doc=None, filename=None, filesize=None, \
+                mimetype=None, filetext=None, dt_ext_text=None, download=None):
+            self.id_file = id_file
+            self.id_doc = id_doc
+            self.filename = filename
+            self.filesize = filesize
+            self.mimetype = mimetype
+            self.filetext = filetext
+            self.dt_ext_text = dt_ext_text
+            self.download = download
+
+class FileResults(list):
+
+    def __init__(self, results):
+        results_object = [LBFile(**dictobj) for dictobj in results]
+        super(FileResults, self).__init__(results_object)
+
+
 class Results(list):
 
     def __init__(self, base, results):
         results_object = [dict2document(base, dictobj) for dictobj in results]
         super(Results, self).__init__(results_object)
+
+class FileCollection(object):
+
+    def __init__(self, results, result_count, limit, offset):
+
+        # @property results:
+        self.results = FileResults(results)
+
+        # @property result_count:
+        self.result_count = result_count
+
+        # @property limit:
+        self.limit = limit
+
+        # @property offset:
+        self.offset = offset
 
 class Collection(object):
 
@@ -196,11 +231,3 @@ class Collection(object):
 
         # @property offset:
         self.offset = offset
-
-
-
-
-
-
-
-
