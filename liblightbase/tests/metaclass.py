@@ -297,8 +297,8 @@ class LBDocumentTestCase(unittest.TestCase):
                 g4 = dict(
                     teste='ww',
                     teste2=[
-                        u'dgfkdsgsghslkdghsk',
-                        u'dsgjsd.,gjsd.gjs'
+                        'dgfkdsgsghslkdghsk',
+                        'dsgjsd.,gjsd.gjs'
                     ]
                 )
                 g4_obj = dict2document(lbbase, g4, Gmulti)

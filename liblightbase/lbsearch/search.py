@@ -193,11 +193,14 @@ class FileResults(list):
         results_object = [LBFile(**dictobj) for dictobj in results]
         super(FileResults, self).__init__(results_object)
 
+class NullDocument(object):
+    pass
 
 class Results(list):
 
     def __init__(self, base, results):
-        results_object = [dict2document(base, dictobj) for dictobj in results]
+        results_object = [dict2document(base, dictobj) \
+            if dictobj is not None else NullDocument() for dictobj in results]
         super(Results, self).__init__(results_object)
 
 class FileCollection(object):

@@ -135,8 +135,6 @@ def document2dict(base, document, struct=None):
     else:
         snames = struct.content.__snames__
     for sname in snames:
-        value = None
-        has_value = True
         try:
             value = getattr(document, sname)
         except AttributeError:
@@ -158,7 +156,6 @@ def document2dict(base, document, struct=None):
                     document=value,
                     struct=_struct)
             dictobj[sname] = _value
-
     return dictobj
 
 
