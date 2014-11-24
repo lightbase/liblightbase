@@ -1,3 +1,5 @@
+#!/usr/env python
+# -*- coding: utf-8 -*-
 from liblightbase import lbutils
 from liblightbase.lbdoc.metadata import DocumentMetadata
 
@@ -48,16 +50,18 @@ def generate_metaclass(struct, base=None):
     MetaClass.__name__ = struct.metadata.name
     return MetaClass
 
+
 def generate_property(base, struct):
     """
     Make python's property based on structure attributes.
     @param base: Base object.
     @param struct: Field or Group object.
     """
-    if struct.is_field:
-        structname = struct.name
-    elif struct.is_group:
+    if struct.is_group:
         structname = struct.metadata.name
+    else:
+        # Se não for grupo é campo
+        structname = struct.name
     attr_name = '_' + structname
 
     def getter(self):
