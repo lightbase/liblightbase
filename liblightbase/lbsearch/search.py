@@ -64,7 +64,7 @@ class Search(object):
     """
 
     def __init__(self, select=['*'], order_by=OrderBy(),
-            literal='', limit=10, offset=0):
+            literal='', limit=10, offset=0, distinct=None):
         """
         """
         # @property select:
@@ -81,6 +81,9 @@ class Search(object):
 
         # @property offset:
         self.offset = offset
+
+        if distinct is not None:
+            self.distinct = distinct
 
     def _asjson(self, **kw):
         dict_search = {} 
