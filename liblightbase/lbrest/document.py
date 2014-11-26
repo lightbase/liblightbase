@@ -40,6 +40,22 @@ class DocumentREST(LBRest):
             params={self.search_param: search_obj._asjson()})
         return Collection(self.base, **lbutils.json2object(response))
 
+    def update_collection(self, search_obj=None, path_list=[]):
+        """
+        Updates collection of documents according to search object.
+        @param search_obj: JSON which represents a search object.
+        """
+        if search_obj is not None:
+            msg = 'search_obj must be a Search object.'
+            assert isinstance(search_obj, Search), msg
+        else:
+            search_obj = Search()
+        response = self.send_request(self.httpput,
+            url_path=[self.basename, self.doc_prefix],
+            params={self.search_param: search_obj._asjson(),
+            self.path_param: lbutils.object2json(path_list)})
+        return response
+
     def get(self, id):
         """
         Retrieves document by id.

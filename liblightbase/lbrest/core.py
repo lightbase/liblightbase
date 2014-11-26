@@ -36,6 +36,9 @@ class LBRest(object):
     # @property search_param:
     search_param = '$$'
 
+    # @property path_param:
+    path_param = 'path'
+
     def __init__(self, rest_url, response_object=False):
         self.rest_url = rest_url
         self.response_object = response_object
