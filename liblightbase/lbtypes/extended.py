@@ -1,7 +1,9 @@
 
 from liblightbase import lbutils
 from liblightbase.lbtypes import BaseDataType
+from liblightbase.lbutils.const import PYSTR
 from uuid import UUID, uuid3
+
 
 class FileMask(object):
 
@@ -60,7 +62,7 @@ class FileMask(object):
     def filename(self, value):
         """ @property filename setter
         """
-        accepted_types = (str, type(None))
+        accepted_types = (PYSTR, type(None))
         if isinstance(value, accepted_types):
             self._filename= value
         else:
@@ -77,7 +79,7 @@ class FileMask(object):
     def mimetype(self, value):
         """ @property mimetype  setter
         """
-        accepted_types = (str, type(None))
+        accepted_types = (PYSTR, type(None))
         if isinstance(value, accepted_types):
             self._mimetype = value
         else:
