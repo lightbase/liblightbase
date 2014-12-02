@@ -47,7 +47,7 @@ def dict2base(dictobj):
     Convert dictionary object to Base object
     @param dictobj: dictionary object
     """
-    def assemble_content(content_object, dimension=0):
+    def assemble_content(content_object, dimension=0, parent_path=[]):
         """
         Parses content object and builds a list with Field and Group objects
         @param content_object:
@@ -60,13 +60,18 @@ def dict2base(dictobj):
                 _dimension = dimension
                 if group_metadata.multivalued:
                     _dimension += 1
+                if group_metadata.multivalued:
+                    parent_path.append('*')
+                parent_path.append(group_metadata.name)
                 group_content = assemble_content(
                     obj['group']['content'],
-                    dimension=_dimension)
+                    dimension=_dimension,
+                    parent_path=parent_path)
                 group = Group(
                     metadata=group_metadata,
                     content=group_content)
                 content_list.append(group)
+                group.path = parent_path
             elif obj.get('field'):
                 field = Field(**obj['field'])
                 if field.multivalued:
@@ -74,6 +79,9 @@ def dict2base(dictobj):
                 else:
                     field.__dim__ = dimension
                 content_list.append(field)
+                this_path = parent_path[:]
+                this_path.append(field.name)
+                field.path = this_path
         return content_list
     base = Base(metadata=BaseMetadata(**dictobj['metadata']),
         content=assemble_content(dictobj['content']))
@@ -127,18 +135,9 @@ def document2dict(base, document, struct=None):
     else:
         snames = struct.content.__snames__
     for sname in snames:
-        value = None
-        has_value = True
         try:
             value = getattr(document, sname)
         except AttributeError:
-            try:
-                value = document.get(sname)
-            except AttributeError:
-                has_value = False
-                pass
-            pass
-        if not has_value:
             continue
         _struct = base.get_struct(sname)
         if _struct.is_field:
@@ -157,7 +156,6 @@ def document2dict(base, document, struct=None):
                     document=value,
                     struct=_struct)
             dictobj[sname] = _value
-
     return dictobj
 
 

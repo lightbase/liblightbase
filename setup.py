@@ -19,7 +19,7 @@ LightBase Library""",
       zip_safe=True,
       install_requires=[
           'voluptuous',
-          'requests==1.2.3',
+          'requests',
           'python-dateutil',
           'six',
           'jsonpath-rw'
