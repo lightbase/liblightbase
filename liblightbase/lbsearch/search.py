@@ -166,7 +166,7 @@ class Search(object):
         """
         if not value == None:
             msg = "limit property must be a int"
-            assert isinstance(value, PYSTR), msg
+            assert isinstance(value, int), msg
         self._limit = value
 
     @property

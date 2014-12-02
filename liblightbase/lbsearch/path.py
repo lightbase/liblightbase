@@ -4,6 +4,7 @@ __author__ = 'carlos'
 
 from liblightbase.lbutils.const import PYSTR
 
+
 class PathOperation():
     """
     Class model representing operations with path.
@@ -105,3 +106,14 @@ class PathOperation():
         msg = "args property must be list."
         assert isinstance(value, list), msg
         self._args = value
+
+    def _encoded(self):
+        """
+        :return:dicionário com od atributos
+        """
+        return {
+                "path": self.path,
+                "mode": self.mode,
+                "fn": self.fn,
+                "args": self.args
+        }
