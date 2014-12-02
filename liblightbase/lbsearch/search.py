@@ -1,5 +1,10 @@
+#!/usr/env python
+# -*- coding: utf-8 -*-
+__author__ = 'carlos'
+
 from liblightbase import lbutils
 from liblightbase.lbutils.conv import dict2document
+from liblightbase.lbutils.const import PYSTR
 
 class OrderBy(object):
     """ 
@@ -143,7 +148,7 @@ class Search(object):
         """@property literal setter
         """
         msg = "literal property must be a string"
-        assert isinstance(value, str), msg
+        assert isinstance(value, PYSTR), msg
         self._literal = value
 
     @property
@@ -158,7 +163,7 @@ class Search(object):
         """
         if not value == None:
             msg = "limit property must be a int"
-            assert isinstance(value, int), msg
+            assert isinstance(value, PYSTR), msg
         self._limit = value
 
     @property
