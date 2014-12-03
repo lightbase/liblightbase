@@ -87,6 +87,7 @@ class PathOperation():
         if not value == None:
             msg = "fn property must be a string"
             assert isinstance(value, PYSTR), msg
+        self._fn = value
 
     @property
     def args(self):
