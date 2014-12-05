@@ -49,7 +49,8 @@ class Base(object):
         for structname in self.__allstructs__:
             struct = self.get_struct(structname)
             self.__metaclasses__[structname] = struct._metaclass(self)
-            if struct.is_field and ('Unico' or 'Ordenado') in struct.indices:
+            if struct.is_field and (
+            'Unico' in struct.indices or 'Ordenado' in struct.indices):
                 self.__rel_fields__.append(structname)
 
         self.__metaclasses__['__base__'] = self._metaclass()
