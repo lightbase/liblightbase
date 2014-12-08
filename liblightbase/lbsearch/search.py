@@ -1,5 +1,7 @@
 from liblightbase import lbutils
 from liblightbase.lbutils.conv import dict2document
+from liblightbase.lbutils.const import PYSTR
+
 
 class OrderBy(object):
     """ 
@@ -146,7 +148,7 @@ class Search(object):
         """@property literal setter
         """
         msg = "literal property must be a string"
-        assert isinstance(value, str), msg
+        assert isinstance(value, PYSTR), msg
         self._literal = value
 
     @property
