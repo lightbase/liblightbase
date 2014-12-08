@@ -43,12 +43,17 @@ class Base(object):
         # @property __metaclasses__: A dictionary at the format {structname:
         # metaclass}. All metaclasses are created here, so user can acces them
         # to user later, using the @method metaclass().
-        self.__metaclasses__ = dict()
+        self.__metaclasses__ = { }
+        self.__rel_fields__ = [ ]
+
         for structname in self.__allstructs__:
-            self.__metaclasses__[structname] =  self.get_struct(structname)._metaclass(self)
-        #self.__metaclasses__ = {structname: self.get_struct(structname)._metaclass(self) for structname in self.__allstructs__}
+            struct = self.get_struct(structname)
+            self.__metaclasses__[structname] = struct._metaclass(self)
+            if struct.is_field and (
+            'Unico' in struct.indices or 'Ordenado' in struct.indices):
+                self.__rel_fields__.append(structname)
+
         self.__metaclasses__['__base__'] = self._metaclass()
-        #print(self.__metaclasses__)
 
     @property
     def metadata(self):
@@ -80,7 +85,7 @@ class Base(object):
         assert len(value) > 0, msg
         self._content = value
 
-    def validate(self, document, _meta):
+    def validate(self, document, _meta, validate=True):
         """ Validate document data structure.
         """
         id = _meta.id_doc
@@ -88,6 +93,15 @@ class Base(object):
         # Create docs memory area
         self.__files__[id] = [ ]
         self.__reldata__[id] = { }
+
+        if not validate:
+            for rel_field in self.__rel_fields__:
+                self.__reldata__[id][rel_field] = document.get(
+                    rel_field, None)
+            return (document,
+                   self.__reldata__[id],
+                   self.__files__[id],
+                   [])
 
         # Delete metadata from document
         if '_metadata' in document: del document['_metadata']
