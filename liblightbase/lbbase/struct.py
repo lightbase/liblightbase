@@ -98,6 +98,7 @@ class Base(object):
             for rel_field in self.__rel_fields__:
                 self.__reldata__[id][rel_field] = document.get(
                     rel_field, None)
+            document['_metadata'] = _meta.__dict__
             return (document,
                    self.__reldata__[id],
                    self.__files__[id],
