@@ -47,7 +47,7 @@ class DocumentMetadata(object):
            'dt_doc' : self.dt_doc,
            'dt_last_up' : self.dt_last_up,
            'dt_idx' : self.dt_idx,
-           'dt_del' : self.dt_del
+           #'dt_del' : self.dt_del
         }
 
     def _attr_setter(self, attr, value, accepted_types):

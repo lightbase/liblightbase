@@ -59,13 +59,10 @@ class Object(dict):
                 return v.tolist()
             else:
                 return v
-        
-        saida = dict()
+        out = dict()
         for k, v in self.items():
-            saida[k] = conv(v)
-
-        return saida        
-        #eturn {k: conv(v) for k, v in self.items()}
+            out[k] = conv(v)
+        return out
 
     def _getregobj(self, sname):
         """ @param sname: structure name to find
@@ -74,14 +71,26 @@ class Object(dict):
             This method gets the base structure (Field/Group), and returns
             a empty instance depending on structure's multivalue attribute.
         """
-        if self.base.get_struct(sname).multivalued:
-            return Array([], self.base, create_path=self.create_path)
+        struct = self.base.get_struct(sname)
+        if struct.is_group:
+            if struct.metadata.multivalued:
+                 return Array([], self.base, create_path=self.create_path)
+            else:
+                return Object({}, self.base, create_path=self.create_path)
         else:
-            return Object({}, self.base, create_path=self.create_path)
+            if struct.multivalued:
+                return Array([], self.base, create_path=self.create_path)
+        return Object({}, self.base, create_path=self.create_path)
 
     def __getitem__(self, key):
         try:
             item = super(Object, self).__getitem__(key)
+            if isinstance(item, dict):
+                item = Object(item, self.base, create_path=self.create_path)
+                self.__setitem__(key, item)
+            elif isinstance(item, list):
+                item = Array(item, self.base, create_path=self.create_path)
+                self.__setitem__(key, item)
         except KeyError:
             if self.create_path:
                 self.__setitem__(key, self._getregobj(key))
