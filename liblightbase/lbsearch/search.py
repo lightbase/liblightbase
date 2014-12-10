@@ -1,10 +1,7 @@
-#!/usr/env python
-# -*- coding: utf-8 -*-
-__author__ = 'carlos'
-
 from liblightbase import lbutils
 from liblightbase.lbutils.conv import dict2document
 from liblightbase.lbutils.const import PYSTR
+
 
 class OrderBy(object):
     """ 
