@@ -189,7 +189,8 @@ class DocumentTree():
             if str(matches[0].full_path).endswith(']'):
                 # if it is a multivalued field have to sort because need
                 # to delete last indexes before firsts
-                matches = sorted(matches, key=keyfunc, reverse=True)
+                #matches = sorted(matches, key=keyfunc, reverse=True)
+                matches.reverse()
 
             for match in matches:
                 ok = fn(match)
