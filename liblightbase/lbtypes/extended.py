@@ -10,7 +10,7 @@ class FileMask(object):
     """ Represents a Generic File Mask
     """
 
-    def __init__(self, id_file, filename, mimetype, filesize, uuid):
+    def __init__(self, id_file, filename, mimetype, filesize, uuid, filetext=None):
         if id_file is not None:
             self.id_file = UUID(id_file)
         else:
@@ -18,6 +18,7 @@ class FileMask(object):
         self.filename = filename
         self.mimetype = mimetype
         self.filesize = filesize
+        self.filetext = filetext
         if uuid is not None:
             self.uuid = UUID(uuid)
         else:
@@ -25,13 +26,23 @@ class FileMask(object):
 
     @property
     def __dict__(self):
-        return dict(
-            id_file= self.id_file,
-            filename = self.filename,
-            mimetype = self.mimetype,
-            filesize = self.filesize,
-            uuid = self.uuid,
-        )
+        if self.filetext != None:
+            return dict(
+                id_file= self.id_file,
+                filename = self.filename,
+                mimetype = self.mimetype,
+                filesize = self.filesize,
+                uuid = self.uuid,
+                filetext = self.filetext
+            )
+        else:
+            return dict(
+                id_file= self.id_file,
+                filename = self.filename,
+                mimetype = self.mimetype,
+                filesize = self.filesize,
+                uuid = self.uuid
+            )
 
     @property
     def id_file(self):
@@ -154,10 +165,14 @@ class FileExtension(BaseDataType):
 
             name = str(hash(frozenset(filemask.items())))
 
-            try:
-                assert id_file == str(uuid3(namespace, name))
-            except AssertionError:
-                raise ValueError('Mask modified. id_file do not match file mask')
+            # TODO: Esse cara valida se o arquivo que está sendo enviado é de fato
+            # o que foi vinculado ao registro! Rever, pois foi modificado para que
+            # o retorno do ES possa usar o método "Collection()". Tentar mudar esse
+            # comportamento usando uma "flag"! By Questor
+            # try:
+            #     assert id_file == str(uuid3(namespace, name))
+            # except AssertionError:
+            #     raise ValueError('Mask modified. id_file do not match file mask')
 
             filemask['id_file'] = id_file
             self.base.__files__[self.id].append(id_file)
