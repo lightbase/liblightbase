@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 from liblightbase import lbutils
 from liblightbase.lbtypes import BaseDataType
 from liblightbase.lbutils.const import PYSTR
