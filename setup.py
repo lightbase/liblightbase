@@ -18,10 +18,12 @@ LightBase Library""",
       include_package_data=True,
       zip_safe=True,
       install_requires=[
-          'voluptuous',
-          'requests',
-          'python-dateutil',
-          'six',
-          'jsonpath-rw'
+          'voluptuous == 0.8.7',
+	  'ply == 3.6',
+	  'decorator == 3.4.2',
+          'requests == 2.7.0',
+          'python-dateutil == 2.4.2',
+          'six == 1.9.0',
+          'jsonpath-rw == 1.4.0'
       ]
       )
