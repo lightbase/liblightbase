@@ -19,11 +19,11 @@ LightBase Library""",
       zip_safe=True,
       install_requires=[
           'voluptuous == 0.8.7',
-	  'ply == 3.6',
-	  'decorator == 3.4.2',
-          'requests == 2.7.0',
-          'python-dateutil == 2.4.2',
-          'six == 1.9.0',
-          'jsonpath-rw == 1.4.0'
+	  'ply == 3.4',
+	  'decorator == 3.4.0',
+          'requests == 2.3.0',
+          'python-dateutil == 2.2',
+          'six == 1.7.2',
+          'jsonpath-rw == 1.3.0'
       ]
       )
