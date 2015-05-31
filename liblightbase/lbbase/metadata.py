@@ -11,7 +11,7 @@ class BaseMetadata(object):
 
     def __init__(self, name=None, description='', password='', color='',
         model=None, dt_base=None, id_base=0, idx_exp=False , idx_exp_url='',
-        idx_exp_time=300, file_ext=False, file_ext_time=300):
+        idx_exp_time=300, file_ext=False, file_ext_time=300, owner=''):
 
         """ Base Metadata Attributes
         """
@@ -60,6 +60,9 @@ class BaseMetadata(object):
         # asynchronous extractor to sleep beetwen the extracting processes.
         self.file_ext_time = file_ext_time
 
+        # @param owner: Owner of the base, means that can do all operation in the base.
+        self.owner = owner
+
     @property
     def name(self):
         """ @property name getter
@@ -89,6 +92,20 @@ class BaseMetadata(object):
         msg = 'Base description must be string or unicode!'
         assert(isinstance(value, PYSTR)), msg
         self._description= value
+
+    @property
+    def owner(self):
+        """ @property owner getter
+        """
+        return self._owner
+
+    @owner.setter
+    def owner(self, value):
+        """ @property owner setter
+        """
+        msg = 'Owner of the base must be string or unicode'
+        assert(isinstance(value, PYSTR)), msg
+        self._owner = value
 
     @property
     def id_base(self):
@@ -239,7 +256,8 @@ class BaseMetadata(object):
             'idx_exp_url': self.idx_exp_url,
             'idx_exp_time': self.idx_exp_time,
             'file_ext': self.file_ext,
-            'file_ext_time': self.file_ext_time
+            'file_ext_time': self.file_ext_time,
+            'owner': self.owner
         }
 
     @property
