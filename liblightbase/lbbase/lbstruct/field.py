@@ -193,6 +193,14 @@ class Field(object):
         return False
 
     @property
+    def is_unique(self):
+        """
+        Check if field is unique in table
+        :return: True or False
+        """
+        return 'Unico' in self.indices
+
+    @property
     def asdict(self):
         """ @property asdict: Dictonary format of field model.
         """
