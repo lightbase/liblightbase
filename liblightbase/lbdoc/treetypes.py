@@ -42,11 +42,14 @@ class Array(list):
             super(Array, self).__setitem__(index, item)
         """
 
+# delete path - Object(dict)
 class Object(dict):
 
     def __init__(self, obj, base, create_path=False):
         self.base = base
         self.create_path = create_path
+
+        # O tipo Object passa a herdar tudo q tem em dict!
         super(Object, self).__init__(obj)
 
     def todict(self):

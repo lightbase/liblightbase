@@ -78,4 +78,3 @@ def json2object(value, **kwargs):
         except Exception as e:
             # JSON loading was not possible
             raise e.__class__('Could not parse JSON data: %s' % e)
-

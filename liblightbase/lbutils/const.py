@@ -3,6 +3,7 @@ import sys
 PY3 = sys.version_info[0] == 3
 
 if PY3:
+    # delete path - get(self, base)
     PYSTR = str
     PYUNICODE = str
 else:

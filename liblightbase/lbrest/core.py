@@ -43,6 +43,7 @@ class LBRest(object):
         self.rest_url = rest_url
         self.response_object = response_object
 
+    # delete path - to_url(self, *args)
     def to_url(self, *args):
         """ Make a list of args and join "/" between list elements
         """
@@ -65,6 +66,7 @@ class LBRest(object):
         self._cookies = value
         globals()['SESSION_COOKIES'] = value
 
+    # delete path - send_request(self, method, url_path=[ ], **kwargs)
     def send_request(self, method, url_path=[ ], **kwargs):
         """
         @param method:

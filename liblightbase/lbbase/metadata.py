@@ -11,7 +11,7 @@ class BaseMetadata(object):
 
     def __init__(self, name=None, description='', password='', color='',
         model=None, dt_base=None, id_base=0, idx_exp=False , idx_exp_url='',
-        idx_exp_time=300, file_ext=False, file_ext_time=300):
+        idx_exp_time=300, file_ext=False, file_ext_time=300, txt_mapping=''):
 
         """ Base Metadata Attributes
         """
@@ -59,6 +59,9 @@ class BaseMetadata(object):
         # @param file_ext_time: File extraction time. Time in seconds used by 
         # asynchronous extractor to sleep beetwen the extracting processes.
         self.file_ext_time = file_ext_time
+
+        # @param txt_mapping: .
+        self.txt_mapping = txt_mapping
 
     @property
     def name(self):
@@ -239,7 +242,8 @@ class BaseMetadata(object):
             'idx_exp_url': self.idx_exp_url,
             'idx_exp_time': self.idx_exp_time,
             'file_ext': self.file_ext,
-            'file_ext_time': self.file_ext_time
+            'file_ext_time': self.file_ext_time,
+            'txt_mapping': self.txt_mapping
         }
 
     @property

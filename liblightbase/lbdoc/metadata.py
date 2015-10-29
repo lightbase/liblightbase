@@ -2,6 +2,7 @@
 from datetime import datetime
 from liblightbase.lbutils.const import PYSTR
 
+# delete path - DocumentMetadata(object)
 class DocumentMetadata(object):
 
     """ 
