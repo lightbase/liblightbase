@@ -67,7 +67,7 @@ class DocumentTree():
                 saida[str(match.full_path)] = match.value
 
             return saida
-                
+
             #return {str(match.full_path): match.value for match in matches}
         else:
             raise IndexError('Could not find any matches for index -> %s' %
