@@ -30,17 +30,14 @@ class DocumentREST(LBRest):
         Retrieves collection of documents according to search object.
         @param search_obj: JSON which represents a search object.
         """
-        if instance:
-            if search_obj is not None:
-                msg = 'search_obj must be a Search object.'
-                assert isinstance(search_obj, Search), msg
-            else:
-                search_obj = Search()
-            response = self.send_request(self.httpget,
-                url_path=[self.basename, self.doc_prefix],
-                params={self.search_param: search_obj._asjson()})
-        else:
+        if search_obj is not None:
             msg = 'search_obj must be a Search object.'
+            assert isinstance(search_obj, Search), msg
+        else:
+            search_obj = Search()
+        response = self.send_request(self.httpget,
+            url_path=[self.basename, self.doc_prefix],
+            params={self.search_param: search_obj._asjson()})
 
         return Collection(self.base, **lbutils.json2object(response))
 
