@@ -6,6 +6,7 @@ from liblightbase.lbbase.content import Content
 from liblightbase.lbdoc.doctree import DocumentTree
 from liblightbase.lbbase.metadata import BaseMetadata
 from liblightbase.lbdoc.metaclass import generate_metaclass
+from liblightbase.lbtypes import Matrix
 
 class Base(object):
 
@@ -85,14 +86,16 @@ class Base(object):
         assert len(value) > 0, msg
         self._content = value
 
-    def validate(self, document, _meta, validate=True):
+    def validate(self, document, _meta, validate=True, delete=False):
         """ Validate document data structure.
         """
         id = _meta.id_doc
 
-        # Create docs memory area
-        self.__files__[id] = [ ]
-        self.__reldata__[id] = { }
+        if not delete:
+
+            # Create docs memory area
+            self.__files__[id] = [ ]
+            self.__reldata__[id] = { }
 
         if not validate:
             for rel_field in self.__rel_fields__:
@@ -121,6 +124,17 @@ class Base(object):
         # Put document metadata back
         document['_metadata'] = _meta.__dict__
 
+
+        for key, value in document.items():
+            if key != '_metadata':
+                struct = self.get_struct(key)
+                if not value and (isinstance(value, list) or isinstance(value, dict)):
+                    self.normalize_reldata(id, struct)
+                elif value and (isinstance(value, list) or isinstance(value, dict)):
+                    self.check_fields(id, struct, document)
+
+        #self.check_empty_fields(document)
+
         return (document,
                self.__reldata__[id],
                self.__files__[id],
@@ -143,6 +157,57 @@ class Base(object):
                 structname = voluptuous.Required(structname)
             schema.update({structname: struct.schema(self, id)})
         return voluptuous.Schema(schema)
+
+
+    def check_fields(self,id, struct, document):
+        """ check values in document """
+        if struct.is_group:
+            for key_field, value_struct in struct.relational_fields.items():
+                val = list(self.find(key_field, document))
+                if not val:
+                    self.normalize_reldata(id, self.get_struct(key_field))
+
+
+    def normalize_reldata(self, id, struct):
+        """
+        @document
+        """
+    #if struct.is_rel:
+        if struct.is_field:
+            if struct.is_rel:
+                #if struct.multivalued:
+                #    self.__reldata__[id][struct.name] = Matrix()
+                #else:
+                #    self.__reldata__[id][struct.name] = None
+                if not self.__reldata__.get(id):
+                    self.__reldata__[id] = {}
+                    self.__reldata__[id][struct.name] = None
+                else:
+                    self.__reldata__[id][struct.name] = None
+        elif struct.is_group:
+            for _field in struct.content:
+                self.normalize_reldata(id, _field)
+                #self.__reldata__[id][_field.name] = None
+
+    def find(self, key, document):
+        """Find key in document"""
+        if isinstance(document, list):
+            for d in document:
+                for result in self.find(key, d):
+                    yield result
+
+        if isinstance(document, dict):
+            for k, v in document.items():
+                if k == key:
+                    yield v
+                elif isinstance(v, dict):
+                    for result in self.find(key, v):
+                        yield result
+                elif isinstance(v, list):
+                    for d in v:
+                        for result in self.find(key, d):
+                            yield result
+
 
     def get_struct(self, sname):
         """ 
@@ -204,6 +269,10 @@ class Base(object):
     def delete_path(self, document, path, fn):
         """ Delete value from given path in document
         """
+        id = document['_metadata']['id_doc']
+        for item in path:
+            struct = self.get_struct(item)
+            self.normalize_reldata(id, struct)
         return DocumentTree(document, self).delete_path(path, fn).todict()
 
     @property
