@@ -247,8 +247,9 @@ class Base(object):
     def txt_mapping_json(self):
         """ @property txt_mapping_json: JSON format of txt_mapping.
         """
+
         '''
-        Note: Se usarmos "object2json()" será retornado p/ o campo 
+        NOTE: Se usarmos "object2json()" será retornado p/ o campo 
         outro valor que não vazio (string vazia) nos casos onde 
         txt_mapping não for enviado! By Questor
         '''
