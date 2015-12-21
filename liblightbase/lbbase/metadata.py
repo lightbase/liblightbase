@@ -133,6 +133,7 @@ class BaseMetadata(object):
         if isinstance(value, datetime.datetime):
             self._dt_base = value
         elif value is None:
+
             # Default to now
             self._dt_base = datetime.datetime.now()
         else:
@@ -193,6 +194,7 @@ class BaseMetadata(object):
     @idx_exp_time.setter
     def idx_exp_time(self, value):
         if value is None:
+
             # Default to 300 seconds
             self._idx_exp_time = 300
         else:
@@ -212,6 +214,7 @@ class BaseMetadata(object):
     @file_ext.setter
     def file_ext(self, value):
         if value is None:
+
             # Default to false 
             self._file_ext = False
         else:
@@ -230,6 +233,7 @@ class BaseMetadata(object):
         """ @property file_ext_time setter
         """
         if value is None:
+
             # Default to 300 seconds
             self._file_ext_time=300
         else:
@@ -256,7 +260,7 @@ class BaseMetadata(object):
             'idx_exp_time': self.idx_exp_time,
             'file_ext': self.file_ext,
             'file_ext_time': self.file_ext_time,
-            'txt_mapping': self.txt_mapping
+            'txt_mapping': self.txt_mapping}
 
     @property
     def json(self):
