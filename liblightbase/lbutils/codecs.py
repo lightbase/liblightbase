@@ -1,3 +1,6 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import json
 import datetime
 
@@ -9,6 +12,7 @@ JSON_TYPES = (
     bool,        # true, false
     type(None)   # null
 )
+
 
 # ********************************** 
 # * Document default encode/decode *
@@ -78,4 +82,3 @@ def json2object(value, **kwargs):
         except Exception as e:
             # JSON loading was not possible
             raise e.__class__('Could not parse JSON data: %s' % e)
-

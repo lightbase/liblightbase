@@ -11,8 +11,7 @@ class BaseMetadata(object):
 
     def __init__(self, name=None, description='', password='', color='',
         model=None, dt_base=None, id_base=0, idx_exp=False , idx_exp_url='',
-        idx_exp_time=300, file_ext=False, file_ext_time=300, owner=''):
-
+        idx_exp_time=300, file_ext=False, file_ext_time=300, txt_mapping=''):
         """ Base Metadata Attributes
         """
 
@@ -60,8 +59,8 @@ class BaseMetadata(object):
         # asynchronous extractor to sleep beetwen the extracting processes.
         self.file_ext_time = file_ext_time
 
-        # @param owner: Owner of the base, means that can do all operation in the base.
-        self.owner = owner
+        # @param txt_mapping: .
+        self.txt_mapping = txt_mapping
 
     @property
     def name(self):
@@ -257,8 +256,7 @@ class BaseMetadata(object):
             'idx_exp_time': self.idx_exp_time,
             'file_ext': self.file_ext,
             'file_ext_time': self.file_ext_time,
-            'owner': self.owner
-        }
+            'txt_mapping': self.txt_mapping
 
     @property
     def json(self):

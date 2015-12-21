@@ -16,7 +16,6 @@ def json2base(jsonobj):
     """
     return dict2base(dictobj=lbutils.json2object(jsonobj))
 
-
 def base2json(base):
     """
     Convert a liblightbase.lbbase.struct.Base object to JSON string.
@@ -43,10 +42,10 @@ def document2json(base, document, **kw):
 
 
 def dict2base(dictobj):
-    """
-    Convert dictionary object to Base object
+    """ Convert dictionary object to Base object
     @param dictobj: dictionary object
     """
+
     def assemble_content(content_object, dimension=0, parent_path=[]):
         """
         Parses content object and builds a list with Field and Group objects
@@ -86,7 +85,6 @@ def dict2base(dictobj):
     base = Base(metadata=BaseMetadata(**dictobj['metadata']),
         content=assemble_content(dictobj['content']))
     return base
-
 
 def dict2document(base, dictobj, metaclass=None):
     """
@@ -223,7 +221,6 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
             lbtype = 'Text'
             if len(attr_value) > 0:
                 lbtype = pytypes.pytype2lbtype(type(attr_value[0]))
-                #print(type(attr_value[0]))
                 try:
                     content_list = Content()
                     for group_elm in attr_value[0].__dict__.keys():
@@ -261,7 +258,6 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
                             metadata=group_metadata,
                             content=content_list)
 
-            #print(lbtype)
             return Field(
                 name=attr_name,
                 description=attr_name,

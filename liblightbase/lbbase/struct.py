@@ -1,5 +1,5 @@
-
 import voluptuous
+
 from liblightbase import lbutils
 from liblightbase.lbutils import exc
 from liblightbase.lbbase.content import Content
@@ -7,8 +7,8 @@ from liblightbase.lbdoc.doctree import DocumentTree
 from liblightbase.lbbase.metadata import BaseMetadata
 from liblightbase.lbdoc.metaclass import generate_metaclass
 
-class Base(object):
 
+class Base(object):
     """ 
     A base is a set of interrelated data, organized to allow the retrieval 
     of information. A base must provide updated information (structural funds),
@@ -26,6 +26,7 @@ class Base(object):
         # @param content: The base content is a list of structures that compose
         # the base schema. Structures may also have metadata and content, giving
         # the base a recursive modeling.
+        # delete path - self.content = content
         self.content = content
 
         # @property __files__: A dictionary at the format { id_doc: list of 
@@ -85,11 +86,13 @@ class Base(object):
         assert len(value) > 0, msg
         self._content = value
 
+    # delete path - validate(self, document, _meta, validate=True)
     def validate(self, document, _meta, validate=True):
         """ Validate document data structure.
         """
         id = _meta.id_doc
 
+        # Para o que serve isso?
         # Create docs memory area
         self.__files__[id] = [ ]
         self.__reldata__[id] = { }
@@ -126,6 +129,7 @@ class Base(object):
                self.__files__[id],
                [])
 
+    # delete path - schema(self, id)
     def schema(self, id):
         """ 
         A database schema is a collection of meta-data that describes the 
@@ -201,6 +205,7 @@ class Base(object):
         """
         return DocumentTree(document, self, True).put_path(path, fn).todict()
 
+    # delete path - delete_path(self, document, path, fn)
     def delete_path(self, document, path, fn):
         """ Delete value from given path in document
         """
@@ -224,7 +229,7 @@ class Base(object):
     def asdict(self):
         """ @property asdict: Dictionary format of base model.
         """
-        metadata_dict= self.metadata.asdict
+        metadata_dict = self.metadata.asdict
         content_dict = self.content.asdict
         metadata_dict['model'] = self.document_model
         return {
@@ -237,6 +242,21 @@ class Base(object):
         """ @property json: JSON format of base model.
         """
         return lbutils.object2json(self.asdict)
+
+    @property
+    def txt_mapping_json(self):
+        """ @property txt_mapping_json: JSON format of txt_mapping.
+        """
+
+        '''
+        NOTE: Se usarmos "object2json()" será retornado p/ o campo 
+        outro valor que não vazio (string vazia) nos casos onde 
+        txt_mapping não for enviado! By Questor
+        '''
+        if self.asdict["metadata"]["txt_mapping"] is not '':
+            return lbutils.object2json(self.asdict["metadata"]["txt_mapping"])
+        else:
+            return self.asdict["metadata"]["txt_mapping"]
 
     @property
     def __allstructs__(self):

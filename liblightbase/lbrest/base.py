@@ -24,6 +24,7 @@ class BaseREST(LBRest):
         return self.send_request(self.httpget,
             data={self.search_param: search_obj})
 
+    # delete path - get(self, base)
     def get(self, base):
         """
         @param name: base's name
@@ -45,6 +46,7 @@ class BaseREST(LBRest):
         return self.send_request(self.httppost,
             data={self.base_param: base.json})
 
+    # delete path - update(self, base)
     def update(self, base):
         """
         @param base:

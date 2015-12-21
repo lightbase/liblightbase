@@ -7,12 +7,15 @@ from liblightbase import lbutils
 from liblightbase.lbdoc.treetypes import Object
 from liblightbase.lbdoc.treetypes import Array
 
+# delete path - DocumentTree() __init__(self, root, base=None, create_path=False)
 class DocumentTree():
 
     def __init__(self, root, base=None, create_path=False):
         self.base = base
         self.create_path = create_path
-        self.root= Object(root,
+
+        # delete path - self.root
+        self.root = Object(root,
             base=self.base,
             create_path=self.create_path)
 
@@ -67,7 +70,7 @@ class DocumentTree():
                 saida[str(match.full_path)] = match.value
 
             return saida
-                
+
             #return {str(match.full_path): match.value for match in matches}
         else:
             raise IndexError('Could not find any matches for index -> %s' %
@@ -162,6 +165,7 @@ class DocumentTree():
 
         return self.root
 
+    # delete path - delete_leaf(self, branch, path)
     def delete_leaf(self, branch, path):
         for ipath, node in enumerate(path):
             node = self.toint(node)
@@ -170,6 +174,7 @@ class DocumentTree():
             branch = branch[node]
         del branch[node]
 
+    # delete path - delete_path(self, path, fn)
     def delete_path(self, path, fn):
         """ 
         This method traverse the tree object following the path, until
@@ -180,6 +185,7 @@ class DocumentTree():
         jpath = self.lbpath2jpath(path)
         matches = jpath.find(self.root)
 
+        # TODO: Pq esse troço tah aki? Quem usa?
         def keyfunc(match):
             # sort by last index descending
             return int(str(match.full_path)[-2:-1])
@@ -220,12 +226,14 @@ class DocumentTree():
             _lbtype = struct._datatype.__schema__.cast_str(value)
         return _lbtype
 
+    # delete path - lbpath2jpath(self, lbpath)
     def lbpath2jpath(self, lbpath):
         dot_notation = '.'.join(lbpath)
         jpath_notation = re.sub(r'(^|\.)([0-9]+|\*)($|\.)',
             r'[\2]\3', dot_notation)
         return jsonpath_rw.parse(jpath_notation)
 
+    # delete path - jpath2lbpath(self, jpath)
     def jpath2lbpath(self, jpath):
         lbpath = jpath.replace('.[', '/')\
             .replace('].', '/')\
