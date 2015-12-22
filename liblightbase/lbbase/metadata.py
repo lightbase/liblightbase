@@ -257,6 +257,7 @@ class BaseMetadata(object):
             'file_ext': self.file_ext,
             'file_ext_time': self.file_ext_time,
             'txt_mapping': self.txt_mapping
+        }
 
     @property
     def json(self):
