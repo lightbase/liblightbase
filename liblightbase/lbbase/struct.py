@@ -276,6 +276,8 @@ class Base(object):
         """
         id = document['_metadata']['id_doc']
         for item in path:
+            if item == '*':
+                continue
             struct = self.get_struct(item)
             self.normalize_reldata(id, struct)
         return DocumentTree(document, self).delete_path(path, fn).todict()
