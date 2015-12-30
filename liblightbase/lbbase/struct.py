@@ -276,7 +276,7 @@ class Base(object):
         """
         id = document['_metadata']['id_doc']
         for item in path:
-            if item == '*':
+            if item == '*' or item.isdigit():
                 continue
             struct = self.get_struct(item)
             self.normalize_reldata(id, struct)
