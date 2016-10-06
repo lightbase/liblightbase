@@ -6,6 +6,7 @@ from liblightbase.lbbase.struct import Base
 from liblightbase.lbsearch.search import Collection
 from liblightbase.lbsearch.search import Search
 from liblightbase import lbutils
+from liblightbase.lbutils.conv import dict2genericbase
 
 class DocumentREST(LBRest):
 
@@ -39,7 +40,9 @@ class DocumentREST(LBRest):
             url_path=[self.basename, self.doc_prefix],
             params={self.search_param: search_obj._asjson()})
 
-        return Collection(self.base, **lbutils.json2object(response))
+        #return Collection(self.base, **lbutils.json2object(response))
+        #return dict2genericbase(response.json())
+        return dict2genericbase(lbutils.json2object(response))
 
     def update_collection(self, search_obj=None, path_list=[]):
         """

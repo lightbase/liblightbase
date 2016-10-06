@@ -275,3 +275,27 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
                 indices = ['Textual'],
                 multivalued = False,
                 required = False)
+
+
+
+class dict2genericbase(object):
+    """ Convert um dicionário Python para um objeto Python.
+        @return: generic object
+    """
+    def __init__(self, d):
+        for a, b in d.items():
+            if isinstance(b, (list, tuple)):
+               setattr(self, a, [dict2genericbase(x) if isinstance(x, dict) else x for x in b])
+            else:
+               setattr(self, a, dict2genericbase(b) if isinstance(b, dict) else b)
+
+    def __repr__(self):
+        return str(self.__dict__)
+
+    def __str__(self):
+        return str(self.__dict__)
+
+    @property
+    def json(self):
+        return lbutils.object2json(self, default=lambda o: o.__dict__)
+        #return json.dumps(self, default=lambda o: o.__dict__)
