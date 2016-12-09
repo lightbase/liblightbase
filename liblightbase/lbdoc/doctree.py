@@ -165,6 +165,77 @@ class DocumentTree():
 
         return self.root
 
+    def patch_leaf(self, branch, path, value):
+        """
+        Traverses the object tree through path then partially updates
+        it with 'value'. Only fields present in 'value' will be changed.
+        Everything else in path remains the same.
+        """
+        parent = None
+        for ipath, node in enumerate(path):
+            node = self.toint(node)
+            if ipath == len(path) - 1:
+                sname = parent if isinstance(node, int) else node
+                value = self.str2lbtype(node,
+                    self.base.get_struct(sname),
+                    value, 'patch')
+                break
+            branch = branch[node]
+            parent = node
+
+        self.patch_leaf_rec(branch, node, value)
+
+        return self.root
+
+    def patch_leaf_rec(self, branch, node, new_value):
+        """
+        Recursily updates a branch and its leafs with values in 'new_value'
+        """
+        if isinstance(new_value, dict):
+            for key, value in new_value.items():
+                self.patch_leaf_rec(branch[node], key, new_value[key])
+        elif isinstance(new_value, list):
+            for idx, item in enumerate(new_value):
+                if len(branch[node]) > idx:
+                    self.patch_leaf_rec(branch[node], idx, item)
+                else:
+                    branch[node].push(item)
+        else:
+            branch[node] = new_value
+
+    def patch_path(self, path, fn):
+        """
+        This method traverse the tree object following the path, until
+        it ends, then patches the value to @value.
+        @ param path: List of nodes that indicates where to put the value.
+        @ param value: The value to update. If the current struct is a group
+        then the value may be a JSON value.
+        @ returns tree structure.
+        """
+        # Special treatment for metadata
+        if path == ['_metadata', 'dt_idx']:
+            actual_value = self.root['_metadata']['dt_idx']
+            match = type("Match", (), {'value': actual_value})()
+            ok, value = fn(match)
+            if value == 'null': value = None
+            self.root['_metadata']['dt_idx'] = value
+            return self.root
+
+        jpath = self.lbpath2jpath(path)
+        matches = jpath.find(self.root)
+        if len(matches) > 0:
+            for match in matches:
+                ok, value = fn(match)
+                if not ok:
+                    continue
+                lbpath = self.jpath2lbpath(str(match.full_path))
+                self.patch_leaf(self.root, lbpath, value)
+        else:
+            raise IndexError('Could not find any matches for index -> %s' %
+                '/'.join(path))
+
+        return self.root
+
     # delete path - delete_leaf(self, branch, path)
     def delete_leaf(self, branch, path):
         for ipath, node in enumerate(path):
@@ -219,6 +290,8 @@ class DocumentTree():
         elif isinstance(node, int):
             _lbtype = struct._datatype.__schema__.cast_str(value)
         elif struct.multivalued and method == 'put':
+            _lbtype = lbutils.json2object(value)
+        elif struct.multivalued and method == 'patch':
             _lbtype = lbutils.json2object(value)
         elif value == 'null':
             _lbtype = None
