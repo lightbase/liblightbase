@@ -270,9 +270,14 @@ class Base(object):
         """
         return DocumentTree(document, self, True).put_path(path, fn).todict()
 
+    def patch_path(self, document, path, fn):
+        """ Patch value from given path in document (partial update)
+        """
+        return DocumentTree(document, self, True).patch_path(path, fn).todict()
+
     # delete path - delete_path(self, document, path, fn)
     def delete_path(self, document, path, fn):
-        """ Delete value from given path in document
+        """ Delete value at given path in document
         """
         id = document['_metadata']['id_doc']
         for item in path:
