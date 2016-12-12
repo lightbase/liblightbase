@@ -10,8 +10,9 @@ class BaseMetadata(object):
     """
 
     def __init__(self, name=None, description='', password='', color='',
-        model=None, dt_base=None, id_base=0, idx_exp=False , idx_exp_url='',
-        idx_exp_time=300, file_ext=False, file_ext_time=300, txt_mapping=''):
+        model=None, dt_base=None, id_base=0, idx_exp=False , admin_users=[], 
+        idx_exp_url='', owner='', idx_exp_time=300, file_ext=False, file_ext_time=300, 
+        txt_mapping=''):
         """ Base Metadata Attributes
         """
 
@@ -41,11 +42,19 @@ class BaseMetadata(object):
         # this flag is true. The index engine is external to this API.
         self.idx_exp = idx_exp
 
+        # @param admin_users: List of users with access. List of users with 
+        # access to the base. This parameter is used by LBA - LBApp.
+        self.admin_users = admin_users
+
         # @param idx_exp_url: Index exportaction URI (Uniform Resource Locator).
         # Identifier used to index the documents. Accepted format is:
         # http://<IP>:<PORT>/<INDEX>/<TYPE>. If @param idx_exp is true, when
         # inserting a document to base, a HTTP request is sent to this URI.
         self.idx_exp_url = idx_exp_url
+
+        # @param owner: Owner of the base. This parameter is used by 
+        # LBA - LBApp.
+        self.owner = owner
 
         # @param idx_exp_time: Index exportaction time. Time in seconds used by 
         # asynchronous indexer to sleep beetwen the indexing processes.
@@ -164,6 +173,23 @@ class BaseMetadata(object):
             self._idx_exp = value
 
     @property
+    def admin_users(self):
+        """ @property admin_users getter
+        """
+        return self._admin_users
+
+    @admin_users.setter
+    def admin_users(self, value):
+        """ @property admin_users setter
+        """
+        try:
+            assert(isinstance(value, list))
+        except AssertionError:
+            raise ValueError('admin_users value must be list!')
+        else:
+            self._admin_users = value
+
+    @property
     def idx_exp_url(self):
         """ @property idx_exp_url getter
         """
@@ -256,7 +282,9 @@ class BaseMetadata(object):
             'password': self.password,
             'color': self.color,
             'idx_exp': self.idx_exp,
+            'admin_users': self.admin_users,
             'idx_exp_url': self.idx_exp_url,
+            'owner': self.owner,
             'idx_exp_time': self.idx_exp_time,
             'file_ext': self.file_ext,
             'file_ext_time': self.file_ext_time,
