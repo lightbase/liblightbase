@@ -191,17 +191,20 @@ class DocumentTree():
         """
         Recursily updates a branch and its leafs with values in 'new_value'
         """
-        if isinstance(new_value, dict):
-            for key, value in new_value.items():
-                self.patch_leaf_rec(branch[node], key, new_value[key])
-        elif isinstance(new_value, list):
-            for idx, item in enumerate(new_value):
-                if len(branch[node]) > idx:
-                    self.patch_leaf_rec(branch[node], idx, item)
-                else:
-                    branch[node].push(item)
-        else:
+        if node not in branch:
             branch[node] = new_value
+        else:
+            if isinstance(new_value, dict):
+                for key, value in new_value.items():
+                    self.patch_leaf_rec(branch[node], key, new_value[key])
+            elif isinstance(new_value, list):
+                for idx, item in enumerate(new_value):
+                    if len(branch[node]) > idx:
+                        self.patch_leaf_rec(branch[node], idx, item)
+                    else:
+                        branch[node].push(item)
+            else:
+                branch[node] = new_value
 
     def patch_path(self, path, fn):
         """
