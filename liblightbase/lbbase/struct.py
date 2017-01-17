@@ -275,6 +275,16 @@ class Base(object):
         """
         return DocumentTree(document, self, True).patch_path(path, fn).todict()
 
+    def merge_path(self, document, path, fn):
+        """ Patch value from given path in document (partial update)
+        """
+        return DocumentTree(document, self, True).merge_path(path, fn).todict()
+
+    def manual_path(self, document, path, fn):
+        """ Patch value from given path in document (partial update)
+        """
+        return DocumentTree(document, self, True).manual_path(path, fn).todict()
+
     # delete path - delete_path(self, document, path, fn)
     def delete_path(self, document, path, fn):
         """ Delete value at given path in document
