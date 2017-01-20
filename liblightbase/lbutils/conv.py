@@ -55,22 +55,24 @@ def dict2base(dictobj):
         content_list = Content()
         for obj in content_object:
             if obj.get('group'):
+                this_path = parent_path[:]
                 group_metadata = GroupMetadata(**obj['group']['metadata'])
+                this_path.append(group_metadata.name)
+                child_path = this_path[:]
                 _dimension = dimension
                 if group_metadata.multivalued:
                     _dimension += 1
                 if group_metadata.multivalued:
-                    parent_path.append('*')
-                parent_path.append(group_metadata.name)
+                    child_path.append('*')
                 group_content = assemble_content(
                     obj['group']['content'],
                     dimension=_dimension,
-                    parent_path=parent_path)
+                    parent_path=child_path)
                 group = Group(
                     metadata=group_metadata,
                     content=group_content)
                 content_list.append(group)
-                group.path = parent_path
+                group.path = this_path
             elif obj.get('field'):
                 field = Field(**obj['field'])
                 if field.multivalued:
