@@ -7,7 +7,7 @@ from liblightbase.lbbase.lbstruct.group import Group
 from liblightbase.lbbase.lbstruct.group import GroupMetadata
 from liblightbase import pytypes
 from liblightbase.lbdoc.metadata import DocumentMetadata
-import json
+
 
 def json2base(jsonobj):
     """
