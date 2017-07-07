@@ -201,7 +201,7 @@ class BaseMetadata(object):
         """
         if value is not None:
             assert isinstance(value, PYSTR)
-        if self.idx_exp:
+        if value:
             url = lbutils.validate_url(value)
             if len(url.split('/')) is not 5:
                 raise ValueError('''idx_exp_url must have the following format:
