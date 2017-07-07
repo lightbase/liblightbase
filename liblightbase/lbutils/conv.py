@@ -278,8 +278,6 @@ def attribute2lbfield(attr_name, attr_type, attr_value):
                 multivalued = False,
                 required = False)
 
-
-
 class dict2genericbase(object):
     """ Convert um dicionário Python para um objeto Python.
         @return: generic object
@@ -300,4 +298,3 @@ class dict2genericbase(object):
     @property
     def json(self):
         return lbutils.object2json(self, default=lambda o: o.__dict__)
-        #return json.dumps(self, default=lambda o: o.__dict__)
