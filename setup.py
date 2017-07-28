@@ -1,10 +1,12 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.3'
-
+'''
+NOTE: Para versionamento usar "MAJOR.MINOR.REVISION.BUILDNUMBER"! By Questor
+http://programmers.stackexchange.com/questions/24987/what-exactly-is-the-build-number-in-major-minor-buildnumber-revision
+'''
 setup(name='liblightbase',
-    version=version,
+    version='0.3.3.0',
     description="LightBase Library",
     long_description="""\
 LightBase Library""",

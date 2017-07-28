@@ -199,17 +199,22 @@ class BaseMetadata(object):
     def idx_exp_url(self, value):
         """ @property idx_exp_url setter
         """
-        if value is not None:
-            assert isinstance(value, PYSTR)
-        if self.idx_exp:
-            url = lbutils.validate_url(value)
-            if len(url.split('/')) is not 5:
-                raise ValueError('''idx_exp_url must have the following format:
-                    http://host:port/index_name/type_name But received: %s''' %
-                    str(url))
-            self._idx_exp_url = value
-        else:
-            self._idx_exp_url = value
+        self._idx_exp_url = value
+
+        # TODO: Validação da URL do ES. Revisar... Se não mais necessário, remover!
+        # By Questor
+        # if value is not None:
+        #     assert isinstance(value, PYSTR)
+            
+        # if self.idx_exp:
+        #     url = lbutils.validate_url(value)
+        #     if len(url.split('/')) is not 5:
+        #         raise ValueError('''idx_exp_url must have the following format:
+        #             http://host:port/index_name/type_name But received: %s''' %
+        #             str(url))
+        #     self._idx_exp_url = value
+        # else:
+        #     self._idx_exp_url = value
 
     @property
     def idx_exp_time(self):
