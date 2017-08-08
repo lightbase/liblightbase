@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Instalação das dependências do liblightbase no python3.2!
+# Instalação das dependências do liblightbase no python?!
 
 . ./ez_i.bash
 
@@ -32,7 +32,7 @@ fi
 
 f_open_section
 
-TITLE_F="Install liblightbase dependencies for python3.2?"
+TITLE_F="Install liblightbase dependencies for python??"
 f_yes_no "$TITLE_F"
 TITLE_F=""
 
@@ -43,43 +43,43 @@ if [ ${YES_NO_R} -eq 1 ] || [ ${EZ_I_SKIP_ON_V} -eq 1 ] ; then
 
     tar -zxvf ./decorator-3.4.0.tar.gz
     cd ./decorator-3.4.0
-    eval "$BASE_INST_DIR_V/ve32/bin/python3.2 setup.py install"
+    eval "$BASE_INST_DIR_V/lb?_ve??/bin/python? setup.py install"
     cd ..
     rm -rf decorator-3.4.0
 
     tar -zxvf ./six-1.7.2.tar.gz
     cd ./six-1.7.2
-    eval "$BASE_INST_DIR_V/ve32/bin/python3.2 setup.py install"
+    eval "$BASE_INST_DIR_V/lb?_ve??/bin/python? setup.py install"
     cd ..
     rm -rf six-1.7.2
 
     tar -zxvf ./ply-3.4.tar.gz
     cd ./ply-3.4
-    eval "$BASE_INST_DIR_V/ve32/bin/python3.2 setup.py install"
+    eval "$BASE_INST_DIR_V/lb?_ve??/bin/python? setup.py install"
     cd ..
     rm -rf ply-3.4
 
     tar -zxvf ./jsonpath-rw-1.3.0.tar.gz
     cd ./jsonpath-rw-1.3.0
-    eval "$BASE_INST_DIR_V/ve32/bin/python3.2 setup.py install"
+    eval "$BASE_INST_DIR_V/lb?_ve??/bin/python? setup.py install"
     cd ..
     rm -rf jsonpath-rw-1.3.0
 
     tar -zxvf ./python-dateutil-2.2.tar.gz
     cd ./python-dateutil-2.2
-    eval "$BASE_INST_DIR_V/ve32/bin/python3.2 setup.py install"
+    eval "$BASE_INST_DIR_V/lb?_ve??/bin/python? setup.py install"
     cd ..
     rm -rf python-dateutil-2.2
 
     tar -zxvf ./requests-1.2.3.tar.gz
     cd ./requests-1.2.3
-    eval "$BASE_INST_DIR_V/ve32/bin/python3.2 setup.py install"
+    eval "$BASE_INST_DIR_V/lb?_ve??/bin/python? setup.py install"
     cd ..
     rm -rf requests-1.2.3
 
     tar -zxvf ./voluptuous-0.8.7.tar.gz
     cd ./voluptuous-0.8.7
-    eval "$BASE_INST_DIR_V/ve32/bin/python3.2 setup.py install"
+    eval "$BASE_INST_DIR_V/lb?_ve??/bin/python? setup.py install"
     cd ..
     rm -rf voluptuous-0.8.7
 

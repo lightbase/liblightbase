@@ -1,13 +1,13 @@
 #!/bin/bash
 
-rm -rf /var/log/lbg.log
-cd "/usr/local/lb/ve32/src/liblightbase"
-/usr/local/lb/ve32/bin/python3.2 setup.py install
-cd "/usr/local/lb/ve32/src/LBGenerator"
-/usr/local/lb/ve32/bin/python3.2 setup.py install
+rm -rf /var/log/lb?.log
+cd "/usr/local/lb/lb?_ve??/src/liblightbase"
+/usr/local/lb/lb?_ve??/bin/python? setup.py install
+cd "/usr/local/lb/lb?_ve??/src/LBGenerator"
+/usr/local/lb/lb?_ve??/bin/python? setup.py install
 service nginx stop
 service uwsgi stop
 sleep 5
 service uwsgi start
 service nginx start
-less +F /var/log/lbg.log
+less +F /var/log/lb?.log
