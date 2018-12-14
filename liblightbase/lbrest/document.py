@@ -26,7 +26,7 @@ class DocumentREST(LBRest):
         assert isinstance(base, Base), msg
         self.base = base
 
-    def get_collection(self, search_obj=None, instance=True):
+    def get_collection(self, search_obj=None, instance=True, return_as_dict=False):
         """
         Retrieves collection of documents according to search object.
         @param search_obj: JSON which represents a search object.
@@ -39,10 +39,17 @@ class DocumentREST(LBRest):
         response = self.send_request(self.httpget,
             url_path=[self.basename, self.doc_prefix],
             params={self.search_param: search_obj._asjson()})
-
-        #return Collection(self.base, **lbutils.json2object(response))
-        #return dict2genericbase(response.json())
-        return dict2genericbase(lbutils.json2object(response))
+        # NOTE: Adicionado pelo Bleno 06/10/2016. By Alexandre.
+        # "Adicionado por Bleno Nascimento Silva aproximadamente 2 anos atrás
+        # Removendo a validação no retorno do método get_collection"
+        # ===================================================================
+        # return Collection(self.base, **lbutils.json2object(response))
+        # return dict2genericbase(response.json())
+        # ===================================================================
+        if return_as_dict:
+            return Collection(self.base, **lbutils.json2object(response))        
+        else:            
+            return dict2genericbase(lbutils.json2object(response))
 
     def update_collection(self, search_obj=None, path_list=[]):
         """
