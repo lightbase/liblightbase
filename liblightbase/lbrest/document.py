@@ -47,9 +47,9 @@ class DocumentREST(LBRest):
         # return dict2genericbase(response.json())
         # ===================================================================
         if return_as_dict:
-            return Collection(self.base, **lbutils.json2object(response))        
-        else:            
             return dict2genericbase(lbutils.json2object(response))
+        else:            
+            return Collection(self.base, **lbutils.json2object(response))        
 
     def update_collection(self, search_obj=None, path_list=[]):
         """
