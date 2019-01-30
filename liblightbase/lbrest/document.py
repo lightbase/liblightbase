@@ -39,17 +39,17 @@ class DocumentREST(LBRest):
         response = self.send_request(self.httpget,
             url_path=[self.basename, self.doc_prefix],
             params={self.search_param: search_obj._asjson()})
-        # NOTE: Adicionado pelo Bleno 06/10/2016. By Alexandre.
-        # "Adicionado por Bleno Nascimento Silva aproximadamente 2 anos atrás
-        # Removendo a validação no retorno do método get_collection"
-        # ===================================================================
+
+        # NOTE: Adicionado pelo Bleno 06/10/2016. Adicionado por Bleno Nascimento 
+        # Silva aproximadamente 2 anos atrás removendo a validação no retorno do método 
+        # "get_collection". By Alexandre
         # return Collection(self.base, **lbutils.json2object(response))
         # return dict2genericbase(response.json())
-        # ===================================================================
+
         if return_as_dict:
             return dict2genericbase(lbutils.json2object(response))
         else:            
-            return Collection(self.base, **lbutils.json2object(response))        
+            return Collection(self.base, **lbutils.json2object(response))
 
     def update_collection(self, search_obj=None, path_list=[]):
         """

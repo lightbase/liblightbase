@@ -298,3 +298,4 @@ class dict2genericbase(object):
     @property
     def json(self):
         return lbutils.object2json(self, default=lambda o: o.__dict__)
+
