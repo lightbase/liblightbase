@@ -84,6 +84,7 @@ def dict2base(dictobj):
                 this_path.append(field.name)
                 field.path = this_path
         return content_list
+    
     base = Base(metadata=BaseMetadata(**dictobj['metadata']),
         content=assemble_content(dictobj['content']))
     return base

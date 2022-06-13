@@ -12,7 +12,7 @@ class BaseMetadata(object):
     def __init__(self, name=None, description='', password='', color='',
         model=None, dt_base=None, id_base=0, idx_exp=False , admin_users=[], 
         idx_exp_url='', owner='', idx_exp_time=300, file_ext=False, file_ext_time=300, 
-        txt_mapping=''):
+        txt_mapping='', locked=False, alias=''):
         """ Base Metadata Attributes
         """
 
@@ -82,9 +82,9 @@ class BaseMetadata(object):
         """ @property name setter
         """
         msg = 'Invalid chars on Base name. It must be an ascii string'
-        assert(isinstance(value, PYSTR)), msg
+        #assert isinstance(value, PYSTR) , msg
         # check ascii characters
-        assert all(ord(c) < 128 for c in value), msg
+        #assert all(ord(c) < 128 for c in value), msg
         self._name = str(value).lower()
 
     @property

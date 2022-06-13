@@ -23,7 +23,7 @@ LightBase Library""",
     'voluptuous == 0.8.7',
     'ply == 3.4',
     'decorator == 3.4.0',
-    'requests == 2.3.0',
+    'requests == 2.27.0',
     'python-dateutil == 2.2',
     'six == 1.7.2',
     'jsonpath-rw == 1.3.0'])
