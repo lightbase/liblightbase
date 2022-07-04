@@ -22,7 +22,7 @@ LightBase Library""",
     install_requires=[
     'voluptuous == 0.8.7',
     'ply == 3.4',
-    'decorator == 3.4.0',
+    'decorator == 5.1.1',
     'requests == 2.27.0',
     'python-dateutil == 2.2',
     'six == 1.7.2',
